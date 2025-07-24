@@ -1,0 +1,1110 @@
+{
+    "basics": {
+        "filekey": 369,
+        "lastName": "Tucker-Info0093",
+        "firstName": "Piers",
+        "middle": "",
+        "idnum": "TimID575",
+        "badge": 575575,
+        "homeWg": {
+            "description": "Glenwood Gardens-CNA(Certified Nursing Assistant)-Default-Nursing Medicare Direct",
+            "workPositionWgName": "Certified Nursing Assistant",
+            "workPositionWgCode": "CNA",
+            "workPositionName": "CNA",
+            "workPositionAbb": "CNA",
+            "levels": [
+                {
+                    "wgLevel": 1,
+                    "wgNum": 3,
+                    "caption": "Glenwood Gardens"
+                },
+                {
+                    "wgLevel": 4,
+                    "wgNum": 66,
+                    "caption": "CNA(Certified Nursing Assistant)"
+                },
+                {
+                    "wgLevel": 2,
+                    "wgNum": 1,
+                    "caption": "Default"
+                },
+                {
+                    "wgLevel": 3,
+                    "wgNum": 9,
+                    "caption": "Nursing Medicare Direct"
+                }
+            ]
+        },
+        "homeWgSet": {
+            "levels": [
+                {
+                    "wgLevel": 1,
+                    "wgNum": 3
+                },
+                {
+                    "wgLevel": 2,
+                    "wgNum": 1
+                },
+                {
+                    "wgLevel": 3,
+                    "wgNum": 9
+                },
+                {
+                    "wgLevel": 4,
+                    "wgNum": 66
+                }
+            ]
+        },
+        "homeWgEffDate": "2017-01-17T00:00:00.000"
+    },
+    "personalInfo": {
+        "address": {
+            "addressLine1": "Bethel Church",
+            "addressLine2": "",
+            "addressLine3": "",
+            "city": "Saline",
+            "stateProv": "MI",
+            "postalCode": "48262",
+            "created": "2017-01-17T00:00:00.000",
+            "editing": {
+                "editable": false,
+                "presentInConfig": false
+            }
+        },
+        "contactInfo": {
+            "phoneNumbers": [
+                {
+                    "phonePosIndex": 0,
+                    "phoneLabel": "Work Phone",
+                    "phoneNumber": "8102311963",
+                    "editing": {
+                        "editable": true,
+                        "presentInConfig": true
+                    }
+                },
+                {
+                    "phonePosIndex": 1,
+                    "phoneLabel": "Home Phone",
+                    "phoneNumber": "3333333333",
+                    "editing": {
+                        "editable": true,
+                        "presentInConfig": true
+                    }
+                },
+                {
+                    "phonePosIndex": 2,
+                    "phoneLabel": "Cell Phone New",
+                    "phoneNumber": "0000000000",
+                    "editing": {
+                        "editable": true,
+                        "presentInConfig": true
+                    }
+                }
+            ],
+            "emails": [
+                {
+                    "emailPosIndex": 1,
+                    "emailLabel": "Personal Email",
+                    "emailAddress": "ttsiang13_Personal@gmail.com",
+                    "editing": {
+                        "editable": true,
+                        "presentInConfig": true
+                    }
+                },
+                {
+                    "emailPosIndex": 0,
+                    "emailLabel": "Work Email",
+                    "emailAddress": "ttsiang.aod+timtim@gmail.com",
+                    "editing": {
+                        "editable": true,
+                        "presentInConfig": true
+                    }
+                }
+            ],
+            "devices": [
+                {
+                    "platform": "Windows"
+                }
+            ]
+        },
+        "emergency": {
+            "emergencyContact": "",
+            "editing": {
+                "editable": true,
+                "presentInConfig": true
+            }
+        },
+        "customFields": [],
+        "eula": {
+            "attest": true,
+            "lastModified": "2019-08-15T10:44:36.020",
+            "url": null
+        }
+    },
+    "profileInfo": {
+        "profileName": "Piers",
+        "guid": "{21178A09-E594-4918-BF09-20C64172984A}",
+        "createdBy": "",
+        "sheetId": 0,
+        "sheetName": "Default (Time Card)",
+        "allSheets": false,
+        "schSheetId": 1,
+        "arcSheetId": 1,
+        "benSheetId": 1,
+        "piSheetId": 2,
+        "piSheetName": "Customzied Layout",
+        "msgSheetId": 1,
+        "leaveSheetId": 1,
+        "wgRendering": {
+            "caption": "",
+            "levels": [
+                {
+                    "wgLevel": 1,
+                    "name": "Location",
+                    "plural": "",
+                    "captionUses": "wgName"
+                },
+                {
+                    "wgLevel": 4,
+                    "name": "Position Name/Code",
+                    "plural": "Position Name/Code",
+                    "captionUses": "wgNum"
+                },
+                {
+                    "wgLevel": 2,
+                    "name": "Zone",
+                    "plural": "",
+                    "captionUses": "wgName"
+                },
+                {
+                    "wgLevel": 3,
+                    "name": "Department",
+                    "plural": "",
+                    "captionUses": "wgName"
+                }
+            ]
+        },
+        "enablePunchingRestrictions": false,
+        "enableOverrideRestrClass": true,
+        "wageAdvanceEnabled": false,
+        "empNameFormatId": 0,
+        "timeCardApprovalEnabled": true,
+        "timeCardApprovalAsSupervisor": false,
+        "showRateOfOpenSch": false,
+        "idleTimeout": 300,
+        "benefitPeriodId": 60,
+        "approvalText": "I understand that I am approving my time card for the selected pay period.",
+        "mayAddToWGSheet": false,
+        "daysBackForHistory": 30,
+        "applyPaidLunch": true,
+        "schBuddyCoverage": true,
+        "inclPrintTimeCard": false,
+        "timeCardReportName": "Time Card Report",
+        "benefitPeriodName": "Prev. & Current Calendar Year",
+        "benefitPeriodAbb": "currPrevYear",
+        "benefitPeriodSelections": [
+            {
+                "benefitPeriodId": 1,
+                "benefitPeriodName": "Previous Period",
+                "benefitPeriodAbb": "prevPeriod",
+                "id": "extModel67-1"
+            },
+            {
+                "benefitPeriodId": 2,
+                "benefitPeriodName": "Current Period",
+                "benefitPeriodAbb": "currPeriod",
+                "id": "extModel67-2"
+            },
+            {
+                "benefitPeriodId": 3,
+                "benefitPeriodName": "Next Period",
+                "benefitPeriodAbb": "nextPeriod",
+                "id": "extModel67-3"
+            },
+            {
+                "benefitPeriodId": 16,
+                "benefitPeriodName": "Previous Year",
+                "benefitPeriodAbb": "prevYear",
+                "id": "extModel67-4"
+            },
+            {
+                "benefitPeriodId": 17,
+                "benefitPeriodName": "Current Year",
+                "benefitPeriodAbb": "currYear",
+                "id": "extModel67-5"
+            },
+            {
+                "benefitPeriodId": 18,
+                "benefitPeriodName": "Next Year",
+                "benefitPeriodAbb": "nextYear",
+                "id": "extModel67-6"
+            },
+            {
+                "benefitPeriodId": 19,
+                "benefitPeriodName": "Last 12 Months (FMLA)",
+                "benefitPeriodAbb": "lastTwelveMonths",
+                "id": "extModel67-7"
+            },
+            {
+                "benefitPeriodId": 60,
+                "benefitPeriodName": "Prev. & Current Calendar Year",
+                "benefitPeriodAbb": "currPrevYear",
+                "id": "extModel67-8"
+            },
+            {
+                "benefitPeriodId": 72,
+                "benefitPeriodName": "Current & Next Calendar Year",
+                "benefitPeriodAbb": "currNextYear",
+                "id": "extModel67-9"
+            }
+        ],
+        "maySetAvailability": true,
+        "canSeeCoWorkerSch": true,
+        "canSeeOpenAssignments": true,
+        "canSeeOpenSchedules": true,
+        "openSchWGLevel": 1,
+        "wageAdvance": false,
+        "preventChgPwd": true,
+        "leaveRequests": {
+            "minRTOTime": 133,
+            "defaultRTOBenefit": 3,
+            "rtoMinDaysFormulaId": 2,
+            "rtoMinDaysFormula": "Minimum Days from Start of Current Week",
+            "rtoDaysOffset": 0,
+            "rtoMaxDaysOffset": 444,
+            "rtoMaxDaysFormulaId": 2,
+            "rtoMaxDaysFormula": "Number of Months from Start of Current Month",
+            "allowCancelRTO": true,
+            "rtoMinCancelDays": 5,
+            "eMailRTOReqs": true,
+            "rtoFKeys": [
+                {
+                    "fkeyOpId": 2,
+                    "usedForId": 0,
+                    "caption": "multi Request Time Off",
+                    "collectGPS": false,
+                    "collectGPSMode": 2,
+                    "icon": "sun",
+                    "guid": "{BDC8EEEF-3DD5-4EC2-99DE-E7E0D487A775}",
+                    "fkeyCls": "fkey-default",
+                    "fkeyHint": "",
+                    "rtoStyleId": 1,
+                    "rtoStyle": "More than one day; not an extended leave (Vacation)",
+                    "rtoHoursPromptId": 0,
+                    "rtoHoursPrompt": "Prompt for Amount",
+                    "rtoDefaultHoursFormulaId": 4,
+                    "rtoDefaultHoursFormula": "Use Scheduled Hours in Range",
+                    "rtoHours": 480,
+                    "rtoIntervalFormulaId": 0,
+                    "rtoIntervalFormula": "None",
+                    "rtoHoursInterval": 30,
+                    "rtoHoursMin": 60,
+                    "rtoHoursMax": 4800,
+                    "rtoBenefitPromptId": 0,
+                    "rtoBenefitPrompt": "Prompt for Benefit",
+                    "rtoDefaultBenefitFormulaId": 1,
+                    "rtoDefaultBenefitFormula": "Selected Benefit",
+                    "rtoBenefit": 3,
+                    "rtoZeroHours": true,
+                    "rtoRenderBenBalId": 0,
+                    "rtoRenderBenBal": "None"
+                },
+                {
+                    "fkeyOpId": 2,
+                    "usedForId": 0,
+                    "caption": "Partial Time Off",
+                    "collectGPS": false,
+                    "collectGPSMode": 2,
+                    "icon": "sun",
+                    "guid": "{96296B5F-DAD2-4463-AC82-46F3D3C17884}",
+                    "fkeyCls": "fkey-default",
+                    "fkeyHint": "",
+                    "rtoStyleId": 3,
+                    "rtoStyle": "Partial Shift",
+                    "rtoHoursPromptId": 0,
+                    "rtoHoursPrompt": "Prompt for Amount",
+                    "rtoDefaultHoursFormulaId": 4,
+                    "rtoDefaultHoursFormula": "Use Scheduled Hours in Range",
+                    "rtoHours": 480,
+                    "rtoIntervalFormulaId": 0,
+                    "rtoIntervalFormula": "None",
+                    "rtoHoursInterval": 5,
+                    "rtoHoursMin": 35,
+                    "rtoHoursMax": 393,
+                    "rtoBenefitPromptId": 0,
+                    "rtoBenefitPrompt": "Prompt for Benefit",
+                    "rtoDefaultBenefitFormulaId": 1,
+                    "rtoDefaultBenefitFormula": "Selected Benefit",
+                    "rtoBenefit": 7,
+                    "rtoZeroHours": true,
+                    "rtoRenderBenBalId": 1,
+                    "rtoRenderBenBal": "Show"
+                },
+                {
+                    "fkeyOpId": 2,
+                    "usedForId": 0,
+                    "caption": "Single Day Request Time Off",
+                    "collectGPS": false,
+                    "collectGPSMode": 2,
+                    "icon": "sun",
+                    "guid": "{06FB10F6-BEAA-4200-A4B9-83C1C8C65D90}",
+                    "fkeyCls": "fkey-default",
+                    "fkeyHint": "",
+                    "rtoStyleId": 0,
+                    "rtoStyle": "Single Day",
+                    "rtoHoursPromptId": 0,
+                    "rtoHoursPrompt": "Prompt for Amount",
+                    "rtoDefaultHoursFormulaId": 0,
+                    "rtoDefaultHoursFormula": "Value Specified",
+                    "rtoHours": 313,
+                    "rtoIntervalFormulaId": 0,
+                    "rtoIntervalFormula": "None",
+                    "rtoHoursInterval": 15,
+                    "rtoHoursMin": 0,
+                    "rtoHoursMax": 480,
+                    "rtoBenefitPromptId": 0,
+                    "rtoBenefitPrompt": "Prompt for Benefit",
+                    "rtoDefaultBenefitFormulaId": 0,
+                    "rtoDefaultBenefitFormula": "Profile Default",
+                    "rtoBenefit": 1,
+                    "rtoZeroHours": true,
+                    "rtoRenderBenBalId": 0,
+                    "rtoRenderBenBal": "None"
+                }
+            ]
+        },
+        "stationProperties": {
+            "impliedStationNum": 55,
+            "punchTZXLateMode": 1,
+            "showPunchMode": 0,
+            "transAcceptedText": "Transaction Accepted",
+            "currentTimeMode": 2,
+            "showCorpTimeStamp": true,
+            "auxDataCapFields": [],
+            "empReviewTiles": []
+        },
+        "scheduleConfirmation": {
+            "reapproveOnChgNotes": true,
+            "doesConfirmSchs": true,
+            "confirmPattSchs": true,
+            "unConfSchDays": 21
+        },
+        "onboardingInvitation": {
+            "invtModeId": 1,
+            "invtPeriodDays": 14,
+            "invtMaxTrys": 3,
+            "invtMinHrs": 23,
+            "invtDOHBias": -1
+        },
+        "restClass": {
+            "classNum": 0,
+            "BSTEnabled": true,
+            "BSTBegin": 240,
+            "BSTEnd": 15,
+            "ASTEnabled": true,
+            "ASTBegin": 15,
+            "ASTEnd": 60,
+            "BETEnabled": false,
+            "BETBegin": 60,
+            "BETEnd": 15,
+            "AETEnabled": false,
+            "AETBegin": 15,
+            "AETEnd": 240,
+            "MinOutEnabled": false,
+            "RestFlexEnabled": false
+        },
+        "datedLabelRules": [],
+        "customProperties": [
+            {
+                "name": "URL:TLN",
+                "value": "https://www.attendanceondemand.com/learning-center/8-employee-mobile/",
+                "id": "extModel21-1",
+                "type": "URL",
+                "label": "TLN"
+            }
+        ],
+        "persInfoSections": [
+            {
+                "sectionId": 2,
+                "caption": "Personal Information",
+                "renderedFields": [
+                    {
+                        "fieldTypeId": 1,
+                        "fieldId": 8,
+                        "caption": "Work Email",
+                        "editing": 1,
+                        "itemIndex": 0
+                    },
+                    {
+                        "fieldTypeId": 1,
+                        "fieldId": 8,
+                        "caption": "Personal Email",
+                        "editing": 1,
+                        "itemIndex": 1
+                    },
+                    {
+                        "fieldTypeId": 1,
+                        "fieldId": 6,
+                        "caption": "Work Phone",
+                        "editing": 1,
+                        "itemIndex": 0
+                    },
+                    {
+                        "fieldTypeId": 1,
+                        "fieldId": 6,
+                        "caption": "Home Phone",
+                        "editing": 1,
+                        "itemIndex": 1
+                    },
+                    {
+                        "fieldTypeId": 1,
+                        "fieldId": 6,
+                        "caption": "Cell Phone",
+                        "editing": 1,
+                        "itemIndex": 2
+                    },
+                    {
+                        "fieldTypeId": 2,
+                        "fieldId": 17,
+                        "caption": "Emergency Contact",
+                        "editing": 1,
+                        "itemIndex": 0
+                    }
+                ]
+            }
+        ],
+        "operational": {
+            "minimumLeaveRequestDate": "2019-08-11T00:00:00.000",
+            "maximumLeaveRequestDate": "2056-08-01T00:00:00.000",
+            "currentPayPeriodBeginDate": "2019-08-11T00:00:00.000",
+            "currentPayPeriodEndDate": "2019-08-24T00:00:00.000",
+            "previousPayPeriodBeginDate": "2019-07-28T00:00:00.000",
+            "previousPayPeriodEndDate": "2019-08-10T00:00:00.000",
+            "nextPayPeriodBeginDate": "2019-08-25T00:00:00.000",
+            "nextPayPeriodEndDate": "2019-09-07T00:00:00.000",
+            "availability": {
+                "earliestAllowedDate": "2019-08-15T15:05:05.107",
+                "daysFormulaId": 1,
+                "days": 30
+            }
+        },
+        "availablePlaces": [
+            {
+                "wgName": "Cedar Springs",
+                "wgCode": "CS",
+                "wgNum": 4
+            },
+            {
+                "wgName": "Central Office",
+                "wgCode": "CO",
+                "wgNum": 1
+            },
+            {
+                "wgName": "Evergreen Acres",
+                "wgCode": "EA",
+                "wgNum": 2
+            },
+            {
+                "wgName": "Glenwood Gardens",
+                "wgCode": "GG",
+                "wgNum": 3
+            }
+        ]
+    },
+    "company": {
+        "name": "Maplewood Lifecare",
+        "address1": "1 Golden Pond Ave",
+        "address2": "",
+        "city": "Detroit",
+        "stateProv": "MI",
+        "postalCode": "48201",
+        "latitude": 42.348495,
+        "longitude": -83.0603,
+        "phoneFields": [
+            {
+                "phonePosIndex": 0,
+                "phoneLabel": "Work Phone"
+            },
+            {
+                "phonePosIndex": 1,
+                "phoneLabel": "Home Phone"
+            },
+            {
+                "phonePosIndex": 2,
+                "phoneLabel": "Cell Phone New"
+            }
+        ],
+        "emailFields": [
+            {
+                "emailPosIndex": 0,
+                "emailLabel": "Work Email"
+            },
+            {
+                "emailPosIndex": 1,
+                "emailLabel": "Personal Email"
+            }
+        ]
+    },
+    "time": {
+        "corpTimeZone": -5,
+        "bypassDaylightSavings": false,
+        "california": false,
+        "inProduction": false,
+        "installationDate": "2006-05-19T08:34:45.219",
+        "startDOW": 1,
+        "payroll": "Custom"
+    },
+    "application": {
+        "maxFaceEnrollments": 3,
+        "tradingAllowed": true,
+        "wageAdvanceEligible": false,
+        "requireBioAttest": false,
+        "visualScheduling": true
+    },
+    "operator": {
+        "canSeeRates": true,
+        "aeUserCode": "INFOAPI",
+        "friendlyName": "INFOTRONICS",
+        "userGroup": "Employee Self Service",
+        "preferences": {
+            "timeInAmPm": true,
+            "timeInHund": false,
+            "hoursInHund": false,
+            "schTimeInAmPm": true,
+            "schTimeInHund": false,
+            "schHoursInHund": false,
+            "arcHoursInHund": false
+        }
+    },
+    "schStyles": [
+        {
+            "uniqueId": 2621,
+            "schStyleId": 1,
+            "Schedule Style": "On Call",
+            "comment": "",
+            "isUnpunchedStyle": false
+        },
+        {
+            "uniqueId": 2622,
+            "schStyleId": 2,
+            "Schedule Style": "Absent - No Show",
+            "comment": "",
+            "isUnpunchedStyle": false
+        },
+        {
+            "uniqueId": 2623,
+            "schStyleId": 3,
+            "Schedule Style": "Schedule Style 3",
+            "comment": "",
+            "isUnpunchedStyle": false
+        },
+        {
+            "uniqueId": 2624,
+            "schStyleId": 4,
+            "Schedule Style": "Schedule Style 4",
+            "comment": "",
+            "isUnpunchedStyle": false
+        },
+        {
+            "uniqueId": 2625,
+            "schStyleId": 5,
+            "Schedule Style": "Schedule Style 5",
+            "comment": "",
+            "isUnpunchedStyle": false
+        },
+        {
+            "uniqueId": 2626,
+            "schStyleId": 6,
+            "Schedule Style": "Schedule Style 6",
+            "comment": "",
+            "isUnpunchedStyle": false
+        },
+        {
+            "uniqueId": 2627,
+            "schStyleId": 7,
+            "Schedule Style": "Schedule Style 7",
+            "comment": "",
+            "isUnpunchedStyle": false
+        },
+        {
+            "uniqueId": 2628,
+            "schStyleId": 8,
+            "Schedule Style": "Schedule Style 8",
+            "comment": "",
+            "isUnpunchedStyle": false
+        },
+        {
+            "uniqueId": 2629,
+            "schStyleId": 9,
+            "Schedule Style": "Schedule Style 9",
+            "comment": "",
+            "isUnpunchedStyle": false
+        },
+        {
+            "uniqueId": 2630,
+            "schStyleId": 10,
+            "Schedule Style": "Schedule Style 10",
+            "comment": "",
+            "isUnpunchedStyle": false
+        }
+    ],
+    "context": {
+        "focusDate": "2019-08-15T00:00:00.000",
+        "currentTime": "2019-08-15T15:05:07.107",
+        "demoMode": true,
+        "previousPeriodBegins": "2019-07-28T00:00:00.000",
+        "previousPeriodEnds": "2019-08-10T00:00:00.000",
+        "currentPeriodBegins": "2019-08-11T00:00:00.000",
+        "currentPeriodEnds": "2019-08-24T00:00:00.000",
+        "workedShifts": [
+            {
+                "date": "2019-08-15T00:00:00.000",
+                "dop": 0,
+                "dow": 0,
+                "grossHours": 0,
+                "hours": 0,
+                "hundHours": 0,
+                "shiftNum": 0,
+                "scheduled": false,
+                "hasWorkSchedule": false,
+                "hasFlexSchedule": false,
+                "isWorkedHoliday": false,
+                "isOddPunchState": true,
+                "isVirtualShift": false,
+                "lastPunchState": 1,
+                "active": false,
+                "transactions": {
+                    "count": 1,
+                    "actual": [
+                        {
+                            "timestamp": "2019-08-15T09:51:00.000",
+                            "transType": 0,
+                            "station": 13,
+                            "id": "extModel71-1"
+                        }
+                    ],
+                    "rounded": []
+                },
+                "monitoredItems": {
+                    "arrival": {
+                        "beforeStart": false,
+                        "afterStart": false
+                    },
+                    "departure": {
+                        "beforeEnd": false,
+                        "afterEnd": false
+                    },
+                    "intervals": {
+                        "inDiff": 0,
+                        "outDiff": 0,
+                        "inDiffRnd": 0,
+                        "outDiffRnd": 0
+                    },
+                    "shiftExceptions": [],
+                    "breakEvents": [],
+                    "zones": [],
+                    "nonWorkedEvents": []
+                }
+            },
+            {
+                "date": "2019-08-15T00:00:00.000",
+                "dop": 0,
+                "dow": 0,
+                "grossHours": 305,
+                "hours": 275,
+                "hundHours": 4.58,
+                "shiftNum": 0,
+                "scheduled": false,
+                "hasWorkSchedule": false,
+                "hasFlexSchedule": false,
+                "isWorkedHoliday": false,
+                "isOddPunchState": false,
+                "isVirtualShift": false,
+                "lastPunchState": 0,
+                "active": true,
+                "transactions": {
+                    "count": 4,
+                    "actual": [
+                        {
+                            "timestamp": "2019-08-15T10:21:00.000",
+                            "transType": 256,
+                            "station": 13,
+                            "id": "extModel71-2"
+                        },
+                        {
+                            "timestamp": "2019-08-15T13:34:00.000",
+                            "transType": 0,
+                            "station": 13,
+                            "id": "extModel71-3"
+                        },
+                        {
+                            "timestamp": "2019-08-15T13:57:00.000",
+                            "transType": 0,
+                            "station": 13,
+                            "id": "extModel71-4"
+                        },
+                        {
+                            "timestamp": "2019-08-15T15:26:00.000",
+                            "transType": 0,
+                            "station": 13,
+                            "id": "extModel71-5"
+                        }
+                    ],
+                    "rounded": []
+                },
+                "monitoredItems": {
+                    "arrival": {
+                        "beforeStart": false,
+                        "afterStart": false
+                    },
+                    "departure": {
+                        "beforeEnd": false,
+                        "afterEnd": false
+                    },
+                    "intervals": {
+                        "inDiff": 0,
+                        "outDiff": 0,
+                        "inDiffRnd": 0,
+                        "outDiffRnd": 0
+                    },
+                    "shiftExceptions": [],
+                    "breakEvents": [],
+                    "zones": [],
+                    "nonWorkedEvents": []
+                }
+            }
+        ],
+        "impliedStation": 55,
+        "maySetAvailability": true,
+        "canSeeCoWorkerSch": true,
+        "canSeeOpenAssignments": true,
+        "canSeeOpenSchedules": true,
+        "openSchWGLevel": 1,
+        "inOutStateId": 0,
+        "defaultWg": {
+            "description": "Glenwood Gardens-CNA(Certified Nursing Assistant)-Default-Nursing Medicare Direct",
+            "workPositionWgName": "Certified Nursing Assistant",
+            "workPositionWgCode": "CNA",
+            "workPositionName": "CNA",
+            "workPositionAbb": "CNA",
+            "levels": [
+                {
+                    "wgLevel": 1,
+                    "wgNum": 3,
+                    "caption": "Glenwood Gardens"
+                },
+                {
+                    "wgLevel": 4,
+                    "wgNum": 66,
+                    "caption": "CNA(Certified Nursing Assistant)"
+                },
+                {
+                    "wgLevel": 2,
+                    "wgNum": 1,
+                    "caption": "Default"
+                },
+                {
+                    "wgLevel": 3,
+                    "wgNum": 9,
+                    "caption": "Nursing Medicare Direct"
+                }
+            ]
+        },
+        "operations": [
+            {
+                "operation": 5,
+                "description": "Capture Tips",
+                "caption": "Tips",
+                "fkeyguid": "{516BDD8B-39BB-4A33-A2CD-0304F0AB08B5}",
+                "hint": "",
+                "icon": "fa fa-clock",
+                "tip1": {
+                    "prompt": true,
+                    "caption": "Enter Tips Num 1",
+                    "hint": "Enter Tip 1",
+                    "payDesId": 30
+                },
+                "tip2": {
+                    "prompt": false,
+                    "caption": "Enter Charge Tips Num 2",
+                    "hint": "Enter Tip 2",
+                    "payDesId": 10
+                },
+                "id": "extModel69-6",
+                "xtype": "enter-tips-button"
+            },
+            {
+                "operation": 4,
+                "description": "Initiate Waiver",
+                "caption": "Select Preferences",
+                "fkeyguid": "{5F9F0772-B6C7-4858-97D5-7E3B5A5F5D90}",
+                "hint": "",
+                "icon": "fa fa-clock",
+                "promptForEffDate": false,
+                "memo": "",
+                "days": 1,
+                "catA": {
+                    "prompt": true,
+                    "caption": "Lunch Waiver",
+                    "defaultId": 2,
+                    "selections": [
+                        {
+                            "name": "No Waiver",
+                            "abb": "No Waiver",
+                            "id": 1,
+                            "aux": 0,
+                            "usage": 1
+                        },
+                        {
+                            "name": "First Lunch Waiver",
+                            "abb": "1st Lunch Waiver",
+                            "id": 2,
+                            "aux": 0,
+                            "usage": 1
+                        },
+                        {
+                            "name": "Second Lunch Waiver",
+                            "abb": "2nd Lunch Waiver",
+                            "id": 3,
+                            "aux": 0,
+                            "usage": 1
+                        },
+                        {
+                            "name": "Full Waiver",
+                            "abb": "Waive All",
+                            "id": 4,
+                            "aux": 0,
+                            "usage": 1
+                        }
+                    ]
+                },
+                "catB": {
+                    "prompt": false,
+                    "caption": "My Options",
+                    "defaultId": 0,
+                    "selections": []
+                },
+                "id": "extModel69-7",
+                "xtype": "waiver-button"
+            },
+            {
+                "operation": 2,
+                "description": "Standard Transfer",
+                "caption": "Lunch Transfer ",
+                "fkeyguid": "{5324678A-4261-40EE-BB3D-1026297ECB37}",
+                "hint": "",
+                "icon": "fa fa-clock",
+                "alsoPunch": false,
+                "transType": 0,
+                "callbackTransType": 20,
+                "xferStyle": 0,
+                "xferStyleDescr": "multiList",
+                "wgRendering": {
+                    "caption": "",
+                    "levels": [
+                        {
+                            "wgLevel": 1,
+                            "name": "Location",
+                            "plural": "Location",
+                            "captionUses": "wgName"
+                        },
+                        {
+                            "wgLevel": 2,
+                            "name": "Zone",
+                            "plural": "Zone",
+                            "captionUses": "wgCode"
+                        },
+                        {
+                            "wgLevel": 4,
+                            "name": "Position",
+                            "plural": "Department",
+                            "captionUses": "wgName"
+                        }
+                    ]
+                },
+                "id": "extModel69-8",
+                "xtype": "xfer-button"
+            },
+            {
+                "operation": 0,
+                "description": "Punch In",
+                "caption": "Punch In",
+                "fkeyguid": "{488A812A-85A8-4F69-9FE8-0BEE35321789}",
+                "prerequisites": {
+                    "captureGps": true,
+                    "faceVerify": false,
+                    "geoZone": true,
+                    "autoXfer": false,
+                    "transRuleGuid": "{60F686E6-5283-46FC-8D3F-7A3BB881EB3C}",
+                    "requireGps": true,
+                    "enabled": true
+                },
+                "prompts": {
+                    "askForTransType": true,
+                    "defaultTransType": 0,
+                    "selections": [
+                        {
+                            "id": 0,
+                            "caption": "Back To Work"
+                        },
+                        {
+                            "id": 256,
+                            "caption": "Start New Shift"
+                        }
+                    ],
+                    "askForCallback": false,
+                    "defaultCallback": null,
+                    "callbackSelections": [
+                        {
+                            "id": 0,
+                            "caption": "None"
+                        },
+                        {
+                            "id": 1,
+                            "caption": "Klints Callback"
+                        },
+                        {
+                            "id": 1,
+                            "caption": "On Call"
+                        }
+                    ],
+                    "askForXfer": true,
+                    "xferOperation": {
+                        "operation": 2,
+                        "description": "Standard Transfer",
+                        "caption": "Punch",
+                        "fkeyguid": "{488A812A-85A8-4F69-9FE8-0BEE35321789}",
+                        "hint": "",
+                        "icon": "fa fa-clock",
+                        "alsoPunch": false,
+                        "transType": 0,
+                        "callbackTransType": 20,
+                        "xferStyle": 2,
+                        "xferStyleDescr": "singleList",
+                        "singleList": [
+                            {
+                                "description": "Central Office-ADM(Administration)-Default-General/Administration",
+                                "workPositionWgName": "Administration",
+                                "workPositionWgCode": "ADM",
+                                "workPositionName": "",
+                                "workPositionAbb": "",
+                                "levels": [
+                                    {
+                                        "wgLevel": 1,
+                                        "wgNum": 1,
+                                        "caption": "Central Office"
+                                    },
+                                    {
+                                        "wgLevel": 4,
+                                        "wgNum": 6,
+                                        "caption": "ADM(Administration)"
+                                    },
+                                    {
+                                        "wgLevel": 2,
+                                        "wgNum": 1,
+                                        "caption": "Default"
+                                    },
+                                    {
+                                        "wgLevel": 3,
+                                        "wgNum": 2,
+                                        "caption": "General/Administration"
+                                    }
+                                ]
+                            },
+                            {
+                                "description": "Glenwood Gardens-MDR(MDS RN)-Default-Nursing Medicare Direct",
+                                "workPositionWgName": "MDS RN",
+                                "workPositionWgCode": "MDR",
+                                "workPositionName": "",
+                                "workPositionAbb": "",
+                                "levels": [
+                                    {
+                                        "wgLevel": 1,
+                                        "wgNum": 3,
+                                        "caption": "Glenwood Gardens"
+                                    },
+                                    {
+                                        "wgLevel": 4,
+                                        "wgNum": 40,
+                                        "caption": "MDR(MDS RN)"
+                                    },
+                                    {
+                                        "wgLevel": 2,
+                                        "wgNum": 1,
+                                        "caption": "Default"
+                                    },
+                                    {
+                                        "wgLevel": 3,
+                                        "wgNum": 9,
+                                        "caption": "Nursing Medicare Direct"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "defaultWg": {
+                        "description": "Glenwood Gardens-CNA(Certified Nursing Assistant)-Default-Nursing Medicare Direct",
+                        "workPositionWgName": "Certified Nursing Assistant",
+                        "workPositionWgCode": "CNA",
+                        "workPositionName": "CNA",
+                        "workPositionAbb": "CNA",
+                        "levels": [
+                            {
+                                "wgLevel": 1,
+                                "wgNum": 3,
+                                "caption": "Glenwood Gardens"
+                            },
+                            {
+                                "wgLevel": 4,
+                                "wgNum": 66,
+                                "caption": "CNA(Certified Nursing Assistant)"
+                            },
+                            {
+                                "wgLevel": 2,
+                                "wgNum": 1,
+                                "caption": "Default"
+                            },
+                            {
+                                "wgLevel": 3,
+                                "wgNum": 9,
+                                "caption": "Nursing Medicare Direct"
+                            }
+                        ]
+                    }
+                },
+                "id": "extModel69-9",
+                "xtype": "punch-in-button"
+            },
+            {
+                "operation": 1,
+                "description": "Punch Out",
+                "caption": "Punch Out",
+                "fkeyguid": "{6E6230E8-68E2-4D1F-AE3E-41C5CDEC6B21}",
+                "prerequisites": {
+                    "captureGps": true,
+                    "faceVerify": false,
+                    "geoZone": true,
+                    "autoXfer": true,
+                    "transRuleGuid": "{0EBFA360-8DCA-422C-B324-092A42BE0A89}",
+                    "requireGps": true,
+                    "enabled": true
+                },
+                "prompts": {
+                    "askForTransType": true,
+                    "defaultTransType": 0,
+                    "selections": [
+                        {
+                            "id": 0,
+                            "caption": "Will Be Back Later"
+                        },
+                        {
+                            "id": 512,
+                            "caption": "Done for Today"
+                        }
+                    ]
+                },
+                "xtype": "punch-out-button"
+            }
+        ]
+    }
+}

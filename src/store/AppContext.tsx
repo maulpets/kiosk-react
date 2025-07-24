@@ -1,0 +1,191 @@
+'use client';
+
+import React, { createContext, useContext, useReducer, useCallback, ReactNode } from 'react';
+import { User } from '@/types';
+
+interface AppState {
+  user: User | null;
+  isLoading: boolean;
+  error: string | null;
+  theme: 'light' | 'dark';
+  isConnectedToNative: boolean;
+  language: string;
+  isSetupComplete: boolean;
+}
+
+interface AppAction {
+  type: string;
+  payload?: unknown;
+}
+
+// Action types
+export const APP_ACTIONS = {
+  SET_USER: 'SET_USER',
+  SET_LOADING: 'SET_LOADING',
+  SET_ERROR: 'SET_ERROR',
+  SET_THEME: 'SET_THEME',
+  SET_NATIVE_CONNECTION: 'SET_NATIVE_CONNECTION',
+  SET_LANGUAGE: 'SET_LANGUAGE',
+  SET_SETUP_COMPLETE: 'SET_SETUP_COMPLETE',
+  CLEAR_ERROR: 'CLEAR_ERROR',
+  RESET_STATE: 'RESET_STATE',
+} as const;
+
+// Initial state
+const initialState: AppState = {
+  user: null,
+  isLoading: false,
+  error: null,
+  theme: 'light',
+  isConnectedToNative: false,
+  language: 'en',
+  isSetupComplete: false,
+};
+
+// Reducer
+function appReducer(state: AppState, action: AppAction): AppState {
+  switch (action.type) {
+    case APP_ACTIONS.SET_USER:
+      return {
+        ...state,
+        user: action.payload as User | null,
+      };
+    
+    case APP_ACTIONS.SET_LOADING:
+      return {
+        ...state,
+        isLoading: action.payload as boolean,
+      };
+    
+    case APP_ACTIONS.SET_ERROR:
+      return {
+        ...state,
+        error: action.payload as string | null,
+      };
+    
+    case APP_ACTIONS.SET_THEME:
+      return {
+        ...state,
+        theme: action.payload as 'light' | 'dark',
+      };
+    
+    case APP_ACTIONS.SET_NATIVE_CONNECTION:
+      return {
+        ...state,
+        isConnectedToNative: action.payload as boolean,
+      };
+    
+    case APP_ACTIONS.SET_LANGUAGE:
+      return {
+        ...state,
+        language: action.payload as string,
+      };
+    
+    case APP_ACTIONS.SET_SETUP_COMPLETE:
+      return {
+        ...state,
+        isSetupComplete: action.payload as boolean,
+      };
+    
+    case APP_ACTIONS.CLEAR_ERROR:
+      return {
+        ...state,
+        error: null,
+      };
+    
+    case APP_ACTIONS.RESET_STATE:
+      return initialState;
+    
+    default:
+      return state;
+  }
+}
+
+// Context
+interface AppContextType {
+  state: AppState;
+  dispatch: React.Dispatch<AppAction>;
+  // Action creators
+  setUser: (user: User | null) => void;
+  setLoading: (loading: boolean) => void;
+  setError: (error: string | null) => void;
+  setTheme: (theme: 'light' | 'dark') => void;
+  setNativeConnection: (connected: boolean) => void;
+  setLanguage: (language: string) => void;
+  setSetupComplete: (complete: boolean) => void;
+  clearError: () => void;
+  resetState: () => void;
+}
+
+const AppContext = createContext<AppContextType | undefined>(undefined);
+
+// Provider component
+interface AppProviderProps {
+  children: ReactNode;
+}
+
+export function AppProvider({ children }: AppProviderProps) {
+  const [state, dispatch] = useReducer(appReducer, initialState);
+
+  // Action creators with useCallback to prevent infinite re-renders
+  const setUser = useCallback((user: User | null) => {
+    dispatch({ type: APP_ACTIONS.SET_USER, payload: user });
+  }, []);
+
+  const setLoading = useCallback((loading: boolean) => {
+    dispatch({ type: APP_ACTIONS.SET_LOADING, payload: loading });
+  }, []);
+
+  const setError = useCallback((error: string | null) => {
+    dispatch({ type: APP_ACTIONS.SET_ERROR, payload: error });
+  }, []);
+
+  const setTheme = useCallback((theme: 'light' | 'dark') => {
+    dispatch({ type: APP_ACTIONS.SET_THEME, payload: theme });
+  }, []);
+
+  const setNativeConnection = useCallback((connected: boolean) => {
+    dispatch({ type: APP_ACTIONS.SET_NATIVE_CONNECTION, payload: connected });
+  }, []);
+
+  const setLanguage = useCallback((language: string) => {
+    dispatch({ type: APP_ACTIONS.SET_LANGUAGE, payload: language });
+  }, []);
+
+  const setSetupComplete = useCallback((complete: boolean) => {
+    dispatch({ type: APP_ACTIONS.SET_SETUP_COMPLETE, payload: complete });
+  }, []);
+
+  const clearError = useCallback(() => {
+    dispatch({ type: APP_ACTIONS.CLEAR_ERROR });
+  }, []);
+
+  const resetState = useCallback(() => {
+    dispatch({ type: APP_ACTIONS.RESET_STATE });
+  }, []);
+
+  const value: AppContextType = {
+    state,
+    dispatch,
+    setUser,
+    setLoading,
+    setError,
+    setTheme,
+    setNativeConnection,
+    setLanguage,
+    setSetupComplete,
+    clearError,
+    resetState,
+  };
+
+  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+}
+
+// Hook to use the context
+export function useAppContext() {
+  const context = useContext(AppContext);
+  if (context === undefined) {
+    throw new Error('useAppContext must be used within an AppProvider');
+  }
+  return context;
+}

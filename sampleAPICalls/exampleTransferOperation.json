@@ -1,0 +1,32 @@
+{
+    "operation": 2,
+    "description": "Standard Transfer",
+    "caption": "Transfer",
+    "fkeyguid": "{83C8DBCD-3165-4AF1-A9CE-4F39497AAD2A}",
+    "hint": "",
+    "icon": "fa fa-clock",
+    "alsoPunch": false,
+    "transType": 0,
+    "callbackTransType": 20,
+    "xferStyle": 0,
+    "xferStyleDescr": "multiList",
+    "wgRendering": {
+        "caption": "",
+        "levels": [
+            {
+                "wgLevel": 1,
+                "name": "Location",
+                "plural": "Location",
+                "captionUses": "wgName"
+            },
+            {
+                "wgLevel": 4,
+                "name": "Position",
+                "plural": "Position",
+                "captionUses": "wgName"
+            }
+        ]
+    },
+    "id": "menuOperations-2",
+    "xtype": "xfer-button"
+}
