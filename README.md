@@ -1,5 +1,8 @@
 # Kiosk React App
 
+WElcome!
+
+
 A modern multipage React web application built with Next.js, designed specifically for React Native WebView integration. This app features a comprehensive folder structure, state management, API integration, and seamless communication with React Native apps.
 
 ## 🚀 Features
