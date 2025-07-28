@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useWebViewBridge } from '@/hooks/useWebViewBridge';
 import { useAppContext } from '@/store/AppContext';
 import { useKioskStartup } from '@/hooks/useKioskStartup';
+import { useI18n } from '@/hooks/useI18n';
 import { SubOperation, Employee } from '@/types/kiosk';
 import EmployeeMenu from '@/components/EmployeeMenu';
 import TransferFlow from '@/components/TransferFlow';
@@ -19,6 +20,7 @@ interface PunchInConfirmationProps {
 }
 
 function PunchInConfirmation({ subOperation, employee, selectedCallback, transferSelections, onConfirm, onCancel }: PunchInConfirmationProps) {
+  const { t } = useI18n();
   const currentTime = new Date().toLocaleTimeString('en-US', {
     hour: '2-digit',
     minute: '2-digit',
@@ -74,57 +76,57 @@ function PunchInConfirmation({ subOperation, employee, selectedCallback, transfe
     <div className="max-w-2xl mx-auto">
       {/* Header Section */}
       <div className="text-center mb-8">
-        <div className="w-24 h-24 mx-auto mb-4 bg-gradient-to-br from-green-500 to-blue-600 rounded-full flex items-center justify-center">
+        <div className="w-24 h-24 mx-auto mb-4 bg-gradient-to-br from-company-primary to-company-accent rounded-full flex items-center justify-center">
           <span className="text-4xl">{subOperation.icon}</span>
         </div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+        <h1 className="text-3xl font-bold text-foreground mb-2">
           {subOperation.name}
         </h1>
-        <p className="text-xl text-gray-600 dark:text-gray-300">
+        <p className="text-xl text-muted-foreground">
           {subOperation.description}
         </p>
       </div>
 
       {/* Current Time & Date */}
-      <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-6 mb-6">
+      <div className="bg-muted rounded-2xl p-6 mb-6">
         <div className="text-center">
-          <div className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
+          <div className="text-4xl font-bold text-foreground mb-2">
             {currentTime}
           </div>
-          <div className="text-lg text-gray-600 dark:text-gray-300">
+          <div className="text-lg text-muted-foreground">
             {currentDate}
           </div>
         </div>
       </div>
 
       {/* Employee Info */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 mb-6 shadow-sm">
+      <div className="bg-card rounded-2xl p-6 mb-6 shadow-sm">
         <div className="flex items-center space-x-4">
-          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+          <div className="w-16 h-16 bg-gradient-to-br from-primary to-primary rounded-full flex items-center justify-center">
             <span className="text-white font-bold text-xl">
               {employee.name.charAt(0).toUpperCase()}
             </span>
           </div>
           <div>
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white">{employee.name}</h3>
-            <p className="text-gray-600 dark:text-gray-300">Badge: {employee.id}</p>
-            <p className="text-gray-600 dark:text-gray-300">{employee.department} - {employee.role}</p>
+            <h3 className="text-xl font-bold text-card-foreground">{employee.name}</h3>
+            <p className="text-muted-foreground">{t('dashboard.badge')} {employee.id}</p>
+            <p className="text-muted-foreground">{employee.department} - {employee.role}</p>
           </div>
         </div>
       </div>
 
       {/* Action Description */}
-      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-2xl p-6 mb-6">
-        <h3 className="font-bold text-blue-800 dark:text-blue-200 text-lg mb-3">
+      <div className="bg-company-primary/10 border border-company-primary/20 rounded-2xl p-6 mb-6">
+        <h3 className="font-bold text-company-primary text-lg mb-3">
           What happens next?
         </h3>
-        <p className="text-blue-700 dark:text-blue-300 mb-4">
+        <p className="text-muted-foreground mb-4">
           {getActionDescription()}
         </p>
         <ul className="space-y-2">
           {getNextSteps().map((step, index) => (
-            <li key={index} className="flex items-start space-x-2 text-blue-700 dark:text-blue-300">
-              <span className="text-blue-500 mt-1">•</span>
+            <li key={index} className="flex items-start space-x-2 text-muted-foreground">
+              <span className="text-company-accent mt-1">•</span>
               <span>{step}</span>
             </li>
           ))}
@@ -133,18 +135,18 @@ function PunchInConfirmation({ subOperation, employee, selectedCallback, transfe
 
       {/* Callback Information */}
       {selectedCallback && (
-        <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-2xl p-6 mb-6">
-          <h3 className="font-bold text-purple-800 dark:text-purple-200 text-lg mb-3">
+        <div className="bg-muted border border-border rounded-2xl p-6 mb-6">
+          <h3 className="font-bold text-foreground text-lg mb-3">
             Callback Option Selected
           </h3>
           <div className="flex items-center space-x-3">
             <span className="text-2xl">📞</span>
             <div>
-              <p className="text-purple-700 dark:text-purple-300 font-medium">
-                {selectedCallback.caption}
+              <p className="text-foreground font-medium">
+                Call Center
               </p>
-              <p className="text-purple-600 dark:text-purple-400 text-sm">
-                This callback option will be applied to your punch-in
+              <p className="text-muted-foreground text-sm">
+                Additional support
               </p>
             </div>
           </div>
@@ -153,8 +155,8 @@ function PunchInConfirmation({ subOperation, employee, selectedCallback, transfe
 
       {/* Transfer Information */}
       {transferSelections && transferSelections.length > 0 && (
-        <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-2xl p-6 mb-6">
-          <h3 className="font-bold text-orange-800 dark:text-orange-200 text-lg mb-3">
+        <div className="bg-muted border border-border rounded-2xl p-6 mb-6">
+          <h3 className="font-bold text-foreground text-lg mb-3">
             Transfer Selections
           </h3>
           <div className="space-y-2">
@@ -162,13 +164,13 @@ function PunchInConfirmation({ subOperation, employee, selectedCallback, transfe
               <div key={index} className="flex items-center space-x-3">
                 <span className="text-2xl">🔄</span>
                 <div>
-                  <p className="text-orange-700 dark:text-orange-300 font-medium">
+                  <p className="text-destructive font-medium">
                     Level {selection.levelId + 1}: {selection.optionName}
                   </p>
                 </div>
               </div>
             ))}
-            <p className="text-orange-600 dark:text-orange-400 text-sm mt-2">
+            <p className="text-muted-foreground text-sm mt-2">
               These transfer selections will be applied to your punch-in
             </p>
           </div>
@@ -179,7 +181,7 @@ function PunchInConfirmation({ subOperation, employee, selectedCallback, transfe
       <div className="flex space-x-4">
         <button
           onClick={onCancel}
-          className="flex-1 py-4 px-6 bg-gray-500 hover:bg-gray-600 text-white font-bold rounded-xl transition-colors"
+          className="flex-1 py-4 px-6 bg-muted hover:bg-muted/80 text-muted-foreground font-bold rounded-xl transition-colors"
         >
           <div className="flex items-center justify-center space-x-2">
             <span>❌</span>
@@ -188,7 +190,7 @@ function PunchInConfirmation({ subOperation, employee, selectedCallback, transfe
         </button>
         <button
           onClick={onConfirm}
-          className="flex-1 py-4 px-6 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition-colors"
+          className="flex-1 py-4 px-6 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl transition-colors"
         >
           <div className="flex items-center justify-center space-x-2">
             <span>✅</span>
@@ -211,13 +213,13 @@ function CallbackSelection({ options, onSelect, onCancel }: CallbackSelectionPro
     <div className="max-w-2xl mx-auto">
       {/* Header Section */}
       <div className="text-center mb-8">
-        <div className="w-24 h-24 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+        <div className="w-24 h-24 mx-auto mb-4 bg-gradient-to-br from-primary to-primary rounded-full flex items-center justify-center">
           <span className="text-4xl">📞</span>
         </div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+        <h1 className="text-3xl font-bold text-foreground mb-2">
           Select Callback Option
         </h1>
-        <p className="text-xl text-gray-600 dark:text-gray-300">
+        <p className="text-xl text-muted-foreground">
           Choose your callback preference for this punch-in
         </p>
       </div>
@@ -228,7 +230,7 @@ function CallbackSelection({ options, onSelect, onCancel }: CallbackSelectionPro
           <button
             key={option.id}
             onClick={() => onSelect(option)}
-            className="w-full p-6 rounded-xl text-left transition-all bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl"
+            className="w-full p-6 rounded-xl text-left transition-all bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl"
           >
             <div className="flex items-center space-x-4">
               <span className="text-3xl">📞</span>
@@ -249,7 +251,7 @@ function CallbackSelection({ options, onSelect, onCancel }: CallbackSelectionPro
       {/* Cancel Button */}
       <button
         onClick={onCancel}
-        className="w-full py-4 px-6 bg-gray-500 hover:bg-gray-600 text-white font-bold rounded-xl transition-colors"
+        className="w-full py-4 px-6 bg-muted hover:bg-muted/80 text-muted-foreground font-bold rounded-xl transition-colors"
       >
         <div className="flex items-center justify-center space-x-2">
           <span>❌</span>
@@ -456,10 +458,10 @@ export default function PunchInPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-6">
+      <div className="min-h-screen bg-background pt-6">
         <div className="container mx-auto px-6 py-8">
           <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-company-accent"></div>
           </div>
         </div>
       </div>
@@ -468,15 +470,15 @@ export default function PunchInPage() {
 
   if (error || !kioskData) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-6">
+      <div className="min-h-screen bg-background pt-6">
         <div className="container mx-auto px-6 py-8">
           <div className="text-center">
-            <div className="text-red-600 dark:text-red-400 mb-4">
+            <div className="text-destructive mb-4">
               <p>Error loading punch-in data: {error || 'Invalid operation'}</p>
             </div>
             <button
               onClick={handleCancel}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl"
+              className="bg-company-accent hover:opacity-90 text-white px-6 py-3 rounded-xl"
             >
               Return to Dashboard
             </button>
@@ -489,7 +491,7 @@ export default function PunchInPage() {
   // Show callback selection screen if needed
   if (showCallbackSelection) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-6">
+      <div className="min-h-screen bg-background pt-6">
         <div className="flex">
           {/* Left Sidebar Menu */}
           <EmployeeMenu />
@@ -510,9 +512,10 @@ export default function PunchInPage() {
   // Show transfer flow screen if needed
   if (showTransferFlow && transferOperation) {
     const availablePlaces = (kioskData as any).profileInfo?.availablePlaces || [];
+    const workGroups = (kioskData as { workGroups?: { levels: Array<{ levelName: string; levelNamePlural: string; wgLevel: number; items: Array<{ text: string; wgnum: number; code: string; name: string; }> }> } }).workGroups;
     
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-6">
+      <div className="min-h-screen bg-background pt-6">
         <div className="flex">
           {/* Left Sidebar Menu */}
           <EmployeeMenu />
@@ -522,10 +525,13 @@ export default function PunchInPage() {
             <TransferFlow
               transferOperation={transferOperation}
               availablePlaces={availablePlaces}
+              workGroups={workGroups}
               onComplete={handleTransferComplete}
               onCancel={handleTransferCancel}
               isSubFlow={true}
               title="Transfer Selection for Punch-In"
+              allowSkip={true}
+              onSkip={handleTransferComplete}
             />
           </div>
         </div>
@@ -535,15 +541,15 @@ export default function PunchInPage() {
 
   if (!subOperation) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-6">
+      <div className="min-h-screen bg-background pt-6">
         <div className="container mx-auto px-6 py-8">
           <div className="text-center">
-            <div className="text-red-600 dark:text-red-400 mb-4">
+            <div className="text-destructive mb-4">
               <p>Invalid operation</p>
             </div>
             <button
               onClick={handleCancel}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3 rounded-xl"
             >
               Return to Dashboard
             </button>
@@ -555,14 +561,14 @@ export default function PunchInPage() {
 
   if (isProcessing) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-6">
+      <div className="min-h-screen bg-background pt-6">
         <div className="container mx-auto px-6 py-8">
           <div className="flex flex-col items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mb-4"></div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
+            <h2 className="text-2xl font-bold text-foreground mb-2">
               Processing {subOperation.name}...
             </h2>
-            <p className="text-gray-600 dark:text-gray-300">
+            <p className="text-muted-foreground">
               Please wait while we record your punch-in.
             </p>
           </div>
@@ -572,7 +578,7 @@ export default function PunchInPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-6">
+    <div className="min-h-screen bg-background pt-6">
       <div className="flex">
         {/* Left Sidebar Menu */}
         <EmployeeMenu />

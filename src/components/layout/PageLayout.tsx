@@ -16,11 +16,11 @@ export function PageHeader({ title, subtitle, children, className }: PageHeaderP
     <div className={cn('mb-8', className)}>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
             {title}
           </h1>
           {subtitle && (
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+            <p className="mt-2 text-sm text-muted-foreground">
               {subtitle}
             </p>
           )}
@@ -47,7 +47,7 @@ export function PageLayout({ children, header, className }: PageLayoutProps) {
   return (
     <div className={cn(
       'min-h-screen transition-colors duration-200',
-      state.theme === 'dark' ? 'dark bg-gray-900' : 'bg-gray-50',
+      'bg-background',
       className
     )}>
       {header}
@@ -73,7 +73,7 @@ export function Card({ children, className, padding = 'md' }: CardProps) {
 
   return (
     <div className={cn(
-      'bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700',
+      'bg-card border border-border rounded-lg shadow-sm',
       paddingClasses[padding],
       className
     )}>

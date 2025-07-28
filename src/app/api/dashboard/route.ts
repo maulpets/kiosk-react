@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function GET() {
   try {
     // Simulate some data fetching
-    const data = {
+    const data = { 
       users: 1234,
       activeSessions: 456,
       revenue: 12345,

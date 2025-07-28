@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useWebViewBridge } from '@/hooks/useWebViewBridge';
 import { useAppContext } from '@/store/AppContext';
 import { useKioskStartup } from '@/hooks/useKioskStartup';
+import { useI18n } from '@/hooks/useI18n';
 import { SubOperation } from '@/types/kiosk';
 
 interface EmployeeMenuProps {
@@ -26,7 +27,7 @@ function DropdownMenu({ label, icon, isOpen, onToggle, subOperations, onSubOpera
     <div className="relative">
       <button
         onClick={onToggle}
-        className="w-full p-3 rounded-lg text-left transition-all bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg flex items-center justify-between"
+        className="w-full p-3 rounded-lg text-left transition-all bg-primary hover:bg-primary/90 text-primary-foreground shadow-md hover:shadow-lg flex items-center justify-between"
       >
         <div className="flex items-center space-x-3">
           <span className="text-lg">{icon}</span>
@@ -43,21 +44,21 @@ function DropdownMenu({ label, icon, isOpen, onToggle, subOperations, onSubOpera
       </button>
       
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+        <div className="absolute top-full left-0 right-0 mt-1 bg-card rounded-lg shadow-lg border border-border z-50">
           {subOperations.map((subOperation) => (
             <button
               key={subOperation.id}
               onClick={() => onSubOperationClick(subOperation)}
               disabled={!subOperation.enabled}
-              className={`w-full p-3 text-left transition-all first:rounded-t-lg last:rounded-b-lg hover:bg-gray-50 dark:hover:bg-gray-700 ${
+              className={`w-full p-3 text-left transition-all first:rounded-t-lg last:rounded-b-lg hover:bg-muted ${
                 !subOperation.enabled ? 'opacity-50 cursor-not-allowed' : ''
               }`}
             >
               <div className="flex items-center space-x-3">
                 <span className="text-lg">{subOperation.icon}</span>
                 <div>
-                  <div className="font-medium text-gray-900 dark:text-white">{subOperation.name}</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-300">{subOperation.description}</div>
+                  <div className="font-medium text-foreground">{subOperation.name}</div>
+                  <div className="text-sm text-muted-foreground">{subOperation.description}</div>
                 </div>
               </div>
             </button>
@@ -68,7 +69,8 @@ function DropdownMenu({ label, icon, isOpen, onToggle, subOperations, onSubOpera
   );
 }
 
-export default function EmployeeMenu({ onBack, backLabel = "Back" }: EmployeeMenuProps) {
+export default function EmployeeMenu({ onBack, backLabel }: EmployeeMenuProps) {
+  const { t } = useI18n();
   const router = useRouter();
   const { state } = useAppContext();
   const { data: kioskData } = useKioskStartup({ 
@@ -197,18 +199,18 @@ export default function EmployeeMenu({ onBack, backLabel = "Back" }: EmployeeMen
   }, [openDropdown]);
 
   return (
-    <div className="w-full max-w-[300px] bg-gray-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 p-4 space-y-4">
+    <div className="w-full max-w-[300px] bg-muted border-r border-border p-4 space-y-4">
       {/* Action Items Button */}
       <button
         onClick={handleActionItemsClick}
-        className="w-full p-3 rounded-lg text-left transition-all bg-red-600 hover:bg-red-700 text-white shadow-md hover:shadow-lg"
+        className="w-full p-3 rounded-lg text-left transition-all bg-destructive hover:bg-destructive/90 text-destructive-foreground shadow-md hover:shadow-lg"
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <span className="text-lg">⚠️</span>
             <span className="font-medium">Action Required</span>
           </div>
-          <span className="bg-red-800 text-white text-sm font-bold px-2 py-1 rounded-full">
+          <span className="bg-destructive text-destructive-foreground text-sm font-bold px-2 py-1 rounded-full">
             {actionItems.length}
           </span>
         </div>
@@ -219,30 +221,33 @@ export default function EmployeeMenu({ onBack, backLabel = "Back" }: EmployeeMen
         .filter(op => op.subOperations && op.subOperations.length > 0) // Only operations with sub-operations
         .sort((a, b) => a.operation - b.operation) // Sort by operation number (punch-in, punch-out, etc.)
         .map((operation) => (
-          <DropdownMenu
-            key={operation.id}
-            label={operation.name}
-            icon={operation.icon}
-            isOpen={openDropdown === operation.id}
-            onToggle={() => handleDropdownToggle(operation.id)}
-            subOperations={operation.subOperations || []}
-            onSubOperationClick={(subOp) => handleSubOperationClick(subOp, operation)}
-          />
+          <React.Fragment key={operation.id}>
+            <DropdownMenu
+              label={operation.name}
+              icon={operation.icon}
+              isOpen={openDropdown === operation.id}
+              onToggle={() => handleDropdownToggle(operation.id)}
+              subOperations={operation.subOperations || []}
+              onSubOperationClick={(subOp) => handleSubOperationClick(subOp, operation)}
+            />
+            
+            {/* Add Time Card button directly after transfers (operation 2) */}
+            {operation.operation === 2 && (
+              <button
+                onClick={handleViewTimeCard}
+                className="w-full p-3 rounded-lg text-left transition-all bg-gradient-to-r from-company-primary/90 to-company-secondary/90 hover:from-company-primary hover:to-company-secondary text-white shadow-md hover:shadow-lg"
+              >
+                <div className="flex items-center space-x-3">
+                  <span className="text-lg">📋</span>
+                  <span className="font-medium">Time Card</span>
+                </div>
+              </button>
+            )}
+          </React.Fragment>
         ))}
 
       {/* Divider */}
-      <div className="border-t border-gray-300 dark:border-gray-600"></div>
-
-      {/* View Time Card */}
-      <button
-        onClick={handleViewTimeCard}
-        className="w-full p-3 rounded-lg text-left transition-all bg-green-600 hover:bg-green-700 text-white shadow-md hover:shadow-lg"
-      >
-        <div className="flex items-center space-x-3">
-          <span className="text-lg">📋</span>
-          <span className="font-medium">View Time Card</span>
-        </div>
-      </button>
+      <div className="border-t border-border"></div>
 
       {/* Send Note */}
       <button
@@ -258,7 +263,7 @@ export default function EmployeeMenu({ onBack, backLabel = "Back" }: EmployeeMen
       {/* Tips */}
       <button
         onClick={handleTips}
-        className="w-full p-3 rounded-lg text-left transition-all bg-yellow-600 hover:bg-yellow-700 text-white shadow-md hover:shadow-lg"
+        className="w-full p-3 rounded-lg text-left transition-all bg-secondary hover:bg-secondary/80 text-secondary-foreground shadow-md hover:shadow-lg"
       >
         <div className="flex items-center space-x-3">
           <span className="text-lg">💡</span>
@@ -267,16 +272,16 @@ export default function EmployeeMenu({ onBack, backLabel = "Back" }: EmployeeMen
       </button>
 
       {/* Divider */}
-      <div className="border-t border-gray-300 dark:border-gray-600"></div>
+      <div className="border-t border-border"></div>
 
       {/* Back Button */}
       <button
         onClick={handleBack}
-        className="w-full p-3 rounded-lg text-left transition-all bg-gray-600 hover:bg-gray-700 text-white shadow-md hover:shadow-lg"
+        className="w-full p-3 rounded-lg text-left transition-all bg-secondary hover:bg-secondary/80 text-secondary-foreground shadow-md hover:shadow-lg"
       >
         <div className="flex items-center space-x-3">
           <span className="text-lg">⬅️</span>
-          <span className="font-medium">{backLabel}</span>
+          <span className="font-medium">{backLabel || t('common.back')}</span>
         </div>
       </button>
     </div>

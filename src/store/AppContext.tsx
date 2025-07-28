@@ -1,16 +1,16 @@
 'use client';
 
 import React, { createContext, useContext, useReducer, useCallback, ReactNode } from 'react';
-import { User } from '@/types';
+import { User, CompanyData } from '@/types';
 
 interface AppState {
   user: User | null;
   isLoading: boolean;
   error: string | null;
-  theme: 'light' | 'dark';
   isConnectedToNative: boolean;
   language: string;
   isSetupComplete: boolean;
+  companyData: CompanyData | null;
 }
 
 interface AppAction {
@@ -23,10 +23,10 @@ export const APP_ACTIONS = {
   SET_USER: 'SET_USER',
   SET_LOADING: 'SET_LOADING',
   SET_ERROR: 'SET_ERROR',
-  SET_THEME: 'SET_THEME',
   SET_NATIVE_CONNECTION: 'SET_NATIVE_CONNECTION',
   SET_LANGUAGE: 'SET_LANGUAGE',
   SET_SETUP_COMPLETE: 'SET_SETUP_COMPLETE',
+  SET_COMPANY_DATA: 'SET_COMPANY_DATA',
   CLEAR_ERROR: 'CLEAR_ERROR',
   RESET_STATE: 'RESET_STATE',
 } as const;
@@ -36,10 +36,10 @@ const initialState: AppState = {
   user: null,
   isLoading: false,
   error: null,
-  theme: 'light',
   isConnectedToNative: false,
   language: 'en',
   isSetupComplete: false,
+  companyData: null,
 };
 
 // Reducer
@@ -63,12 +63,6 @@ function appReducer(state: AppState, action: AppAction): AppState {
         error: action.payload as string | null,
       };
     
-    case APP_ACTIONS.SET_THEME:
-      return {
-        ...state,
-        theme: action.payload as 'light' | 'dark',
-      };
-    
     case APP_ACTIONS.SET_NATIVE_CONNECTION:
       return {
         ...state,
@@ -85,6 +79,12 @@ function appReducer(state: AppState, action: AppAction): AppState {
       return {
         ...state,
         isSetupComplete: action.payload as boolean,
+      };
+    
+    case APP_ACTIONS.SET_COMPANY_DATA:
+      return {
+        ...state,
+        companyData: action.payload as CompanyData | null,
       };
     
     case APP_ACTIONS.CLEAR_ERROR:
@@ -109,10 +109,10 @@ interface AppContextType {
   setUser: (user: User | null) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
-  setTheme: (theme: 'light' | 'dark') => void;
   setNativeConnection: (connected: boolean) => void;
   setLanguage: (language: string) => void;
   setSetupComplete: (complete: boolean) => void;
+  setCompanyData: (companyData: CompanyData | null) => void;
   clearError: () => void;
   resetState: () => void;
 }
@@ -140,10 +140,6 @@ export function AppProvider({ children }: AppProviderProps) {
     dispatch({ type: APP_ACTIONS.SET_ERROR, payload: error });
   }, []);
 
-  const setTheme = useCallback((theme: 'light' | 'dark') => {
-    dispatch({ type: APP_ACTIONS.SET_THEME, payload: theme });
-  }, []);
-
   const setNativeConnection = useCallback((connected: boolean) => {
     dispatch({ type: APP_ACTIONS.SET_NATIVE_CONNECTION, payload: connected });
   }, []);
@@ -154,6 +150,10 @@ export function AppProvider({ children }: AppProviderProps) {
 
   const setSetupComplete = useCallback((complete: boolean) => {
     dispatch({ type: APP_ACTIONS.SET_SETUP_COMPLETE, payload: complete });
+  }, []);
+
+  const setCompanyData = useCallback((companyData: CompanyData | null) => {
+    dispatch({ type: APP_ACTIONS.SET_COMPANY_DATA, payload: companyData });
   }, []);
 
   const clearError = useCallback(() => {
@@ -170,10 +170,10 @@ export function AppProvider({ children }: AppProviderProps) {
     setUser,
     setLoading,
     setError,
-    setTheme,
     setNativeConnection,
     setLanguage,
     setSetupComplete,
+    setCompanyData,
     clearError,
     resetState,
   };

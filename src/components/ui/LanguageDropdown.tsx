@@ -1,11 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useAppContext } from '@/store/AppContext';
+import { useI18n } from '@/hooks/useI18n';
 import { cn } from '@/lib/utils';
+import type { Locale } from '@/lib/i18n/types';
 
 interface Language {
-  code: string;
+  code: Locale;
   name: string;
   flag: string;
 }
@@ -24,13 +25,13 @@ interface LanguageDropdownProps {
 }
 
 export function LanguageDropdown({ className }: LanguageDropdownProps) {
-  const { state, setLanguage } = useAppContext();
+  const { locale, changeLanguage, t } = useI18n();
   const [isOpen, setIsOpen] = useState(false);
 
-  const currentLanguage = languages.find(lang => lang.code === state.language) || languages[0];
+  const currentLanguage = languages.find(lang => lang.code === locale) || languages[0];
 
-  const handleLanguageChange = (languageCode: string) => {
-    setLanguage(languageCode);
+  const handleLanguageChange = (languageCode: Locale) => {
+    changeLanguage(languageCode);
     setIsOpen(false);
   };
 
@@ -38,8 +39,8 @@ export function LanguageDropdown({ className }: LanguageDropdownProps) {
     <div className={cn('relative', className)}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-        aria-label="Select language"
+        className="flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:bg-muted transition-colors"
+        aria-label={t('header.selectLanguage')}
       >
         <span className="text-lg">{currentLanguage.flag}</span>
         <span>{currentLanguage.code.toUpperCase()}</span>
@@ -65,23 +66,23 @@ export function LanguageDropdown({ className }: LanguageDropdownProps) {
           />
           
           {/* Dropdown */}
-          <div className="absolute left-0 top-full mt-1 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-20">
+          <div className="absolute left-0 top-full mt-1 w-48 bg-card rounded-md shadow-lg border border-border z-20">
             <div className="py-1">
               {languages.map((language) => (
                 <button
                   key={language.code}
                   onClick={() => handleLanguageChange(language.code)}
                   className={cn(
-                    'w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-3',
-                    state.language === language.code 
-                      ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-200' 
-                      : 'text-gray-700 dark:text-gray-300'
+                    'w-full text-left px-4 py-2 text-sm hover:bg-muted flex items-center space-x-3',
+                    locale === language.code 
+                      ? 'bg-company-primary/10 text-company-primary' 
+                      : 'text-card-foreground'
                   )}
                 >
                   <span className="text-lg">{language.flag}</span>
                   <span>{language.name}</span>
-                  {state.language === language.code && (
-                    <span className="ml-auto text-blue-600 dark:text-blue-400">✓</span>
+                  {locale === language.code && (
+                    <span className="ml-auto text-company-primary">✓</span>
                   )}
                 </button>
               ))}

@@ -201,6 +201,24 @@ interface PromptSelection {
   id: number;
   caption: string;
 }
+interface WorkGroupItem {
+  text: string;
+  wgnum: number;
+  code: string;
+  name: string;
+}
+
+interface WorkGroupsLevel {
+  levelName: string;
+  levelNamePlural: string;
+  wgLevel: number;
+  items: WorkGroupItem[];
+}
+
+interface WorkGroups {
+  levels: WorkGroupsLevel[];
+}
+
 interface Context {
   focusDate: string;
   currentTime: string;
@@ -242,6 +260,7 @@ interface KioskStartupResponse {
   profileInfo: any;
   company: any;
   time: any;
+  workGroups: WorkGroups;
   application: any;
   operator: any;
   schStyles: any[];
@@ -603,6 +622,584 @@ export async function GET(request: NextRequest) {
         installationDate: "2024-01-01T08:34:45.219",
         startDOW: 1,
         payroll: "Custom"
+      },
+      workGroups:{
+          levels: [
+              {
+                  levelName: "Location",
+                  levelNamePlural: "Location",
+                  wgLevel: 1,
+                  items: [
+                      {
+                          text: "CS",
+                          wgnum: 4,
+                          code: "CS",
+                          name: "Cedar Springs"
+                      },
+                      {
+                          text: "CO",
+                          wgnum: 1,
+                          code: "CO",
+                          name: "Central Office"
+                      },
+                      {
+                          text: "EA",
+                          wgnum: 2,
+                          code: "EA",
+                          name: "Evergreen Acres"
+                      },
+                      {
+                          text: "GG",
+                          wgnum: 3,
+                          code: "GG",
+                          name: "Glenwood Gardens"
+                      }
+                  ]
+              },
+              {
+                  levelName: "Zone",
+                  levelNamePlural: "Zone",
+                  wgLevel: 2,
+                  items: [
+                      {
+                          text: "DFT",
+                          wgnum: 1,
+                          code: "DFT",
+                          name: "Default"
+                      },
+                      {
+                          text: "FLT",
+                          wgnum: 5,
+                          code: "FLT",
+                          name: "Float"
+                      },
+                      {
+                          text: "A",
+                          wgnum: 2,
+                          code: "A",
+                          name: "Zone A"
+                      },
+                      {
+                          text: "B",
+                          wgnum: 3,
+                          code: "B",
+                          name: "Zone B"
+                      },
+                      {
+                          text: "C",
+                          wgnum: 4,
+                          code: "C",
+                          name: "Zone C"
+                      }
+                  ]
+              },
+              {
+                  levelName: "Department",
+                  levelNamePlural: "Department",
+                  wgLevel: 3,
+                  items: [
+                      {
+                          text: "ACT",
+                          wgnum: 1,
+                          code: "ACT",
+                          name: "Activities"
+                      },
+                      {
+                          text: "G/A",
+                          wgnum: 2,
+                          code: "G/A",
+                          name: "General/Administration"
+                      },
+                      {
+                          text: "HSK",
+                          wgnum: 3,
+                          code: "HSK",
+                          name: "Housekeeping"
+                      },
+                      {
+                          text: "LRY",
+                          wgnum: 4,
+                          code: "LRY",
+                          name: "Laundry"
+                      },
+                      {
+                          text: "MKT",
+                          wgnum: 5,
+                          code: "MKT",
+                          name: "Marketing"
+                      },
+                      {
+                          text: "MCD",
+                          wgnum: 6,
+                          code: "MCD",
+                          name: "Medical Director"
+                      },
+                      {
+                          text: "MDR",
+                          wgnum: 7,
+                          code: "MDR",
+                          name: "Medical Records"
+                      },
+                      {
+                          text: "NSA",
+                          wgnum: 8,
+                          code: "NSA",
+                          name: "Nursing Administration"
+                      },
+                      {
+                          text: "NDR",
+                          wgnum: 9,
+                          code: "NDR",
+                          name: "Nursing Medicare Direct"
+                      },
+                      {
+                          text: "NMD",
+                          wgnum: 10,
+                          code: "NMD",
+                          name: "Nursing Medicare Distinct"
+                      },
+                      {
+                          text: "NTS",
+                          wgnum: 11,
+                          code: "NTS",
+                          name: "Nutritional Services"
+                      },
+                      {
+                          text: "OTH",
+                          wgnum: 12,
+                          code: "OTH",
+                          name: "Occupational Therapy"
+                      },
+                      {
+                          text: "PTH",
+                          wgnum: 13,
+                          code: "PTH",
+                          name: "Physical Therapy"
+                      },
+                      {
+                          text: "P/M",
+                          wgnum: 14,
+                          code: "P/M",
+                          name: "Plant/Maintenance"
+                      },
+                      {
+                          text: "SSS",
+                          wgnum: 15,
+                          code: "SSS",
+                          name: "Social Services"
+                      },
+                      {
+                          text: "STY",
+                          wgnum: 16,
+                          code: "STY",
+                          name: "Speech Therapy"
+                      },
+                      {
+                          text: "Training",
+                          wgnum: 17,
+                          code: "Training",
+                          name: "Training"
+                      }
+                  ]
+              },
+              {
+                  levelName: "Position",
+                  levelNamePlural: "Position",
+                  wgLevel: 4,
+                  items: [
+                      {
+                          text: "ACA",
+                          wgnum: 1,
+                          code: "ACA",
+                          name: "Accounting Assistant"
+                      },
+                      {
+                          text: "ACM",
+                          wgnum: 2,
+                          code: "ACM",
+                          name: "Accounting Manager"
+                      },
+                      {
+                          text: "ATA",
+                          wgnum: 3,
+                          code: "ATA",
+                          name: "Activities Asst"
+                      },
+                      {
+                          text: "ATD",
+                          wgnum: 4,
+                          code: "ATD",
+                          name: "Activities Director"
+                      },
+                      {
+                          text: "AMT",
+                          wgnum: 5,
+                          code: "AMT",
+                          name: "Admin. In Training "
+                      },
+                      {
+                          text: "ADM",
+                          wgnum: 6,
+                          code: "ADM",
+                          name: "Administration"
+                      },
+                      {
+                          text: "AMA",
+                          wgnum: 7,
+                          code: "AMA",
+                          name: "Administrative Assistant"
+                      },
+                      {
+                          text: "AMR",
+                          wgnum: 8,
+                          code: "AMR",
+                          name: "Administrator"
+                      },
+                      {
+                          text: "ANL",
+                          wgnum: 9,
+                          code: "ANL",
+                          name: "Admission Nurse- LPN"
+                      },
+                      {
+                          text: "ANR",
+                          wgnum: 10,
+                          code: "ANR",
+                          name: "Admission Nurse- RN"
+                      },
+                      {
+                          text: "ADC",
+                          wgnum: 11,
+                          code: "ADC",
+                          name: "Admissions Coordinator"
+                      },
+                      {
+                          text: "AFD",
+                          wgnum: 12,
+                          code: "AFD",
+                          name: "Assistant Facilities Director"
+                      },
+                      {
+                          text: "BLS",
+                          wgnum: 13,
+                          code: "BLS",
+                          name: "Billing Specialist"
+                      },
+                      {
+                          text: "BOM",
+                          wgnum: 14,
+                          code: "BOM",
+                          name: "Business Office Manager"
+                      },
+                      {
+                          text: "CS",
+                          wgnum: 15,
+                          code: "CS",
+                          name: "Central Supply "
+                      },
+                      {
+                          text: "Certifications",
+                          wgnum: 69,
+                          code: "Certifications",
+                          name: "Certifications"
+                      },
+                      {
+                          text: "CNA",
+                          wgnum: 66,
+                          code: "CNA",
+                          name: "Certified Nursing Assistant"
+                      },
+                      {
+                          text: "COA",
+                          wgnum: 17,
+                          code: "COA",
+                          name: "Certified OT Assistant"
+                      },
+                      {
+                          text: "CML",
+                          wgnum: 18,
+                          code: "CML",
+                          name: "Clinical Nurse Manager- LPN"
+                      },
+                      {
+                          text: "CMR",
+                          wgnum: 19,
+                          code: "CMR",
+                          name: "Clinical Nurse Manager- RN"
+                      },
+                      {
+                          text: "CTR",
+                          wgnum: 20,
+                          code: "CTR",
+                          name: "Controller"
+                      },
+                      {
+                          text: "CK",
+                          wgnum: 21,
+                          code: "CK",
+                          name: "Cook"
+                      },
+                      {
+                          text: "DT",
+                          wgnum: 22,
+                          code: "DT",
+                          name: "Diet Tech"
+                      },
+                      {
+                          text: "DES",
+                          wgnum: 25,
+                          code: "DES",
+                          name: "Director Environmental Service"
+                      },
+                      {
+                          text: "DIS",
+                          wgnum: 28,
+                          code: "DIS",
+                          name: "Director Information Services"
+                      },
+                      {
+                          text: "DCS",
+                          wgnum: 23,
+                          code: "DCS",
+                          name: "Director of Clinical Systems"
+                      },
+                      {
+                          text: "DOD",
+                          wgnum: 24,
+                          code: "DOD",
+                          name: "Director of Development"
+                      },
+                      {
+                          text: "DOF",
+                          wgnum: 26,
+                          code: "DOF",
+                          name: "Director of Facilities"
+                      },
+                      {
+                          text: "DHR",
+                          wgnum: 27,
+                          code: "DHR",
+                          name: "Director of Human Resources"
+                      },
+                      {
+                          text: "DMK",
+                          wgnum: 29,
+                          code: "DMK",
+                          name: "Director of Marketing"
+                      },
+                      {
+                          text: "DON",
+                          wgnum: 30,
+                          code: "DON",
+                          name: "Director of Nursing"
+                      },
+                      {
+                          text: "DPR",
+                          wgnum: 31,
+                          code: "DPR",
+                          name: "Director PR/Marketing"
+                      },
+                      {
+                          text: "HKR",
+                          wgnum: 32,
+                          code: "HKR",
+                          name: "Housekeeper"
+                      },
+                      {
+                          text: "HRM",
+                          wgnum: 33,
+                          code: "HRM",
+                          name: "Human Resource Manager"
+                      },
+                      {
+                          text: "LDT",
+                          wgnum: 34,
+                          code: "LDT",
+                          name: "Laundry Tech"
+                      },
+                      {
+                          text: "LPN",
+                          wgnum: 35,
+                          code: "LPN",
+                          name: "Licensed Practical Nurse"
+                      },
+                      {
+                          text: "LAD",
+                          wgnum: 36,
+                          code: "LAD",
+                          name: "LPN With Administrative Duties"
+                      },
+                      {
+                          text: "MSP",
+                          wgnum: 37,
+                          code: "MSP",
+                          name: "Maintenance Supervisor"
+                      },
+                      {
+                          text: "MTN",
+                          wgnum: 38,
+                          code: "MTN",
+                          name: "Maintenance Technician"
+                      },
+                      {
+                          text: "MDL",
+                          wgnum: 39,
+                          code: "MDL",
+                          name: "MDS LPN"
+                      },
+                      {
+                          text: "MDR",
+                          wgnum: 40,
+                          code: "MDR",
+                          name: "MDS RN"
+                      },
+                      {
+                          text: "MDR",
+                          wgnum: 41,
+                          code: "MDR",
+                          name: "Medical Director"
+                      },
+                      {
+                          text: "MRC",
+                          wgnum: 42,
+                          code: "MRC",
+                          name: "Medical Records"
+                      },
+                      {
+                          text: "NAD",
+                          wgnum: 43,
+                          code: "NAD",
+                          name: "Network Administrator"
+                      },
+                      {
+                          text: "NSS",
+                          wgnum: 44,
+                          code: "NSS",
+                          name: "Network Support Specialist"
+                      },
+                      {
+                          text: "NAI",
+                          wgnum: 45,
+                          code: "NAI",
+                          name: "Nurse Aide"
+                      },
+                      {
+                          text: "NUA",
+                          wgnum: 46,
+                          code: "NUA",
+                          name: "Nutrition Aide"
+                      },
+                      {
+                          text: "NUS",
+                          wgnum: 47,
+                          code: "NUS",
+                          name: "Nutrition Supervisor"
+                      },
+                      {
+                          text: "OTH",
+                          wgnum: 48,
+                          code: "OTH",
+                          name: "Occupational Therapist"
+                      },
+                      {
+                          text: "PAC",
+                          wgnum: 49,
+                          code: "PAC",
+                          name: "Payroll Accountant"
+                      },
+                      {
+                          text: "PTH",
+                          wgnum: 50,
+                          code: "PTH",
+                          name: "Physical Therapist"
+                      },
+                      {
+                          text: "PTA",
+                          wgnum: 51,
+                          code: "PTA",
+                          name: "Physical Therapy Assistant"
+                      },
+                      {
+                          text: "PTD",
+                          wgnum: 52,
+                          code: "PTD",
+                          name: "PT Aide"
+                      },
+                      {
+                          text: "PAG",
+                          wgnum: 53,
+                          code: "PAG",
+                          name: "Purchasing Agent"
+                      },
+                      {
+                          text: "RCP",
+                          wgnum: 54,
+                          code: "RCP",
+                          name: "Receptionist"
+                      },
+                      {
+                          text: "R/A",
+                          wgnum: 55,
+                          code: "R/A",
+                          name: "Receptionist/Admin"
+                      },
+                      {
+                          text: "RN",
+                          wgnum: 68,
+                          code: "RN",
+                          name: "Registered Nurse"
+                      },
+                      {
+                          text: "RSM",
+                          wgnum: 57,
+                          code: "RSM",
+                          name: "Rehab Service Manager"
+                      },
+                      {
+                          text: "RBT",
+                          wgnum: 58,
+                          code: "RBT",
+                          name: "Rehab Technician"
+                      },
+                      {
+                          text: "RND",
+                          wgnum: 59,
+                          code: "RND",
+                          name: "RN With Administrative Duties"
+                      },
+                      {
+                          text: "SBS",
+                          wgnum: 60,
+                          code: "SBS",
+                          name: "Senior Billing Specialist"
+                      },
+                      {
+                          text: "SW",
+                          wgnum: 61,
+                          code: "SW",
+                          name: "Social Worker"
+                      },
+                      {
+                          text: "SPT",
+                          wgnum: 62,
+                          code: "SPT",
+                          name: "Speech Therapist"
+                      },
+                      {
+                          text: "SYA",
+                          wgnum: 63,
+                          code: "SYA",
+                          name: "Systems Administrator"
+                      },
+                      {
+                          text: "DVR",
+                          wgnum: 64,
+                          code: "DVR",
+                          name: "Van Driver"
+                      }
+                  ]
+              }
+          ]
       },
       application: {
         maxFaceEnrollments: 3,

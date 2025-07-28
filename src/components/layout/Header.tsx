@@ -3,7 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAppContext } from '@/store/AppContext';
+import { useI18n } from '@/hooks/useI18n';
 import { LanguageDropdown } from '@/components/ui/LanguageDropdown';
+import { DarkModeToggle } from '@/components/ui/DarkModeToggle';
 import { ROUTES } from '@/constants';
 import { cn } from '@/lib/utils';
 
@@ -13,6 +15,7 @@ interface HeaderProps {
 
 export function Header({ className }: HeaderProps) {
   const { state, setUser } = useAppContext();
+  const { t, formatDate } = useI18n();
   const pathname = usePathname();
   const router = useRouter();
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -31,53 +34,47 @@ export function Header({ className }: HeaderProps) {
     router.push(ROUTES.LOGIN);
   };
 
-  // Don't show header on setup and login pages
-  if (pathname === ROUTES.SETUP || pathname === ROUTES.LOGIN) {
+  // Don't show header on setup page
+  if (pathname === ROUTES.SETUP) {
     return null;
   }
 
-  // Format date and time
-  const dayOfWeek = currentTime.toLocaleDateString('en-US', { weekday: 'long' });
-  const monthDate = currentTime.toLocaleDateString('en-US', { 
-    month: 'long', 
-    day: 'numeric' 
-  });
-  const timeString = currentTime.toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true
-  });
+  // Format date and time using i18n
+  const formattedDate = formatDate(currentTime, 'date');
+  const formattedTime = formatDate(currentTime, 'time');
 
   return (
     <header className={cn(
-      'bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700',
+      'bg-card border-b border-border flex-shrink-0 shadow-sm',
       className
     )}>
-      <div className="container mx-auto px-6 py-4">
+      <div className="w-full max-w-full px-4 md:px-6 py-3 md:py-4">
         <div className="flex items-center justify-between">
-          {/* Left: Language Dropdown */}
-          <div className="flex items-center">
+          {/* Left: Language Dropdown (and Dark Mode Toggle on non-login pages) */}
+          <div className="flex items-center space-x-3 flex-shrink-0">
             <LanguageDropdown />
+            {pathname !== ROUTES.LOGIN && <DarkModeToggle />}
           </div>
           
           {/* Center: Date and Time */}
-          <div className="text-center">
-            <div className="text-lg font-medium text-gray-900 dark:text-white">
-              {dayOfWeek}, {monthDate}
+          <div className="text-center flex-1 min-w-0 mx-4">
+            <div className="text-sm md:text-lg font-medium text-foreground">
+              {formattedDate}
             </div>
-            <div className="text-3xl font-bold text-gray-900 dark:text-white mt-1">
-              {timeString}
+            <div className="text-xl md:text-3xl font-bold text-primary mt-1">
+              {formattedTime}
             </div>
           </div>
           
-          {/* Right: Logout Button */}
-          <div className="flex items-center">
-            {state.user && (
+          {/* Right: Logout Button (and Dark Mode Toggle on login page) */}
+          <div className="flex items-center space-x-3 flex-shrink-0">
+            {pathname === ROUTES.LOGIN && <DarkModeToggle />}
+            {state.user && pathname !== ROUTES.LOGIN && (
               <button
                 onClick={handleLogout}
-                className="px-6 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors"
+                className="px-3 py-2 md:px-6 md:py-2 bg-destructive hover:bg-destructive/90 text-destructive-foreground rounded-lg font-medium focus:outline-none focus:ring-2 focus:ring-destructive focus:ring-offset-2 transition-colors text-sm md:text-base"
               >
-                Logout
+                {t('common.logout')}
               </button>
             )}
           </div>

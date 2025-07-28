@@ -1,3 +1,6 @@
+// Export company types
+export * from './company';
+
 // Core application types
 export interface User {
   id: string;

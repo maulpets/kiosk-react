@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { AppProvider } from "@/store/AppContext";
+import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import { ThemeLayout } from "@/components/layout/ThemeLayout";
 import { Header } from "@/components/layout/Header";
 import { RouteGuard } from "@/components/RouteGuard";
 import "./globals.css";
@@ -26,16 +28,28 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="h-full" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased h-full overflow-hidden bg-background text-foreground`}
+        suppressHydrationWarning
       >
-        <AppProvider>
-          <RouteGuard>
-            <Header />
-            {children}
-          </RouteGuard>
-        </AppProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <AppProvider>
+            <RouteGuard>
+              <ThemeLayout>
+                <Header />
+                <main className="flex-1 overflow-auto">
+                  {children}
+                </main>
+              </ThemeLayout>
+            </RouteGuard>
+          </AppProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
