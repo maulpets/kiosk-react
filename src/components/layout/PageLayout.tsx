@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { useAppContext } from '@/store/AppContext';
 import { cn } from '@/lib/utils';
 
 interface PageHeaderProps {
@@ -42,7 +41,6 @@ interface PageLayoutProps {
 }
 
 export function PageLayout({ children, header, className }: PageLayoutProps) {
-  const { state } = useAppContext();
   
   return (
     <div className={cn(

@@ -15,13 +15,13 @@ export const translations: Record<Locale, TranslationKeys> = {
 };
 
 // Get nested property from object using dot notation
-function getNestedProperty(obj: Record<string, unknown>, path: string): string {
+function getNestedProperty(obj: TranslationKeys | Record<string, unknown>, path: string): string {
   return path.split('.').reduce((current: unknown, key: string) => {
     if (current && typeof current === 'object' && key in current) {
       return (current as Record<string, unknown>)[key];
     }
     return undefined;
-  }, obj) as string || path;
+  }, obj as Record<string, unknown>) as string || path;
 }
 
 // Simple interpolation function for variables in strings

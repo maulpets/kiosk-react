@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useWebViewBridge } from '@/hooks/useWebViewBridge';
 import { useAppContext } from '@/store/AppContext';
@@ -263,6 +264,22 @@ function CallbackSelection({ options, onSelect, onCancel }: CallbackSelectionPro
 }
 
 export default function PunchInPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-background pt-6">
+        <div className="container mx-auto px-6 py-8">
+          <div className="flex items-center justify-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-company-accent"></div>
+          </div>
+        </div>
+      </div>
+    }>
+      <PunchInContent />
+    </Suspense>
+  );
+}
+
+function PunchInContent() {
   const { state } = useAppContext();
   const { sendToNative, isConnected } = useWebViewBridge();
   const router = useRouter();

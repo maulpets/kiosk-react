@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { PageLayout } from '@/components/layout/PageLayout';
 import { useI18n } from '@/hooks/useI18n';
@@ -51,7 +51,7 @@ export default function TimeCardPage() {
   const [timeCardData, setTimeCardData] = useState<WeeklyData | null>(null);
   const [selectedPayPeriod, setSelectedPayPeriod] = useState<'current' | 'previous'>('current');
 
-  const payPeriods: PayPeriodInfo[] = [
+  const payPeriods: PayPeriodInfo[] = useMemo(() => [
     {
       id: 'current',
       name: 'Current Pay Period',
@@ -66,7 +66,7 @@ export default function TimeCardPage() {
       ends: '2019-08-10',
       isCurrent: false
     }
-  ];
+  ], []);
 
   const fetchTimeCardData = useCallback(async () => {
     try {
@@ -120,7 +120,7 @@ export default function TimeCardPage() {
     } finally {
       setLoading(false);
     }
-  }, [selectedPayPeriod]);
+  }, [selectedPayPeriod, payPeriods]);
 
   useEffect(() => {
     fetchTimeCardData();

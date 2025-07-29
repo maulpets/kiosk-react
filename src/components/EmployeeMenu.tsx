@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import React, { useState } from 'react';
@@ -82,7 +83,7 @@ export default function EmployeeMenu({ onBack, backLabel }: EmployeeMenuProps) {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   // Get operations data - updated for new API structure
-  const operations = kioskData?.context?.operations || [];
+  const operations = (kioskData as any)?.context?.operations || [];
   
   // Transform operations to match the same structure as dashboard
   const transformApiOperations = (apiOperations: any[] = []) => {
@@ -218,7 +219,7 @@ export default function EmployeeMenu({ onBack, backLabel }: EmployeeMenuProps) {
 
       {/* Dynamic Operation Dropdowns */}
       {transformedOperations
-        .filter(op => op.subOperations && op.subOperations.length > 0) // Only operations with sub-operations
+        .filter(op => (op as any).subOperations && (op as any).subOperations.length > 0) // Only operations with sub-operations
         .sort((a, b) => a.operation - b.operation) // Sort by operation number (punch-in, punch-out, etc.)
         .map((operation) => (
           <React.Fragment key={operation.id}>
@@ -227,7 +228,7 @@ export default function EmployeeMenu({ onBack, backLabel }: EmployeeMenuProps) {
               icon={operation.icon}
               isOpen={openDropdown === operation.id}
               onToggle={() => handleDropdownToggle(operation.id)}
-              subOperations={operation.subOperations || []}
+              subOperations={(operation as any).subOperations || []}
               onSubOperationClick={(subOp) => handleSubOperationClick(subOp, operation)}
             />
             

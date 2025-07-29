@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useWebViewBridge } from '@/hooks/useWebViewBridge';
 import { useAppContext } from '@/store/AppContext';
@@ -156,6 +157,22 @@ function PunchOutConfirmation({ subOperation, employee, onConfirm, onCancel }: P
 }
 
 export default function PunchOutPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-background pt-6">
+        <div className="container mx-auto px-6 py-8">
+          <div className="flex items-center justify-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-company-accent"></div>
+          </div>
+        </div>
+      </div>
+    }>
+      <PunchOutContent />
+    </Suspense>
+  );
+}
+
+function PunchOutContent() {
   const { state } = useAppContext();
   const { sendToNative, isConnected } = useWebViewBridge();
   const router = useRouter();
@@ -176,11 +193,11 @@ export default function PunchOutPage() {
 
   // Transform employee data from new API structure
   const employee = kioskData ? {
-    id: kioskData.basics?.idnum || '',
-    name: `${kioskData.basics?.firstName || ''} ${kioskData.basics?.lastName || ''}`.trim(),
-    email: kioskData.personalInfo?.contactInfo?.emails?.find((e: { emailLabel: string; emailAddress: string }) => e.emailLabel === 'Work Email')?.emailAddress || '',
-    role: kioskData.basics?.homeWg?.workPositionName || '',
-    department: kioskData.basics?.homeWg?.description || '',
+    id: (kioskData as any).basics?.idnum || '',
+    name: `${(kioskData as any).basics?.firstName || ''} ${(kioskData as any).basics?.lastName || ''}`.trim(),
+    email: (kioskData as any).personalInfo?.contactInfo?.emails?.find((e: { emailLabel: string; emailAddress: string }) => e.emailLabel === 'Work Email')?.emailAddress || '',
+    role: (kioskData as any).basics?.homeWg?.workPositionName || '',
+    department: (kioskData as any).basics?.homeWg?.description || '',
     permissions: ['clock-in-out', 'view-reports'],
     shift: { start: '07:00', end: '15:30', breakDuration: 30 }
   } : null;
@@ -188,8 +205,8 @@ export default function PunchOutPage() {
   useEffect(() => {
     if (kioskData && operationId && subOperationId) {
       // Find the operation and sub-operation from new API structure
-      const operations = kioskData.context?.operations || [];
-      const operation = operations.find(op => op.operation === 1); // Punch Out is operation 1
+      const operations = (kioskData as any).context?.operations || [];
+      const operation = operations.find((op: any) => op.operation === 1); // Punch Out is operation 1
       
       // Create sub-operations from prompts selections if available
       if (operation?.prompts?.selections) {

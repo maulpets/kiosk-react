@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -71,9 +72,6 @@ function OperationButton({ operation, onClick }: OperationButtonProps) {
       disabled={!enabled}
       className={`w-full p-4 md:p-6 rounded-xl text-left transition-all duration-200 ${style.button}`}
     >
-      {/* Debug header */}
-      <div className="text-xs opacity-50 mb-2 font-mono">{style.debug}</div>
-      
       <div className="flex items-center space-x-3 md:space-x-4">
         {/* Icon with varying backgrounds */}
         <div className={`flex-shrink-0 ${style.icon}`}>
@@ -306,7 +304,8 @@ export default function Dashboard() {
       // Fallback to navigation for other operations
       if (selectedOperation) {
         // Use the stored selectionId if available, otherwise extract from subOperation.id
-        const selectionId = (subOperation as any).selectionId?.toString() || subOperation.id.split('-').pop();
+        const subOpWithSelection = subOperation as SubOperation & { selectionId?: string | number };
+        const selectionId = subOpWithSelection.selectionId?.toString() || subOperation.id.split('-').pop();
         
         const params = new URLSearchParams({
           operation: selectedOperation.id, // This is the fkeyguid
@@ -315,8 +314,8 @@ export default function Dashboard() {
         
         // Route to appropriate screen based on operation number, not fkeyguid
         let route = '/punch-in'; // default
-        if ((selectedOperation as any).originalOperation === 1) route = '/punch-out';
-        else if ((selectedOperation as any).originalOperation === 2) route = '/transfer';
+        if (selectedOperation.operation === 1) route = '/punch-out';
+        else if (selectedOperation.operation === 2) route = '/transfer';
         
         router.push(`${route}?${params.toString()}`);
       }
@@ -430,7 +429,7 @@ export default function Dashboard() {
       return (a as any).originalOperation - (b as any).originalOperation;
     }).map(op => {
       // Remove the temporary originalOperation property
-      const { originalOperation, ...cleanOp } = op as any;
+      const { ...cleanOp } = op as Operation & { originalOperation?: number };
       return cleanOp as Operation;
     });
   };

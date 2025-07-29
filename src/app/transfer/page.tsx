@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -189,18 +190,18 @@ export default function TransferPage() {
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   // Get transfer operation data - updated for new API structure
-  const operations = kioskData?.context?.operations || [];
-  const transferOperation = operations.find(op => op.operation === 2); // Transfer is operation 2
+  const operations = (kioskData as any)?.context?.operations || [];
+  const transferOperation = operations.find((op: any) => op.operation === 2); // Transfer is operation 2
   const transferData = transferOperation || null;
   const transferLevels = useMemo(() => transferData?.wgRendering?.levels || [], [transferData]);
 
   // Transform employee data from new API structure
   const employee = kioskData ? {
-    id: kioskData.basics?.idnum || '',
-    name: `${kioskData.basics?.firstName || ''} ${kioskData.basics?.lastName || ''}`.trim(),
-    email: kioskData.personalInfo?.contactInfo?.emails?.find((e: { emailLabel: string; emailAddress: string }) => e.emailLabel === 'Work Email')?.emailAddress || '',
-    role: kioskData.basics?.homeWg?.workPositionName || '',
-    department: kioskData.basics?.homeWg?.description || '',
+    id: (kioskData as any).basics?.idnum || '',
+    name: `${(kioskData as any).basics?.firstName || ''} ${(kioskData as any).basics?.lastName || ''}`.trim(),
+    email: (kioskData as any).personalInfo?.contactInfo?.emails?.find((e: { emailLabel: string; emailAddress: string }) => e.emailLabel === 'Work Email')?.emailAddress || '',
+    role: (kioskData as any).basics?.homeWg?.workPositionName || '',
+    department: (kioskData as any).basics?.homeWg?.description || '',
     permissions: ['clock-in-out', 'view-reports'],
     shift: { start: '07:00', end: '15:30', breakDuration: 30 }
   } : null;

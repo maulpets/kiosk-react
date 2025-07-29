@@ -1,8 +1,8 @@
-import { WebViewMessage, NativeMessage, WebMessage } from '@/types/webview';
+import { NativeMessage, WebMessage } from '@/types/webview';
 import { MESSAGE_TYPES } from '@/constants';
 
 class WebViewBridge {
-  private messageQueue: WebViewMessage[] = [];
+  private messageQueue: WebMessage[] = [];
   private isNativeReady = false;
   private listeners: Map<string, ((message: NativeMessage) => void)[]> = new Map();
 
