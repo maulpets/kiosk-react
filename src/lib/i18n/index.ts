@@ -15,13 +15,13 @@ export const translations: Record<Locale, TranslationKeys> = {
 };
 
 // Get nested property from object using dot notation
-function getNestedProperty(obj: Record<string, unknown>, path: string): string {
+function getNestedProperty(obj: TranslationKeys | Record<string, unknown>, path: string): string {
   return path.split('.').reduce((current: unknown, key: string) => {
     if (current && typeof current === 'object' && key in current) {
       return (current as Record<string, unknown>)[key];
     }
     return undefined;
-  }, obj) as string || path;
+  }, obj as unknown) as string || path;
 }
 
 // Simple interpolation function for variables in strings
@@ -45,7 +45,7 @@ export function getTranslation(
     return getTranslation('en', key, variables);
   }
 
-  const translation = getNestedProperty(translations_for_locale, key);
+  const translation = getNestedProperty(translations_for_locale as unknown as Record<string, unknown>, key);
   
   if (translation === key) {
     console.warn(`Translation key "${key}" not found for locale "${locale}"`);
