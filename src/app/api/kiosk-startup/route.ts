@@ -3,6 +3,10 @@ import { KioskStartupResponse } from '@/types';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 
+// Configure for static export
+export const dynamic = 'force-static';
+export const revalidate = false;
+
 export async function GET(request: NextRequest) {
   try {
     // Extract employee ID from query params or headers
