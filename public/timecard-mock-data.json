@@ -61,7 +61,7 @@
         "general": {
             "payClass": {
                 "id": 1,
-                "name": "Full Time Hourly",
+                "name": "Full Time Hourl",
                 "effective": "2019-08-11T00:00:00.000"
             },
             "wasApproved": false,
