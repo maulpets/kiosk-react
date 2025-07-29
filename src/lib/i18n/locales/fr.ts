@@ -1,4 +1,4 @@
-import type { TranslationKeys } from './types';
+import type { TranslationKeys } from '../types';
 
 export const fr: TranslationKeys = {
   common: {

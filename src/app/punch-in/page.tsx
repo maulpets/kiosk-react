@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useWebViewBridge } from '@/hooks/useWebViewBridge';
 import { useAppContext } from '@/store/AppContext';
@@ -275,7 +275,7 @@ function CallbackSelection({ options, onSelect, onCancel }: CallbackSelectionPro
   );
 }
 
-export default function PunchInPage() {
+function PunchInPageContent() {
   const { state } = useAppContext();
   const { sendToNative, isConnected } = useWebViewBridge();
   const router = useRouter();
@@ -613,5 +613,14 @@ export default function PunchInPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Wrapper component with Suspense boundary
+export default function PunchInPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PunchInPageContent />
+    </Suspense>
   );
 }

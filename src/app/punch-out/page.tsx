@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useWebViewBridge } from '@/hooks/useWebViewBridge';
 import { useAppContext } from '@/store/AppContext';
@@ -155,7 +155,7 @@ function PunchOutConfirmation({ subOperation, employee, onConfirm, onCancel }: P
   );
 }
 
-export default function PunchOutPage() {
+function PunchOutPageContent() {
   const { state } = useAppContext();
   const { sendToNative, isConnected } = useWebViewBridge();
   const router = useRouter();
@@ -331,5 +331,14 @@ export default function PunchOutPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Wrapper component with Suspense boundary
+export default function PunchOutPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PunchOutPageContent />
+    </Suspense>
   );
 }
