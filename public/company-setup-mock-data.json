@@ -1,0 +1,105 @@
+{
+  "companies": {
+    "acme corp": {
+      "name": "ACME Corp",
+      "logo": "/api/mock-logo/acme-corp.png",
+      "theme": {
+        "primaryColor": "#1f2937",
+        "secondaryColor": "#374151",
+        "accentColor": "#3b82f6",
+        "darkMode": "auto",
+        "fontSize": "medium",
+        "fontFamily": "Inter, sans-serif"
+      },
+      "defaultLanguage": "en",
+      "dailyMessage": "Welcome to ACME Corp! Have a productive day.",
+      "weeklyMessage": "This week focus on safety and efficiency.",
+      "timezone": "America/New_York",
+      "features": ["time-tracking", "transfers", "reports", "messaging"]
+    },
+    "test": {
+      "name": "test",
+      "logo": "/api/mock-logo/techstart-inc.png",
+      "theme": {
+        "primaryColor": "#7c3aed",
+        "secondaryColor": "#8b5cf6",
+        "accentColor": "#06b6d4",
+        "darkMode": "dark",
+        "fontSize": "medium",
+        "fontFamily": "Roboto, sans-serif"
+      },
+      "defaultLanguage": "en",
+      "dailyMessage": "Innovation starts today! Let's build the future.",
+      "weeklyMessage": "Sprint week - let's deliver exceptional results.",
+      "timezone": "America/Los_Angeles",
+      "features": ["time-tracking", "transfers", "reports", "messaging", "analytics"]
+    },
+    "123": {
+      "name": "123",
+      "logo": "/api/mock-logo/global-manufacturing.png",
+      "theme": {
+        "primaryColor": "#dc2626",
+        "secondaryColor": "#991b1b",
+        "accentColor": "#f59e0b",
+        "darkMode": "light",
+        "fontSize": "large",
+        "fontFamily": "Arial, sans-serif"
+      },
+      "defaultLanguage": "en",
+      "dailyMessage": "Safety first, quality always.",
+      "weeklyMessage": "Production targets: On track for 95% efficiency.",
+      "timezone": "America/Chicago",
+      "features": ["time-tracking", "transfers", "safety-reports", "maintenance"]
+    },
+    "retail solutions": {
+      "name": "Retail Solutions",
+      "logo": "/api/mock-logo/retail-solutions.png",
+      "theme": {
+        "primaryColor": "#059669",
+        "secondaryColor": "#047857",
+        "accentColor": "#f97316",
+        "darkMode": "auto",
+        "fontSize": "medium",
+        "fontFamily": "Open Sans, sans-serif"
+      },
+      "defaultLanguage": "en",
+      "dailyMessage": "Customer service excellence is our goal!",
+      "weeklyMessage": "Holiday season prep - all hands on deck!",
+      "timezone": "America/New_York",
+      "features": ["time-tracking", "transfers", "customer-service", "inventory"]
+    },
+    "glenwood gardens": {
+      "name": "Glenwood Gardens",
+      "logo": "/api/mock-logo/glenwood-gardens.png",
+      "theme": {
+        "primaryColor": "#065f46",
+        "secondaryColor": "#047857",
+        "accentColor": "#10b981",
+        "darkMode": "auto",
+        "fontSize": "medium",
+        "fontFamily": "Inter, sans-serif"
+      },
+      "defaultLanguage": "en",
+      "dailyMessage": "Caring for our residents with compassion and excellence.",
+      "weeklyMessage": "Focus on patient care and safety protocols this week.",
+      "timezone": "America/New_York",
+      "features": ["time-tracking", "transfers", "reports", "healthcare", "scheduling"]
+    }
+  },
+  "defaultConfig": {
+    "name": "Your Company",
+    "logo": "/api/mock-logo/default.png",
+    "theme": {
+      "primaryColor": "#1f2937",
+      "secondaryColor": "#374151",
+      "accentColor": "#3b82f6",
+      "darkMode": "auto",
+      "fontSize": "medium",
+      "fontFamily": "Inter, sans-serif"
+    },
+    "defaultLanguage": "en",
+    "dailyMessage": "Welcome! Have a great day at work.",
+    "timezone": "America/New_York",
+    "features": ["time-tracking", "transfers", "reports"]
+  }
+}

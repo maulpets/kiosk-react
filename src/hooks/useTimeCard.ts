@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { apiGetTimeCard } from '../lib/apiAdapter';
 
 // Types for the raw mock data structure
 interface RawTransaction {
@@ -156,12 +157,8 @@ export function useTimeCard(payPeriod: 'current' | 'previous' = 'current'): UseT
       setError(null);
 
       try {
-        // Get basic API structure
-        const apiResponse = await fetch(`/api/time-card?payPeriod=${payPeriod}`);
-        if (!apiResponse.ok) {
-          throw new Error(`API responded with status: ${apiResponse.status}`);
-        }
-        const apiData = await apiResponse.json();
+        // Use API adapter for environment-aware API calls
+        const apiData = await apiGetTimeCard({ payPeriod });
 
         if (!apiData.success) {
           throw new Error(apiData.message || 'API returned unsuccessful response');
@@ -172,8 +169,18 @@ export function useTimeCard(payPeriod: 'current' | 'previous' = 'current'): UseT
         
         // Combine API structure with processed mock data
         const finalData: WeeklyTimeCardData = {
-          ...apiData.data,
-          ...processedData
+          weekStart: apiData.data.weekStart,
+          weekEnd: apiData.data.weekEnd,
+          entries: processedData.entries,
+          totalHours: processedData.totalHours,
+          overtimeHours: processedData.overtimeHours,
+          regularHours: processedData.regularHours,
+          employeeId: processedData.employeeId,
+          employeeName: processedData.employeeName,
+          payPeriod: apiData.data.payPeriod,
+          payClass: processedData.payClass,
+          department: processedData.department,
+          position: processedData.position
         };
 
         setData(finalData);
@@ -220,11 +227,7 @@ export function useTimeCard(payPeriod: 'current' | 'previous' = 'current'): UseT
 
     try {
       // Get basic API structure
-      const apiResponse = await fetch(`/api/time-card?payPeriod=${payPeriod}`);
-      if (!apiResponse.ok) {
-        throw new Error(`API responded with status: ${apiResponse.status}`);
-      }
-      const apiData = await apiResponse.json();
+      const apiData = await apiGetTimeCard({ payPeriod });
 
       if (!apiData.success) {
         throw new Error(apiData.message || 'API returned unsuccessful response');
@@ -235,8 +238,18 @@ export function useTimeCard(payPeriod: 'current' | 'previous' = 'current'): UseT
       
       // Combine API structure with processed mock data
       const finalData: WeeklyTimeCardData = {
-        ...apiData.data,
-        ...processedData
+        weekStart: apiData.data.weekStart,
+        weekEnd: apiData.data.weekEnd,
+        entries: processedData.entries,
+        totalHours: processedData.totalHours,
+        overtimeHours: processedData.overtimeHours,
+        regularHours: processedData.regularHours,
+        employeeId: processedData.employeeId,
+        employeeName: processedData.employeeName,
+        payPeriod: apiData.data.payPeriod,
+        payClass: processedData.payClass,
+        department: processedData.department,
+        position: processedData.position
       };
 
       setData(finalData);
@@ -276,7 +289,17 @@ export function useTimeCard(payPeriod: 'current' | 'previous' = 'current'): UseT
 }
 
 // Helper function to process mock data
-function processMockData(mockData: RawMockData): Partial<WeeklyTimeCardData> {
+function processMockData(mockData: RawMockData): {
+  entries: TimeEntry[];
+  totalHours: number;
+  overtimeHours: number;
+  regularHours: number;
+  employeeId: string;
+  employeeName: string;
+  payClass: string;
+  department: string;
+  position: string;
+} {
   console.log('Processing mock data:', { 
     employee: mockData.basics?.firstName, 
     daysCount: mockData.payPeriod?.days?.length 

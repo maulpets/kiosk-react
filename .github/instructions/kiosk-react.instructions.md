@@ -27,7 +27,7 @@ This project is a React-based kiosk application designed to provide an interacti
 
 Libraries and tools used in the project include:  If you ever have questions about the libraries or tools, refer to their official documentation or ask a team member.
 - **React**: For building user interfaces.
-- **TypeScript**: For type safety and better developer experience.
+- **TypeScript**: For type safety and better developer experience. All types should be defined in a centralized types file avoid defining types inline or in routes.
 - **Next.js**: For server-side rendering and routing.
 - **Tailwind CSS**: For utility-first styling.
 - **Shadcn UI**: For pre-built UI components.

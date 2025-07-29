@@ -5,19 +5,19 @@ import { useRouter } from 'next/navigation';
 import { useAppContext } from '@/store/AppContext';
 import { useWebViewBridge } from '@/hooks/useWebViewBridge';
 import { useCompanyDataSync } from '@/hooks/useCompanyDataSync';
+import { useCompanySetup } from '@/hooks/useCompanySetup';
 import { useI18n } from '@/hooks/useI18n';
 import { ROUTES } from '@/constants';
-import { CompanySetupResponse } from '@/types';
 
 export default function Setup() {
   const router = useRouter();
   const { setSetupComplete, setCompanyData, setLanguage, state } = useAppContext();
   const { sendToNative, isConnected } = useWebViewBridge();
   const { syncToNative } = useCompanyDataSync({ companyData: state.companyData });
+  const { setupCompany, loading: companySetupLoading, error: companySetupError } = useCompanySetup();
   const { t } = useI18n();
   
   const [organizationName, setOrganizationName] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -28,26 +28,11 @@ export default function Setup() {
       return;
     }
 
-    setIsSubmitting(true);
     setError('');
 
     try {
-      // Call company setup API
-      const response = await fetch('/api/company-setup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          companyName: organizationName.trim()
-        }),
-      });
-
-      const data: CompanySetupResponse = await response.json();
-
-      if (!data.success) {
-        throw new Error(data.message || 'Failed to setup company');
-      }
+      // Use the company setup hook
+      const data = await setupCompany(organizationName.trim());
 
       // Store company data in app context
       setCompanyData(data.company);
@@ -96,8 +81,6 @@ export default function Setup() {
     } catch (error) {
       console.error('Setup failed:', error);
       setError(error instanceof Error ? error.message : 'Setup failed. Please try again.');
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -138,19 +121,19 @@ export default function Setup() {
                 placeholder={t('setup.organizationPlaceholder')}
                 className="w-full px-4 py-3 border border-border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-company-accent focus:border-company-accent bg-background text-foreground placeholder:text-muted-foreground"
                 required
-                disabled={isSubmitting}
+                disabled={companySetupLoading}
               />
-              {error && (
-                <p className="mt-2 text-sm text-destructive">{error}</p>
+              {(error || companySetupError) && (
+                <p className="mt-2 text-sm text-destructive">{error || companySetupError}</p>
               )}
             </div>
 
             <button
               type="submit"
-              disabled={isSubmitting || !organizationName.trim()}
+              disabled={companySetupLoading || !organizationName.trim()}
               className="w-full bg-company-accent text-white py-3 px-4 rounded-lg font-medium hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-company-accent focus:ring-offset-2 disabled:bg-muted disabled:cursor-not-allowed transition-colors"
             >
-              {isSubmitting ? (
+              {companySetupLoading ? (
                 <div className="flex items-center justify-center">
                   <div className="w-5 h-5 border-t-2 border-b-2 border-white rounded-full animate-spin mr-2"></div>
                   {t('setup.setupProgress')}

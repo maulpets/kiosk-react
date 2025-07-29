@@ -136,8 +136,93 @@ export interface SystemInfo {
   features: string[];
 }
 
-// Main API response type
+// Main API response type - matches the actual API structure
 export interface KioskStartupResponse {
+  basics: {
+    filekey: number;
+    lastName: string;
+    firstName: string;
+    middle: string;
+    idnum: string;
+    badge: number;
+    homeWg: {
+      description: string;
+      workPositionWgName: string;
+      workPositionWgCode: string;
+      workPositionName: string;
+      workPositionAbb: string;
+      levels: Array<{
+        wgLevel: number;
+        wgNum: number;
+        caption: string;
+      }>;
+    };
+    homeWgSet?: {
+      levels: Array<{
+        wgLevel: number;
+        wgNum: number;
+      }>;
+    };
+    homeWgEffDate?: string;
+  };
+  personalInfo?: {
+    contactInfo?: {
+      emails?: Array<{
+        emailLabel: string;
+        emailAddress: string;
+        [key: string]: unknown;
+      }>;
+      [key: string]: unknown;
+    };
+    [key: string]: unknown;
+  };
+  context?: {
+    operations?: Array<{
+      operation: number;
+      description: string;
+      caption: string;
+      fkeyguid: string;
+      hint: string;
+      icon: string;
+      prompts?: {
+        selections?: Array<{
+          id: number;
+          caption: string;
+        }>;
+        [key: string]: unknown;
+      };
+      subOperations?: Array<{
+        id: string;
+        name: string;
+        description: string;
+        icon: string;
+        enabled: boolean;
+        nativeAction: string;
+      }>;
+      [key: string]: unknown;
+    }>;
+    [key: string]: unknown;
+  };
+  [key: string]: unknown;
+}
+
+// Legacy interfaces for backward compatibility
+export interface Employee {
+  id: string;
+  name: string;
+  email: string;
+  department: string;
+  role: string;
+  avatar?: string;
+  permissions: string[];
+  shift: {
+    start: string;
+    end: string;
+    breakDuration: number;
+  };
+}
+
+export interface LegacyKioskStartupResponse {
   employee: Employee;
   operations: Operation[];
   actionItems: ActionItem[];
