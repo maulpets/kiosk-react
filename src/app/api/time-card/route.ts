@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// Force static generation for static export
+export const dynamic = 'force-static';
+
 // Simplified interface for frontend consumption
 interface Transaction {
   time: string;

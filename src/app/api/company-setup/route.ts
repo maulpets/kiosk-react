@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { CompanySetupResponse } from '@/types';
 
+// Force static generation for static export
+export const dynamic = 'force-static';
+
 // Mock company configurations based on company names
 const mockCompanyConfigs: Record<string, CompanySetupResponse['company']> = {
   'acme corp': {

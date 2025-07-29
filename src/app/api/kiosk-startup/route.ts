@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from 'next/server';
 
+// Force static generation for static export
+export const dynamic = 'force-static';
+
 // Types based on the actual API structure
 interface WorkGroupLevel {
   wgLevel: number;

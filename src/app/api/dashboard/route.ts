@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// Force static generation for static export
+export const dynamic = 'force-static';
+
 export async function GET() {
   try {
     // Simulate some data fetching
