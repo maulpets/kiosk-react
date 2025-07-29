@@ -234,7 +234,7 @@ export default function TransferPage() {
   };
 
   const handleConfirmTransfer = () => {
-    if (isConnected && transferData?.nativeAction) {
+    if (isConnected && transferData) {
       const transferPayload = {
         transferType: 'STANDARD_TRANSFER',
         selections: selections,
@@ -244,7 +244,7 @@ export default function TransferPage() {
         timestamp: Date.now()
       };
 
-      sendToNative(transferData.nativeAction, transferPayload);
+      sendToNative('transferData', transferPayload);
     }
     
     // Navigate back to dashboard
