@@ -5,7 +5,7 @@ import { CompanySetupResponse } from '@/types';
 const mockCompanyConfigs: Record<string, CompanySetupResponse['company']> = {
   'acme corp': {
     name: 'ACME Corp',
-    logo: '/api/mock-logo/acme-corp.png',
+    logo: '/placeholder-logo.svg',
     theme: {
       primaryColor: '#1f2937', // Gray-800
       secondaryColor: '#374151', // Gray-700
@@ -22,7 +22,7 @@ const mockCompanyConfigs: Record<string, CompanySetupResponse['company']> = {
   },
   'test': {
     name: 'test',
-    logo: '/api/mock-logo/techstart-inc.png',
+    logo: '/placeholder-logo.svg',
     theme: {
       primaryColor: '#7c3aed', // Violet-600
       secondaryColor: '#8b5cf6', // Violet-500
@@ -39,7 +39,7 @@ const mockCompanyConfigs: Record<string, CompanySetupResponse['company']> = {
   },
   '123': {
     name: '123',
-    logo: '/api/mock-logo/global-manufacturing.png',
+    logo: '/placeholder-logo.svg',
     theme: {
       primaryColor: '#dc2626', // Red-600
       secondaryColor: '#991b1b', // Red-800
@@ -56,7 +56,7 @@ const mockCompanyConfigs: Record<string, CompanySetupResponse['company']> = {
   },
   'retail solutions': {
     name: 'Retail Solutions',
-    logo: '/api/mock-logo/retail-solutions.png',
+    logo: '/placeholder-logo.svg',
     theme: {
       primaryColor: '#059669', // Emerald-600
       secondaryColor: '#047857', // Emerald-700
@@ -76,7 +76,7 @@ const mockCompanyConfigs: Record<string, CompanySetupResponse['company']> = {
 // Default configuration for unknown companies
 const defaultConfig: CompanySetupResponse['company'] = {
   name: 'Your Company',
-  logo: '/api/mock-logo/default.png',
+  logo: '/placeholder-logo.svg',
   theme: {
     primaryColor: '#1f2937', // Gray-800
     secondaryColor: '#374151', // Gray-700
