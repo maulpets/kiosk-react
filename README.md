@@ -22,8 +22,6 @@ src/
 ├── app/                    # Next.js App Router pages
 │   ├── api/               # API routes
 │   ├── dashboard/         # Dashboard page
-│   ├── profile/           # Profile page
-│   ├── settings/          # Settings page
 │   ├── layout.tsx         # Root layout
 │   └── page.tsx           # Home page
 ├── components/            # Reusable UI components
