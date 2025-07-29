@@ -43,6 +43,7 @@ interface PageLayoutProps {
 
 export function PageLayout({ children, header, className }: PageLayoutProps) {
   const { state } = useAppContext();
+  console.log('PageLayout state:', state);
   
   return (
     <div className={cn(

@@ -6,17 +6,63 @@ import { useWebViewBridge } from '@/hooks/useWebViewBridge';
 import { useAppContext } from '@/store/AppContext';
 import { useKioskStartup } from '@/hooks/useKioskStartup';
 import { useI18n } from '@/hooks/useI18n';
-import { Operation, ActionItem, TimeCardEntry, SubOperation } from '@/types/kiosk';
+import { ActionItem, TimeCardEntry, SubOperation } from '@/types/kiosk';
+import { KioskStartupResponse } from '@/types';
+
+// Dashboard-specific operation interfaces
+interface DashboardOperation {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  enabled: boolean;
+  route?: string;
+  nativeAction?: string;
+}
+
+interface DashboardSubOperation extends SubOperation {
+  selectionId?: number;
+}
+
+interface DashboardSubOperationContainer extends DashboardOperation {
+  operation: 1;
+  subOperations: DashboardSubOperation[];
+}
+
+// Extended types for dashboard-specific operations
+interface ExtendedSubOperation extends SubOperation {
+  selectionId?: number;
+}
+
+interface ExtendedOperation extends DashboardOperation {
+  originalOperation?: number;
+}
+
+// Type for API operations before transformation
+interface ApiOperation {
+  fkeyguid?: string;
+  caption?: string;
+  description?: string;
+  icon?: string;
+  operation: number;
+  prerequisites?: { enabled?: boolean };
+  route?: string;
+  nativeAction?: string;
+  prompts?: {
+    askForTransType?: boolean;
+    selections?: Array<{ id: number; caption: string; }>;
+  };
+}
 
 interface OperationButtonProps {
-  operation: Operation;
+  operation: DashboardOperation;
   onClick: () => void;
 }
 
 function OperationButton({ operation, onClick }: OperationButtonProps) {
   const { enabled, icon, name, description } = operation;
   
-  // Define 5 different styles
+  // Define different styles for operations
   const getButtonStyle = (operationType: 'punch' | 'transfer' | 'timecard' | 'other') => {
     // Style 2: Gradient Accent (for punch and transfer operations)
     const gradientStyle = {
@@ -54,7 +100,7 @@ function OperationButton({ operation, onClick }: OperationButtonProps) {
   };
   
   // Determine operation type for styling
-  const getOperationType = (operation: Operation): 'punch' | 'transfer' | 'timecard' | 'other' => {
+  const getOperationType = (operation: DashboardOperation): 'punch' | 'transfer' | 'timecard' | 'other' => {
     const name = operation.name.toLowerCase();
     if (name.includes('punch') || name.includes('clock')) return 'punch';
     if (name.includes('transfer')) return 'transfer';
@@ -71,9 +117,6 @@ function OperationButton({ operation, onClick }: OperationButtonProps) {
       disabled={!enabled}
       className={`w-full p-4 md:p-6 rounded-xl text-left transition-all duration-200 ${style.button}`}
     >
-      {/* Debug header */}
-      <div className="text-xs opacity-50 mb-2 font-mono">{style.debug}</div>
-      
       <div className="flex items-center space-x-3 md:space-x-4">
         {/* Icon with varying backgrounds */}
         <div className={`flex-shrink-0 ${style.icon}`}>
@@ -83,7 +126,7 @@ function OperationButton({ operation, onClick }: OperationButtonProps) {
           <div className={style.title}>{name}</div>
           <div className="text-sm opacity-75 line-clamp-2">{description}</div>
         </div>
-        {'subOperations' in operation && operation.subOperations && (
+        {operation.nativeAction && (
           <div className={`flex-shrink-0 ${style.arrow}`}>
             <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -247,7 +290,7 @@ export default function Dashboard() {
   const router = useRouter();
   
   // State for managing sub-operations view
-  const [selectedOperation, setSelectedOperation] = useState<Operation | null>(null);
+  const [selectedOperation, setSelectedOperation] = useState<DashboardSubOperationContainer | null>(null);
   
   // Fetch kiosk startup data
   const { data: kioskData, loading, error } = useKioskStartup({
@@ -265,7 +308,7 @@ export default function Dashboard() {
     }
   }, [isConnected, sendToNative, state.user]);
 
-  const handleOperationClick = (operation: Operation) => {
+  const handleOperationClick = (operation: DashboardOperation) => {
     // Handle specific operations by ID
     if (operation.id === '{5324678A-4261-40EE-BB3D-1026297ECB37}') {
       router.push('/transfer');
@@ -277,9 +320,10 @@ export default function Dashboard() {
       return;
     }
     
-    // If operation has sub-operations, show them instead of navigating
-    if ('subOperations' in operation && operation.subOperations && operation.subOperations.length > 0) {
-      setSelectedOperation(operation);
+    // Check if operation is a sub-operation container
+    const operationWithSubs = operation as DashboardSubOperationContainer;
+    if (operationWithSubs.operation === 1 && operationWithSubs.subOperations && operationWithSubs.subOperations.length > 0) {
+      setSelectedOperation(operationWithSubs);
       return;
     }
     
@@ -306,7 +350,8 @@ export default function Dashboard() {
       // Fallback to navigation for other operations
       if (selectedOperation) {
         // Use the stored selectionId if available, otherwise extract from subOperation.id
-        const selectionId = (subOperation as any).selectionId?.toString() || subOperation.id.split('-').pop();
+        const extendedSubOp = subOperation as ExtendedSubOperation;
+        const selectionId = extendedSubOp.selectionId?.toString() || subOperation.id.split('-').pop();
         
         const params = new URLSearchParams({
           operation: selectedOperation.id, // This is the fkeyguid
@@ -314,9 +359,10 @@ export default function Dashboard() {
         });
         
         // Route to appropriate screen based on operation number, not fkeyguid
+        const extendedOperation = selectedOperation as ExtendedOperation;
         let route = '/punch-in'; // default
-        if ((selectedOperation as any).originalOperation === 1) route = '/punch-out';
-        else if ((selectedOperation as any).originalOperation === 2) route = '/transfer';
+        if (extendedOperation.originalOperation === 1) route = '/punch-out';
+        else if (extendedOperation.originalOperation === 2) route = '/transfer';
         
         router.push(`${route}?${params.toString()}`);
       }
@@ -352,22 +398,9 @@ export default function Dashboard() {
   }
 
   // Transform API operations to match expected interface
-  const transformApiOperations = (apiOperations: {
-    fkeyguid?: string;
-    caption?: string;
-    description?: string;
-    icon?: string;
-    operation: number;
-    prerequisites?: { enabled?: boolean };
-    route?: string;
-    nativeAction?: string;
-    prompts?: {
-      askForTransType?: boolean;
-      selections?: Array<{ id: number; caption: string; }>;
-    };
-  }[] = []): Operation[] => {
+  const transformApiOperations = (apiOperations: ApiOperation[] = []): ExtendedOperation[] => {
     const transformed = apiOperations.map(apiOp => {
-      const baseOp = {
+      const baseOp: ExtendedOperation = {
         id: apiOp.fkeyguid || `operation-${apiOp.operation}`, // Use fkeyguid as the unique identifier
         name: apiOp.caption || apiOp.description || '',
         description: apiOp.description || apiOp.caption || '',
@@ -386,7 +419,7 @@ export default function Dashboard() {
       
       if (hasPromptSelections) {
         // Create sub-operations from prompt selections
-        const subOperations: SubOperation[] = apiOp.prompts!.selections!.map(selection => ({
+        const subOperations: ExtendedSubOperation[] = apiOp.prompts!.selections!.map(selection => ({
           id: `${baseOp.id}-${selection.id}`,
           name: selection.caption,
           description: selection.caption,
@@ -401,14 +434,14 @@ export default function Dashboard() {
           ...baseOp,
           operation: 1 as const,
           subOperations
-        } as Operation & { originalOperation: number };
+        };
       }
 
       // Return as GeneralOperation (most common case)
       return {
         ...baseOp,
         operation: 0 as const
-      } as Operation & { originalOperation: number };
+      };
     });
 
     // Sort operations in the desired order: punch-in (0), punch-out (1), transfer (2), then others
@@ -419,36 +452,39 @@ export default function Dashboard() {
         2: 2,  // Transfer
       };
       
-      const aOrder = orderMap[(a as any).originalOperation] !== undefined ? orderMap[(a as any).originalOperation] : 999;
-      const bOrder = orderMap[(b as any).originalOperation] !== undefined ? orderMap[(b as any).originalOperation] : 999;
+      const aOrder = orderMap[a.originalOperation || 999] !== undefined ? orderMap[a.originalOperation || 999] : 999;
+      const bOrder = orderMap[b.originalOperation || 999] !== undefined ? orderMap[b.originalOperation || 999] : 999;
       
       if (aOrder !== bOrder) {
         return aOrder - bOrder;
       }
       
       // For operations not in the order map, sort by original operation number
-      return (a as any).originalOperation - (b as any).originalOperation;
+      return (a.originalOperation || 0) - (b.originalOperation || 0);
     }).map(op => {
-      // Remove the temporary originalOperation property
-      const { originalOperation, ...cleanOp } = op as any;
-      return cleanOp as Operation;
+      // Remove the temporary originalOperation property for return
+      const { originalOperation, ...cleanOp } = op;
+      // We keep the originalOperation in memory for routing decisions
+      (cleanOp as ExtendedOperation).originalOperation = originalOperation;
+      return cleanOp as ExtendedOperation;
     });
   };
 
   const { operations, actionItems, timeCard, employee } = kioskData ? {
     operations: (() => {
-      const baseOperations = transformApiOperations((kioskData as any).context?.operations || []);
+      const typedKioskData = kioskData as KioskStartupResponse;
+      const baseOperations = transformApiOperations(typedKioskData.context?.operations || []);
       
       // Add time card operation if profileInfo.sheetId === 0 - insert after transfer operation
-      if ((kioskData as any).profileInfo?.sheetId === 0) {
-        const timeCardOperation: Operation = {
+      const profileInfo = typedKioskData.profileInfo as { sheetId?: number } | undefined;
+      if (profileInfo?.sheetId === 0) {
+        const timeCardOperation: ExtendedOperation = {
           id: 'timecard-operation',
           name: t('dashboard.timeCard'),
           description: t('dashboard.timeCardDesc'),
           icon: '📋',
           enabled: true,
           route: '/timecard',
-          operation: 0 as const,
           nativeAction: 'VIEW_TIMECARD'
         };
         
@@ -471,18 +507,18 @@ export default function Dashboard() {
     })(),
     actionItems: [], // This needs to be added to the new API structure or handled differently
     timeCard: {
-      currentEntry: undefined,
+      currentEntry: null as TimeCardEntry | null,
       weeklyEntries: [],
       weeklyTotal: 0,
       overtimeHours: 0,
       isOnBreak: false
     }, // This needs to be added to the new API structure or handled differently
     employee: {
-      id: (kioskData as any).basics?.idnum || '',
-      name: `${(kioskData as any).basics?.firstName || ''} ${(kioskData as any).basics?.lastName || ''}`.trim(),
-      email: (kioskData as any).personalInfo?.contactInfo?.emails?.find((e: { emailLabel: string; emailAddress: string }) => e.emailLabel === 'Work Email')?.emailAddress || '',
-      role: (kioskData as any).basics?.homeWg?.workPositionName || '',
-      department: (kioskData as any).basics?.homeWg?.description || '',
+      id: (kioskData as KioskStartupResponse).basics?.idnum || '',
+      name: `${(kioskData as KioskStartupResponse).basics?.firstName || ''} ${(kioskData as KioskStartupResponse).basics?.lastName || ''}`.trim(),
+      email: (kioskData as KioskStartupResponse).personalInfo?.contactInfo?.emails?.find((e: { emailLabel: string; emailAddress: string }) => e.emailLabel === 'Work Email')?.emailAddress || '',
+      role: (kioskData as KioskStartupResponse).basics?.homeWg?.workPositionName || '',
+      department: (kioskData as KioskStartupResponse).basics?.homeWg?.description || '',
     }
   } : { operations: [], actionItems: [], timeCard: { currentEntry: undefined, weeklyEntries: [], weeklyTotal: 0, overtimeHours: 0, isOnBreak: false }, employee: { id: '', name: '', email: '', role: '', department: '' } };
   const enabledOperations = operations.filter(op => op.enabled);
@@ -515,8 +551,8 @@ export default function Dashboard() {
               <>
                 <div className="space-y-4">
                   {(() => {
-                    const fullWidthOperations: Operation[] = [];
-                    const halfWidthOperations: Operation[] = [];
+                    const fullWidthOperations: DashboardOperation[] = [];
+                    const halfWidthOperations: DashboardOperation[] = [];
                     
                     // Separate operations by type
                     enabledOperations.forEach(operation => {
@@ -543,7 +579,7 @@ export default function Dashboard() {
                         ))}
                         
                         {/* Half width operations in rows */}
-                        {halfWidthOperations.reduce((acc: Operation[][], operation, index) => {
+                        {halfWidthOperations.reduce((acc: DashboardOperation[][], operation, index) => {
                           if (index % 2 === 0) {
                             acc.push([operation]);
                           } else {
@@ -589,7 +625,7 @@ export default function Dashboard() {
                 </div>
                 <div className="text-right flex-shrink-0">
                   <div className="text-xs md:text-sm text-muted-foreground">
-                    {timeCard.currentEntry && (timeCard.currentEntry as any).clockIn ? t('dashboard.punchedInFor', [(timeCard.currentEntry as any).clockIn]) : t('dashboard.notClockedIn')}
+                    {timeCard.currentEntry && timeCard.currentEntry.clockIn ? t('dashboard.punchedInFor', [timeCard.currentEntry.clockIn]) : t('dashboard.notClockedIn')}
                   </div>
                 </div>
               </div>

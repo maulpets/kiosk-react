@@ -120,7 +120,7 @@ export default function TimeCardPage() {
     } finally {
       setLoading(false);
     }
-  }, [selectedPayPeriod]);
+  }, [payPeriods, selectedPayPeriod]);
 
   useEffect(() => {
     fetchTimeCardData();

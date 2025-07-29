@@ -268,7 +268,7 @@ export interface KioskStartupResponse {
     homeWgEffDate: string;
   };
   personalInfo: PersonalInfo;
-  profileInfo: unknown;
+  profileInfo: ProfileInfo;
   company: unknown;
   time: unknown;
   workGroups: WorkGroups;
@@ -276,6 +276,153 @@ export interface KioskStartupResponse {
   operator: unknown;
   schStyles: unknown[];
   context: Context;
+}
+
+// Transfer Operation Types (for TransferFlow component)
+export interface TransferOperation {
+  operation: number;
+  description: string;
+  caption: string;
+  fkeyguid: string;
+  hint: string;
+  icon: string;
+  alsoPunch?: boolean;
+  transType?: number;
+  callbackTransType?: number;
+  xferStyle?: number;
+  xferStyleDescr?: string;
+  wgRendering?: {
+    caption: string;
+    levels: WgRenderingLevel[];
+  };
+}
+
+// Profile Info Types
+export interface AvailablePlace {
+  wgName: string;
+  wgCode: string;
+  wgNum: number;
+}
+
+export interface CustomProperty {
+  name: string;
+  value: string;
+  id: string;
+  type: string;
+  label: string;
+}
+
+export interface StationProperties {
+  impliedStationNum: number;
+  punchTZXLateMode: number;
+  showPunchMode: number;
+  transAcceptedText: string;
+  currentTimeMode: number;
+  showCorpTimeStamp: boolean;
+  auxDataCapFields: unknown[];
+  empReviewTiles: unknown[];
+}
+
+export interface ScheduleConfirmation {
+  reapproveOnChgNotes: boolean;
+  doesConfirmSchs: boolean;
+  confirmPattSchs: boolean;
+  unConfSchDays: number;
+}
+
+export interface OnboardingInvitation {
+  invtModeId: number;
+  invtPeriodDays: number;
+  invtMaxTrys: number;
+  invtMinHrs: number;
+  invtDOHBias: number;
+}
+
+export interface RestClass {
+  classNum: number;
+  BSTEnabled: boolean;
+  BSTBegin: number;
+  BSTEnd: number;
+  ASTEnabled: boolean;
+  ASTBegin: number;
+  ASTEnd: number;
+  BETEnabled: boolean;
+  BETBegin: number;
+  BETEnd: number;
+  AETEnabled: boolean;
+  AETBegin: number;
+  AETEnd: number;
+  MinOutEnabled: boolean;
+  RestFlexEnabled: boolean;
+}
+
+export interface Operational {
+  minimumLeaveRequestDate: string;
+  maximumLeaveRequestDate: string;
+  currentPayPeriodBeginDate: string;
+  currentPayPeriodEndDate: string;
+  previousPayPeriodBeginDate: string;
+  previousPayPeriodEndDate: string;
+  nextPayPeriodBeginDate: string;
+  nextPayPeriodEndDate: string;
+  availability: {
+    earliestAllowedDate: string;
+    daysFormulaId: number;
+    days: number;
+  };
+}
+
+export interface ProfileInfo {
+  profileName: string;
+  guid: string;
+  createdBy: string;
+  sheetId: number;
+  sheetName: string;
+  allSheets: boolean;
+  schSheetId: number;
+  arcSheetId: number;
+  benSheetId: number;
+  piSheetId: number;
+  piSheetName: string;
+  msgSheetId: number;
+  leaveSheetId: number;
+  wgRendering: {
+    caption: string;
+    levels: WgRenderingLevel[];
+  };
+  enablePunchingRestrictions: boolean;
+  enableOverrideRestrClass: boolean;
+  wageAdvanceEnabled: boolean;
+  empNameFormatId: number;
+  timeCardApprovalEnabled: boolean;
+  timeCardApprovalAsSupervisor: boolean;
+  showRateOfOpenSch: boolean;
+  idleTimeout: number;
+  benefitPeriodId: number;
+  approvalText: string;
+  mayAddToWGSheet: boolean;
+  daysBackForHistory: number;
+  applyPaidLunch: boolean;
+  schBuddyCoverage: boolean;
+  inclPrintTimeCard: boolean;
+  timeCardReportName: string;
+  benefitPeriodName: string;
+  benefitPeriodAbb: string;
+  maySetAvailability: boolean;
+  canSeeCoWorkerSch: boolean;
+  canSeeOpenAssignments: boolean;
+  canSeeOpenSchedules: boolean;
+  openSchWGLevel: number;
+  wageAdvance: boolean;
+  preventChgPwd: boolean;
+  stationProperties: StationProperties;
+  scheduleConfirmation: ScheduleConfirmation;
+  onboardingInvitation: OnboardingInvitation;
+  restClass: RestClass;
+  datedLabelRules: unknown[];
+  customProperties: CustomProperty[];
+  operational: Operational;
+  availablePlaces: AvailablePlace[];
 }
 
 // Request Types

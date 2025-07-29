@@ -341,6 +341,7 @@ export default function TransferFlow({
   const [selections, setSelections] = useState<TransferSelection[]>([]);
   const [showConfirmation, setShowConfirmation] = useState(false);
 
+  console.log('TransferFlow props:', t)
   const transferLevels = useMemo(() => 
     transferOperation?.wgRendering?.levels || [], 
     [transferOperation]
