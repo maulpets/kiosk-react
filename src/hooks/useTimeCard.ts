@@ -1,125 +1,15 @@
 import { useState, useEffect } from 'react';
 import { apiGetTimeCard } from '../lib/apiAdapter';
-
-// Types for the raw mock data structure
-interface RawTransaction {
-  timestamp: string;
-  transType: number;
-  station?: number;
-}
-
-interface RawWorkedShift {
-  transactions?: {
-    actual?: RawTransaction[];
-  };
-}
-
-interface RawDayData {
-  date: string;
-  workedShifts: RawWorkedShift[];
-  payLines: Array<{ dop: number }>;
-  adjustments: Array<{ prevEffTime: string }>;
-  notes: Array<{ note: string }>;
-  distributed: unknown[];
-  summaries: unknown[];
-  incidents: unknown[];
-  notifConds: unknown[];
-  dailyExceptions: unknown[];
-  schedules: unknown[];
-}
-
-interface RawMockData {
-  basics: {
-    filekey: number;
-    lastName: string;
-    firstName: string;
-    middle: string;
-    idnum: string;
-    badge: number;
-    homeWg: {
-      description: string;
-      workPositionWgName: string;
-      workPositionWgCode: string;
-      workPositionName: string;
-      workPositionAbb: string;
-      levels: Array<{
-        wgLevel: number;
-        wgNum: number;
-        caption: string;
-      }>;
-    };
-  };
-  payPeriod: {
-    general: {
-      payClass: {
-        id: number;
-        name: string;
-        effective: string;
-      };
-      wasApproved: boolean;
-      wasEmployeeApproved: boolean;
-      isSecure: boolean;
-      payPeriodLength: number;
-      compType: number;
-      periods: {
-        this: { begins: string; ends: string };
-        previous: { begins: string; ends: string };
-        current: { begins: string; ends: string };
-        next: { begins: string; ends: string };
-      };
-    };
-    days: RawDayData[];
-  };
-}
-
-// Frontend interfaces
-export interface Transaction {
-  time: string;
-  type: string;
-  department: string;
-  notes: string;
-  transType: number;
-  timestamp: string;
-  station?: number;
-}
-
-export interface TimeEntry {
-  id: string;
-  date: string;
-  clockIn: string;
-  clockOut: string;
-  breakTime: number;
-  totalHours: number;
-  status: string;
-  project: string;
-  notes?: string;
-  workedShifts: number;
-  payLines: number;
-  adjustments: number;
-  transactions?: Transaction[];
-}
-
-export interface WeeklyTimeCardData {
-  weekStart: string;
-  weekEnd: string;
-  entries: TimeEntry[];
-  totalHours: number;
-  overtimeHours: number;
-  regularHours: number;
-  employeeId: string;
-  employeeName: string;
-  payPeriod: string;
-  payClass: string;
-  department: string;
-  position: string;
-}
-
-interface UseTimeCardResult {
-  data: WeeklyTimeCardData | null;
-  loading: boolean;
-  error: string | null;
-  refetch: () => void;
-}
+import { 
+  // Transaction, 
+  TimeCardTransaction,
+  TimeEntry, 
+  WeeklyTimeCardData, 
+  UseTimeCardResult,
+  RawTransaction,
+  RawWorkedShift,
+  RawMockData
+} from '@/types';
 
 export function useTimeCard(payPeriod: 'current' | 'previous' = 'current'): UseTimeCardResult {
   const [data, setData] = useState<WeeklyTimeCardData | null>(null);
@@ -326,8 +216,8 @@ function processMockData(mockData: RawMockData): {
   };
 
   // Extract transactions from worked shifts
-  const extractTransactions = (workedShifts: RawWorkedShift[]): Transaction[] => {
-    const allTransactions: Transaction[] = [];
+  const extractTransactions = (workedShifts: RawWorkedShift[]): TimeCardTransaction[] => {
+    const allTransactions: TimeCardTransaction[] = [];
     
     workedShifts.forEach((shift, shiftIndex) => {
       if (shift.transactions && shift.transactions.actual) {
@@ -409,7 +299,7 @@ function processMockData(mockData: RawMockData): {
   });
 
   // Calculate totals
-  const totalHours = entries.reduce((sum, entry) => sum + entry.totalHours, 0);
+  const totalHours = entries.reduce((sum, entry) => sum + (entry.totalHours || 0), 0);
   const regularHours = Math.min(totalHours, 80);
   const overtimeHours = Math.max(totalHours - 80, 0);
 

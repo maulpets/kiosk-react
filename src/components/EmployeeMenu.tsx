@@ -7,6 +7,17 @@ import { useAppContext } from '@/store/AppContext';
 import { useKioskStartup } from '@/hooks/useKioskStartup';
 import { useI18n } from '@/hooks/useI18n';
 import { SubOperation } from '@/types/kiosk';
+import { Operation, PromptSelection } from '@/types/kioskStartup';
+
+// Extended operation type to include subOperations
+interface ExtendedOperation extends Operation {
+  subOperations?: SubOperation[];
+}
+
+// Extended SubOperation to include selectionId
+interface ExtendedSubOperation extends SubOperation {
+  selectionId?: number;
+}
 
 interface EmployeeMenuProps {
   onBack?: () => void;
@@ -18,8 +29,8 @@ interface DropdownMenuProps {
   icon: string;
   isOpen: boolean;
   onToggle: () => void;
-  subOperations: SubOperation[];
-  onSubOperationClick: (subOperation: SubOperation) => void;
+  subOperations: ExtendedSubOperation[];
+  onSubOperationClick: (subOperation: ExtendedSubOperation) => void;
 }
 
 function DropdownMenu({ label, icon, isOpen, onToggle, subOperations, onSubOperationClick }: DropdownMenuProps) {
@@ -85,19 +96,11 @@ export default function EmployeeMenu({ onBack, backLabel }: EmployeeMenuProps) {
   const operations = kioskData?.context?.operations || [];
   
   // Transform operations to match the same structure as dashboard
-  const transformApiOperations = (apiOperations: any[] = []) => {
+  const transformApiOperations = (apiOperations: Operation[] = []): ExtendedOperation[] => {
     return apiOperations.map(apiOp => {
-      const baseOp = {
-        id: apiOp.fkeyguid || `operation-${apiOp.operation}`,
-        name: apiOp.caption || apiOp.description || '',
-        description: apiOp.description || apiOp.caption || '',
-        icon: apiOp.icon === 'fa fa-clock' ? '🕐' : 
-              apiOp.icon === 'fa fa-exchange' ? '🔄' : 
-              apiOp.icon === 'fa fa-dollar' ? '💰' : 
-              apiOp.icon === 'fa fa-cog' ? '⚙️' : '🔹',
-        enabled: apiOp.prerequisites?.enabled !== false,
-        operation: apiOp.operation,
-        prompts: apiOp.prompts
+      const baseOp: ExtendedOperation = {
+        ...apiOp, // Keep all original Operation properties
+        subOperations: undefined // Initialize as undefined
       };
 
       // Check if this operation has prompt selections
@@ -105,15 +108,18 @@ export default function EmployeeMenu({ onBack, backLabel }: EmployeeMenuProps) {
       
       if (hasPromptSelections) {
         // Create sub-operations from prompt selections
-        const subOperations = apiOp.prompts.selections.map((selection: any) => ({
-          id: `${baseOp.id}-${selection.id}`,
+        const subOperations: ExtendedSubOperation[] = apiOp.prompts?.selections.map((selection: PromptSelection) => ({
+          id: `${apiOp.fkeyguid}-${selection.id}`,
           name: selection.caption,
           description: selection.caption,
-          icon: baseOp.icon,
+          icon: apiOp.icon === 'fa fa-clock' ? '🕐' : 
+                apiOp.icon === 'fa fa-exchange' ? '🔄' : 
+                apiOp.icon === 'fa fa-dollar' ? '💰' : 
+                apiOp.icon === 'fa fa-cog' ? '⚙️' : '🔹',
           enabled: true,
           nativeAction: `OPERATION_${apiOp.operation}_SELECTION_${selection.id}`,
           selectionId: selection.id // Store the original selection ID
-        }));
+        })) || [];
 
         return {
           ...baseOp,
@@ -132,15 +138,15 @@ export default function EmployeeMenu({ onBack, backLabel }: EmployeeMenuProps) {
     setOpenDropdown(openDropdown === dropdownId ? null : dropdownId);
   };
 
-  const handleSubOperationClick = (subOperation: SubOperation, operation: any) => {
+  const handleSubOperationClick = (subOperation: ExtendedSubOperation, operation: ExtendedOperation) => {
     setOpenDropdown(null);
     
     // Use the stored selectionId if available, otherwise extract from subOperation.id
-    const selectionId = (subOperation as any).selectionId?.toString() || subOperation.id.split('-').pop();
+    const selectionId = subOperation.selectionId?.toString() || subOperation.id.split('-').pop();
     
     // Navigate to the appropriate punch page with sub-operation parameters
     const params = new URLSearchParams({
-      operation: operation.id, // Use the fkeyguid
+      operation: operation.fkeyguid, // Use the fkeyguid
       subOperation: selectionId || subOperation.id // Use the selection ID
     });
     
@@ -154,7 +160,7 @@ export default function EmployeeMenu({ onBack, backLabel }: EmployeeMenuProps) {
     // Also send to native if connected
     if (isConnected) {
       sendToNative(subOperation.nativeAction, {
-        operationFkeyguid: operation.id,
+        operationFkeyguid: operation.fkeyguid,
         subOperationId: selectionId,
         timestamp: Date.now()
       });
@@ -221,13 +227,16 @@ export default function EmployeeMenu({ onBack, backLabel }: EmployeeMenuProps) {
         .filter(op => op.subOperations && op.subOperations.length > 0) // Only operations with sub-operations
         .sort((a, b) => a.operation - b.operation) // Sort by operation number (punch-in, punch-out, etc.)
         .map((operation) => (
-          <React.Fragment key={operation.id}>
+          <React.Fragment key={operation.fkeyguid}>
             <DropdownMenu
-              label={operation.name}
-              icon={operation.icon}
-              isOpen={openDropdown === operation.id}
-              onToggle={() => handleDropdownToggle(operation.id)}
-              subOperations={operation.subOperations || []}
+              label={operation.caption || operation.description || ''}
+              icon={operation.icon === 'fa fa-clock' ? '🕐' : 
+                    operation.icon === 'fa fa-exchange' ? '🔄' : 
+                    operation.icon === 'fa fa-dollar' ? '💰' : 
+                    operation.icon === 'fa fa-cog' ? '⚙️' : '🔹'}
+              isOpen={openDropdown === operation.fkeyguid}
+              onToggle={() => handleDropdownToggle(operation.fkeyguid)}
+              subOperations={operation?.subOperations || []}
               onSubOperationClick={(subOp) => handleSubOperationClick(subOp, operation)}
             />
             

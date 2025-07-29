@@ -1,0 +1,17 @@
+{
+  "name": "Glenwood Gardens",
+  "logo": "/placeholder-logo.svg",
+  "theme": {
+    "primaryColor": "#065f46",
+    "secondaryColor": "#047857",
+    "accentColor": "#10b981",
+    "darkMode": "auto",
+    "fontSize": "medium",
+    "fontFamily": "Inter, sans-serif"
+  },
+  "defaultLanguage": "en",
+  "dailyMessage": "Caring for our residents with compassion and excellence.",
+  "weeklyMessage": "Focus on patient care and safety protocols this week.",
+  "timezone": "America/New_York",
+  "features": ["time-tracking", "transfers", "reports", "healthcare", "scheduling"]
+}

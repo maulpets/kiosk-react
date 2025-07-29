@@ -7,8 +7,21 @@ import { useAppContext } from '@/store/AppContext';
 import { useKioskStartup } from '@/hooks/useKioskStartup';
 import { useI18n } from '@/hooks/useI18n';
 import { SubOperation, Employee } from '@/types/kiosk';
+import { KioskStartupResponse, TransferOperation } from '@/types';
 import EmployeeMenu from '@/components/EmployeeMenu';
 import TransferFlow from '@/components/TransferFlow';
+
+// Type for the payload sent to native
+interface PunchInPayload {
+  operationFkeyguid: string;
+  subOperationId: string;
+  employeeId: string;
+  timestamp: number;
+  clockTime: string;
+  callbackId?: number;
+  callbackCaption?: string;
+  transferSelections?: Array<{levelId: number; optionId: string; optionName: string}>;
+}
 
 interface PunchInConfirmationProps {
   subOperation: SubOperation;
@@ -280,7 +293,7 @@ export default function PunchInPage() {
   const [callbackOptions, setCallbackOptions] = useState<Array<{id: number; caption: string}>>([]);
   const [selectedCallback, setSelectedCallback] = useState<{id: number; caption: string} | null>(null);
   const [showTransferFlow, setShowTransferFlow] = useState(false);
-  const [transferOperation, setTransferOperation] = useState<any>(null);
+  const [transferOperation, setTransferOperation] = useState<TransferOperation | null>(null);
   const [transferSelections, setTransferSelections] = useState<Array<{levelId: number; optionId: string; optionName: string}>>([]);
 
   // Fetch kiosk startup data to get the sub-operation details
@@ -291,11 +304,11 @@ export default function PunchInPage() {
 
   // Transform employee data from new API structure
   const employee = kioskData ? {
-    id: (kioskData as any).basics?.idnum || '',
-    name: `${(kioskData as any).basics?.firstName || ''} ${(kioskData as any).basics?.lastName || ''}`.trim(),
-    email: (kioskData as any).personalInfo?.contactInfo?.emails?.find((e: { emailLabel: string; emailAddress: string }) => e.emailLabel === 'Work Email')?.emailAddress || '',
-    role: (kioskData as any).basics?.homeWg?.workPositionName || '',
-    department: (kioskData as any).basics?.homeWg?.description || '',
+    id: (kioskData as KioskStartupResponse).basics?.idnum || '',
+    name: `${(kioskData as KioskStartupResponse).basics?.firstName || ''} ${(kioskData as KioskStartupResponse).basics?.lastName || ''}`.trim(),
+    email: (kioskData as KioskStartupResponse).personalInfo?.contactInfo?.emails?.find((e: { emailLabel: string; emailAddress: string }) => e.emailLabel === 'Work Email')?.emailAddress || '',
+    role: (kioskData as KioskStartupResponse).basics?.homeWg?.workPositionName || '',
+    department: (kioskData as KioskStartupResponse).basics?.homeWg?.description || '',
     permissions: ['clock-in-out', 'view-reports'],
     shift: { start: '07:00', end: '15:30', breakDuration: 30 }
   } : null;
@@ -303,8 +316,9 @@ export default function PunchInPage() {
   useEffect(() => {
     if (kioskData && operationId && subOperationId) {
       // Find the operation using the fkeyguid from URL
-      const operations = (kioskData as any).context?.operations || [];
-      const operation = operations.find((op: any) => op.fkeyguid === operationId);
+      const typedKioskData = kioskData as KioskStartupResponse;
+      const operations = typedKioskData.context?.operations || [];
+      const operation = operations.find((op) => op.fkeyguid === operationId);
       
       if (operation) {
         // Always set up the sub-operation first
@@ -341,7 +355,7 @@ export default function PunchInPage() {
         
         if (needsCallback && !callbackId) {
           // Show callback selection screen
-          setCallbackOptions(operation.prompts.callbackSelections);
+          setCallbackOptions(operation.prompts?.callbackSelections || []);
           setShowCallbackSelection(true);
           setShowTransferFlow(false);
           return;
@@ -352,7 +366,7 @@ export default function PunchInPage() {
         
         // If callback was selected, find and store it
         if (callbackId && operation.prompts?.callbackSelections) {
-          const callback = operation.prompts.callbackSelections.find((cb: any) => cb.id.toString() === callbackId);
+          const callback = operation.prompts.callbackSelections.find((cb) => cb.id.toString() === callbackId);
           setSelectedCallback(callback || null);
         }
         
@@ -361,7 +375,7 @@ export default function PunchInPage() {
         
         if (needsTransfer && callbackId) {
           // Show transfer selection screen
-          setTransferOperation(operation.prompts.xferOperation);
+          setTransferOperation((operation.prompts?.xferOperation as TransferOperation) || null);
           setShowTransferFlow(true);
           return;
         }
@@ -391,10 +405,10 @@ export default function PunchInPage() {
     try {
       // Send to native app with dynamic operation data
       if (isConnected) {
-        const payload: any = { 
-          operationFkeyguid: operationId, // Use the fkeyguid from URL
-          subOperationId: subOperationId, // Use the selection ID from URL
-          employeeId: state.user?.id,
+        const payload: PunchInPayload = { 
+          operationFkeyguid: operationId || '', // Use the fkeyguid from URL
+          subOperationId: subOperationId || '', // Use the selection ID from URL
+          employeeId: state.user?.id || '',
           timestamp: Date.now(),
           clockTime: new Date().toISOString()
         };
@@ -511,7 +525,8 @@ export default function PunchInPage() {
 
   // Show transfer flow screen if needed
   if (showTransferFlow && transferOperation) {
-    const availablePlaces = (kioskData as any).profileInfo?.availablePlaces || [];
+    const typedKioskData = kioskData as KioskStartupResponse;
+    const availablePlaces = typedKioskData.profileInfo?.availablePlaces || [];
     const workGroups = (kioskData as { workGroups?: { levels: Array<{ levelName: string; levelNamePlural: string; wgLevel: number; items: Array<{ text: string; wgnum: number; code: string; name: string; }> }> } }).workGroups;
     
     return (

@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { useI18n } from '@/hooks/useI18n';
 
 interface WgRenderingLevel {
   wgLevel: number;
@@ -189,12 +188,12 @@ function LevelSelector({ level, options, onSelect, isActive }: LevelSelectorProp
           ))
         ) : (
           <div className="text-center py-8 text-muted-foreground">
-            <p className="text-sm md:text-base">{t('transfer.noResults', [level.plural.toLowerCase() || level.name.toLowerCase(), searchTerm])}</p>
+            <p className="text-sm md:text-base">No {level.plural.toLowerCase() || level.name.toLowerCase()} found matching &ldquo;{searchTerm}&rdquo;</p>
             <button
               onClick={() => setSearchTerm('')}
               className="mt-2 text-primary hover:text-primary/80 font-medium text-sm md:text-base"
             >
-              {t('transfer.clearSearch')}
+              Clear search
             </button>
           </div>
         )}
@@ -336,7 +335,6 @@ export default function TransferFlow({
   allowSkip = false,
   onSkip
 }: TransferFlowProps) {
-  const { t } = useI18n();
   const [currentLevelIndex, setCurrentLevelIndex] = useState(0);
   const [selections, setSelections] = useState<TransferSelection[]>([]);
   const [showConfirmation, setShowConfirmation] = useState(false);

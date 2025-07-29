@@ -1,0 +1,17 @@
+{
+  "name": "Retail Solutions",
+  "logo": "/placeholder-logo.svg",
+  "theme": {
+    "primaryColor": "#059669",
+    "secondaryColor": "#047857",
+    "accentColor": "#f97316",
+    "darkMode": "auto",
+    "fontSize": "medium",
+    "fontFamily": "Open Sans, sans-serif"
+  },
+  "defaultLanguage": "en",
+  "dailyMessage": "Customer service excellence is our goal!",
+  "weeklyMessage": "Holiday season prep - all hands on deck!",
+  "timezone": "America/New_York",
+  "features": ["time-tracking", "transfers", "customer-service", "inventory"]
+}

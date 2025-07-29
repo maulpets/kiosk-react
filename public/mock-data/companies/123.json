@@ -1,0 +1,17 @@
+{
+  "name": "123",
+  "logo": "/placeholder-logo.svg",
+  "theme": {
+    "primaryColor": "#dc2626",
+    "secondaryColor": "#991b1b",
+    "accentColor": "#f59e0b",
+    "darkMode": "light",
+    "fontSize": "large",
+    "fontFamily": "Arial, sans-serif"
+  },
+  "defaultLanguage": "en",
+  "dailyMessage": "Safety first, quality always.",
+  "weeklyMessage": "Production targets: On track for 95% efficiency.",
+  "timezone": "America/Chicago",
+  "features": ["time-tracking", "transfers", "safety-reports", "maintenance"]
+}
