@@ -1,52 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-
-// Simplified interface for frontend consumption
-interface Transaction {
-  time: string;
-  type: string;
-  department: string;
-  notes: string;
-  transType: number;
-  timestamp: string;
-  station?: number;
-}
-
-interface TimeEntry {
-  id: string;
-  date: string;
-  clockIn: string;
-  clockOut: string;
-  breakTime: number;
-  totalHours: number;
-  status: string;
-  project: string;
-  notes?: string;
-  workedShifts: number;
-  payLines: number;
-  adjustments: number;
-  transactions?: Transaction[];
-}
-
-interface WeeklyTimeCardData {
-  weekStart: string;
-  weekEnd: string;
-  entries: TimeEntry[];
-  totalHours: number;
-  overtimeHours: number;
-  regularHours: number;
-  employeeId: string;
-  employeeName: string;
-  payPeriod: string;
-  payClass: string;
-  department: string;
-  position: string;
-}
-
-interface TimeCardApiResponse {
-  success: boolean;
-  data: WeeklyTimeCardData;
-  message?: string;
-}
+import { TimeCardApiResponse } from '@/types';
 
 export async function GET(request: NextRequest) {
   try {
