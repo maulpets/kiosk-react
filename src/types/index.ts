@@ -6,7 +6,7 @@ export * from './kiosk';
 
 // Export kiosk startup types
 export * from './kioskStartup';
-
+// 
 // Export timecard types
 export * from './timecard';
 

@@ -1,0 +1,10 @@
+{
+  "companyMappings": {
+    "acme corp": "acme-corp.json",
+    "test": "test.json",
+    "123": "123.json",
+    "retail solutions": "retail-solutions.json",
+    "glenwood gardens": "glenwood-gardens.json"
+  },
+  "defaultFile": "default.json"
+}

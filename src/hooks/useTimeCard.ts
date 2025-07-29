@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { apiGetTimeCard } from '../lib/apiAdapter';
 import { 
-  Transaction, 
+  // Transaction, 
+  TimeCardTransaction,
   TimeEntry, 
   WeeklyTimeCardData, 
   UseTimeCardResult,
@@ -215,8 +216,8 @@ function processMockData(mockData: RawMockData): {
   };
 
   // Extract transactions from worked shifts
-  const extractTransactions = (workedShifts: RawWorkedShift[]): Transaction[] => {
-    const allTransactions: Transaction[] = [];
+  const extractTransactions = (workedShifts: RawWorkedShift[]): TimeCardTransaction[] => {
+    const allTransactions: TimeCardTransaction[] = [];
     
     workedShifts.forEach((shift, shiftIndex) => {
       if (shift.transactions && shift.transactions.actual) {
@@ -298,7 +299,7 @@ function processMockData(mockData: RawMockData): {
   });
 
   // Calculate totals
-  const totalHours = entries.reduce((sum, entry) => sum + entry.totalHours, 0);
+  const totalHours = entries.reduce((sum, entry) => sum + (entry.totalHours || 0), 0);
   const regularHours = Math.min(totalHours, 80);
   const overtimeHours = Math.max(totalHours - 80, 0);
 

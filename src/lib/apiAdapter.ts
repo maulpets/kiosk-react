@@ -33,29 +33,11 @@ interface KioskStartupRequest {
 }
 
 /**
- * Get timecard data - tries API first, falls back to structured response for mock data processing
+ * Get timecard data - uses local API route which handles mock data processing
  */
 export async function apiGetTimeCard({ payPeriod }: TimeCardRequest): Promise<ApiResult<TimeCardApiData>> {
   try {
-    // In development or when API is unavailable, return basic structure for mock data merging
-    if (process.env.NODE_ENV === 'development') {
-      // Return basic structure that will be merged with processed mock data
-      return {
-        success: true,
-        data: {
-          weekStart: payPeriod === 'current' ? '2019-08-11' : '2019-07-28',
-          weekEnd: payPeriod === 'current' ? '2019-08-24' : '2019-08-10',
-          employeeId: "496",
-          employeeName: "Harry Howard",
-          payPeriod: payPeriod === 'current' ? 'Current Pay Period' : 'Previous Pay Period',
-          payClass: "Full Time Hourly",
-          department: "Glenwood Gardens",
-          position: "CNA"
-        }
-      };
-    }
-
-    // In production, make actual API call
+    // Always use the local API route for consistent behavior
     const response = await fetch(`${APP_CONFIG.API_BASE_URL}/api/time-card?payPeriod=${payPeriod}`, {
       method: 'GET',
       headers: {
@@ -84,36 +66,20 @@ export async function apiGetTimeCard({ payPeriod }: TimeCardRequest): Promise<Ap
 
 // Kiosk Startup API response type
 interface KioskStartupApiData {
-  useMockData?: boolean;
-  employeeId?: string;
   [key: string]: unknown;
 }
 
-// Company Setup API types
+// Company Setup API types  
 interface CompanySetupApiData {
-  useMockData?: boolean;
-  companyName?: string;
   [key: string]: unknown;
 }
 
 /**
- * Get kiosk startup data - tries API first, falls back to structured response for mock data processing
+ * Get kiosk startup data - uses local API route which handles mock data processing
  */
 export async function apiGetKioskStartup({ employeeId }: KioskStartupRequest): Promise<ApiResult<KioskStartupApiData>> {
   try {
-    // In development or when API is unavailable, return basic structure for mock data merging
-    if (process.env.NODE_ENV === 'development') {
-      // Return basic structure that indicates we should use mock data
-      return {
-        success: true,
-        data: {
-          useMockData: true,
-          employeeId
-        }
-      };
-    }
-
-    // In production, make actual API call
+    // Always use the local API route for consistent behavior
     const response = await fetch(`${APP_CONFIG.API_BASE_URL}/api/kiosk-startup?employeeId=${encodeURIComponent(employeeId)}`, {
       method: 'GET',
       headers: {
@@ -145,25 +111,13 @@ export async function apiGetKioskStartup({ employeeId }: KioskStartupRequest): P
  */
 export async function apiGetCompanySetup({ companyName }: { companyName: string }): Promise<ApiResult<CompanySetupApiData>> {
   try {
-    // In development or when API is unavailable, return basic structure for mock data merging
-    if (process.env.NODE_ENV === 'development') {
-      // Return basic structure that indicates we should use mock data
-      return {
-        success: true,
-        data: {
-          useMockData: true,
-          companyName
-        }
-      };
-    }
-
-    // In production, make actual API call
-    const response = await fetch(`${APP_CONFIG.API_BASE_URL}/api/company-setup`, {
-      method: 'POST',
+    // Always make the API call to our local endpoint (whether dev or prod)
+    // This ensures consistent behavior and proper mock data processing
+    const response = await fetch(`${APP_CONFIG.API_BASE_URL}/api/company-setup?companyName=${encodeURIComponent(companyName)}`, {
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ companyName }),
     });
 
     if (!response.ok) {

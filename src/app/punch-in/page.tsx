@@ -7,7 +7,7 @@ import { useAppContext } from '@/store/AppContext';
 import { useKioskStartup } from '@/hooks/useKioskStartup';
 import { useI18n } from '@/hooks/useI18n';
 import { SubOperation, Employee } from '@/types/kiosk';
-import { KioskStartupResponse, Operation, TransferOperation } from '@/types';
+import { KioskStartupResponse, TransferOperation } from '@/types';
 import EmployeeMenu from '@/components/EmployeeMenu';
 import TransferFlow from '@/components/TransferFlow';
 

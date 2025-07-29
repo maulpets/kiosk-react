@@ -1,0 +1,17 @@
+{
+  "name": "ACME Corp",
+  "logo": "/placeholder-logo.svg",
+  "theme": {
+    "primaryColor": "#1f2937",
+    "secondaryColor": "#374151",
+    "accentColor": "#3b82f6",
+    "darkMode": "auto",
+    "fontSize": "medium",
+    "fontFamily": "Inter, sans-serif"
+  },
+  "defaultLanguage": "en",
+  "dailyMessage": "Welcome to ACME Corp! Have a productive day.",
+  "weeklyMessage": "This week focus on safety and efficiency.",
+  "timezone": "America/New_York",
+  "features": ["time-tracking", "transfers", "reports", "messaging"]
+}

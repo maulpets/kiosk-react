@@ -4,7 +4,7 @@
  */
 
 // Transaction Types
-export interface Transaction {
+export interface TimeCardTransaction {
   time: string;
   type: string;
   department: string;
@@ -19,16 +19,16 @@ export interface TimeEntry {
   id: string;
   date: string;
   clockIn: string;
-  clockOut: string;
-  breakTime: number;
-  totalHours: number;
-  status: string;
-  project: string;
+  clockOut?: string;
+  breakTime?: number;
+  totalHours?: number;
+  status: 'completed' | 'in-progress' | 'pending';
+  project?: string;
   notes?: string;
   workedShifts: number;
   payLines: number;
   adjustments: number;
-  transactions?: Transaction[];
+  transactions?: TimeCardTransaction[];
 }
 
 // Weekly Time Card Data
@@ -42,9 +42,10 @@ export interface WeeklyTimeCardData {
   employeeId: string;
   employeeName: string;
   payPeriod: string;
-  payClass: string;
-  department: string;
-  position: string;
+  payClass?: string;
+  department?: string;
+  position?: string;
+  payPeriodInfo?: PayPeriodInfo;
 }
 
 // API Response Types
@@ -70,6 +71,15 @@ export interface UseTimeCardResult {
 
 // Status Types
 export type TimeCardStatus = 'completed' | 'in-progress' | 'pending-approval' | 'draft';
+
+// Pay Period Info
+export interface PayPeriodInfo {
+  id: string;
+  name: string;
+  begins: string;
+  ends: string;
+  isCurrent: boolean;
+}
 
 // Raw Mock Data Types for Processing
 export interface RawTransaction {

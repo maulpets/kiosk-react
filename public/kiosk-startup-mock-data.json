@@ -4,6 +4,7 @@
         "lastName": "Smith",
         "firstName": "John",
         "middle": "",
+        "idnum": "496",
         "badge": 575575,
         "homeWg": {
             "description": "Production Floor-Machine Operator-Default-Manufacturing",

@@ -6,8 +6,8 @@ import { useWebViewBridge } from '@/hooks/useWebViewBridge';
 import { useAppContext } from '@/store/AppContext';
 import { useKioskStartup } from '@/hooks/useKioskStartup';
 import { useI18n } from '@/hooks/useI18n';
-import { ActionItem, TimeCardEntry, SubOperation } from '@/types/kiosk';
-import { KioskStartupResponse } from '@/types';
+// import { ActionItem, TimeCardEntry } from '@/types/kiosk';
+import { KioskStartupResponse, SubOperation, ActionItem, TimeEntry    } from '@/types';
 
 // Dashboard-specific operation interfaces
 interface DashboardOperation {
@@ -190,7 +190,7 @@ function BackButton({ onClick }: { onClick: () => void }) {
 }
 
 interface TimeActivityProps {
-  entries: TimeCardEntry[];
+  entries: TimeEntry[];
 }
 
 function TimeActivity({ entries }: TimeActivityProps) {
@@ -507,7 +507,7 @@ export default function Dashboard() {
     })(),
     actionItems: [], // This needs to be added to the new API structure or handled differently
     timeCard: {
-      currentEntry: null as TimeCardEntry | null,
+      currentEntry: null as TimeEntry | null,
       weeklyEntries: [],
       weeklyTotal: 0,
       overtimeHours: 0,

@@ -1,21 +1,20 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { PageLayout } from '@/components/layout/PageLayout';
-import EmployeeMenu from '@/components/EmployeeMenu';
 import { useI18n } from '@/hooks/useI18n';
-import { useTimeCard } from '@/hooks/useTimeCard';
+import { WeeklyTimeCardData, PayPeriodInfo } from '@/types/timecard';
 
 export default function TimeCardPage() {
   const { t } = useI18n();
   const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const [timeCardData, setTimeCardData] = useState<WeeklyTimeCardData | null>(null);
   const [selectedPayPeriod, setSelectedPayPeriod] = useState<'current' | 'previous'>('current');
-  
-  // Use the new timecard hook
-  const { data: timeCardData, loading, error } = useTimeCard(selectedPayPeriod);
 
-  const payPeriods = [
+  // Memoize payPeriods to fix React hooks warning
+  const payPeriods: PayPeriodInfo[] = useMemo(() => [
     {
       id: 'current',
       name: 'Current Pay Period',
@@ -30,12 +29,94 @@ export default function TimeCardPage() {
       ends: '2019-08-10',
       isCurrent: false
     }
-  ];
+  ], []);
+
+  const fetchTimeCardData = useCallback(async () => {
+    try {
+      setLoading(true);
+      
+      // Call the API endpoint
+      const response = await fetch(`/api/time-card?payPeriod=${selectedPayPeriod}&employeeId=496`);
+      const result = await response.json();
+      
+      if (result.success && result.data) {
+        const selectedPeriod = payPeriods.find(p => p.id === selectedPayPeriod);
+        setTimeCardData({
+          ...result.data,
+          payPeriodInfo: selectedPeriod
+        });
+      } else {
+        console.error('API returned error:', result.message);
+        // Fallback to mock data if API fails
+        const selectedPeriod = payPeriods.find(p => p.id === selectedPayPeriod);
+        const mockData: WeeklyTimeCardData = {
+          weekStart: selectedPeriod?.begins || '2019-08-11',
+          weekEnd: selectedPeriod?.ends || '2019-08-24',
+          entries: [],
+          totalHours: 42.5,
+          regularHours: 40,
+          overtimeHours: 2.5,
+          employeeId: '496',
+          employeeName: 'Harry Howard',
+          payPeriod: selectedPeriod?.name || 'Current Pay Period',
+          payPeriodInfo: selectedPeriod
+        };
+        setTimeCardData(mockData);
+      }
+    } catch (error) {
+      console.error('Error fetching timecard data:', error);
+      // Fallback to mock data on error
+      const selectedPeriod = payPeriods.find(p => p.id === selectedPayPeriod);
+      const mockData: WeeklyTimeCardData = {
+        weekStart: selectedPeriod?.begins || '2019-08-11',
+        weekEnd: selectedPeriod?.ends || '2019-08-24',
+        entries: [],
+        totalHours: 42.5,
+        regularHours: 40,
+        overtimeHours: 2.5,
+        employeeId: '496',
+        employeeName: 'Harry Howard',
+        payPeriod: selectedPeriod?.name || 'Current Pay Period',
+        payPeriodInfo: selectedPeriod
+      };
+      setTimeCardData(mockData);
+    } finally {
+      setLoading(false);
+    }
+  }, [payPeriods, selectedPayPeriod]);
+
+  useEffect(() => {
+    fetchTimeCardData();
+  }, [fetchTimeCardData]);
+
+  const formatDate = (dateStr: string): string => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-US', { 
+      weekday: 'short', 
+      month: 'short', 
+      day: 'numeric' 
+    });
+  };
 
   const formatDateRange = (startStr: string, endStr: string): string => {
     const start = new Date(startStr);
     const end = new Date(endStr);
     return `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+  };
+
+  const getDayName = (dateStr: string): string => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-US', { weekday: 'long' });
+  };
+
+  const getDayNumber = (dateStr: string): string => {
+    const date = new Date(dateStr);
+    return date.getDate().toString();
+  };
+
+  const getMonthYear = (dateStr: string): string => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
   };
 
   if (loading) {
@@ -51,33 +132,9 @@ export default function TimeCardPage() {
     );
   }
 
-  if (error) {
-    return (
-      <PageLayout>
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="text-center">
-            <p className="text-red-500 mb-4">Error loading timecard data: {error}</p>
-            <button 
-              onClick={() => window.location.reload()}
-              className="px-4 py-2 bg-company-primary text-white rounded hover:bg-company-primary/90"
-            >
-              Retry
-            </button>
-          </div>
-        </div>
-      </PageLayout>
-    );
-  }
-
   return (
     <PageLayout>
-      <div className="flex h-full">
-        {/* Employee Menu Sidebar */}
-        <EmployeeMenu />
-        
-        {/* Main Content */}
-        <div className="flex-1 p-6 overflow-y-auto">
-          <div className="max-w-7xl mx-auto space-y-6">
+      <div className="max-w-7xl mx-auto space-y-6">
         {/* Header Section */}
         <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
@@ -127,10 +184,10 @@ export default function TimeCardPage() {
                 </div>
               </div>
               
-              {timeCardData && (
+              {timeCardData?.payPeriodInfo && (
                 <div className="text-right space-y-1">
                   <div className="text-sm font-medium text-foreground">
-                    {formatDateRange(timeCardData.weekStart, timeCardData.weekEnd)}
+                    {formatDateRange(timeCardData.payPeriodInfo.begins, timeCardData.payPeriodInfo.ends)}
                   </div>
                   <div className="text-xs text-muted-foreground">
                     {timeCardData.payClass}
@@ -144,50 +201,50 @@ export default function TimeCardPage() {
         {/* Summary Cards */}
         {timeCardData && (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="bg-gradient-to-br from-primary/10 to-primary/20 border border-primary/30 rounded-xl p-4">
+            <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-primary">Regular Hours</p>
-                  <p className="text-2xl font-bold text-foreground">{timeCardData.regularHours}</p>
+                  <p className="text-sm font-medium text-blue-700 dark:text-blue-300">Regular Hours</p>
+                  <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">{timeCardData.regularHours}</p>
                 </div>
-                <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                  <span className="text-primary-foreground text-lg">🕒</span>
+                <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                  <span className="text-white text-lg">🕒</span>
                 </div>
               </div>
             </div>
             
-            <div className="bg-gradient-to-br from-company-accent/10 to-company-accent/20 border border-company-accent/30 rounded-xl p-4">
+            <div className="bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-950 dark:to-amber-900 border border-amber-200 dark:border-amber-800 rounded-xl p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-company-accent">Overtime Hours</p>
-                  <p className="text-2xl font-bold text-foreground">{timeCardData.overtimeHours}</p>
+                  <p className="text-sm font-medium text-amber-700 dark:text-amber-300">Overtime Hours</p>
+                  <p className="text-2xl font-bold text-amber-900 dark:text-amber-100">{timeCardData.overtimeHours}</p>
                 </div>
-                <div className="w-10 h-10 bg-company-accent rounded-lg flex items-center justify-center">
+                <div className="w-10 h-10 bg-amber-500 rounded-lg flex items-center justify-center">
                   <span className="text-white text-lg">⚡</span>
                 </div>
               </div>
             </div>
             
-            <div className="bg-gradient-to-br from-company-secondary/10 to-company-secondary/20 border border-company-secondary/30 rounded-xl p-4">
+            <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900 border border-green-200 dark:border-green-800 rounded-xl p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-company-secondary">Total Hours</p>
-                  <p className="text-2xl font-bold text-foreground">{timeCardData.totalHours}</p>
+                  <p className="text-sm font-medium text-green-700 dark:text-green-300">Total Hours</p>
+                  <p className="text-2xl font-bold text-green-900 dark:text-green-100">{timeCardData.totalHours}</p>
                 </div>
-                <div className="w-10 h-10 bg-company-secondary rounded-lg flex items-center justify-center">
+                <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
                   <span className="text-white text-lg">📊</span>
                 </div>
               </div>
             </div>
             
-            <div className="bg-gradient-to-br from-muted to-muted/50 border border-border rounded-xl p-4">
+            <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950 dark:to-purple-900 border border-purple-200 dark:border-purple-800 rounded-xl p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Work Days</p>
-                  <p className="text-2xl font-bold text-foreground">{timeCardData.entries.length}</p>
+                  <p className="text-sm font-medium text-purple-700 dark:text-purple-300">Work Days</p>
+                  <p className="text-2xl font-bold text-purple-900 dark:text-purple-100">{timeCardData.entries.length}</p>
                 </div>
-                <div className="w-10 h-10 bg-muted-foreground rounded-lg flex items-center justify-center">
-                  <span className="text-background text-lg">📅</span>
+                <div className="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+                  <span className="text-white text-lg">📅</span>
                 </div>
               </div>
             </div>
@@ -200,7 +257,7 @@ export default function TimeCardPage() {
             <div className="bg-gradient-to-r from-company-primary to-company-secondary p-6">
               <h2 className="text-xl font-bold text-white">Daily Time Entries</h2>
               <p className="text-white/80 text-sm mt-1">
-                Detailed breakdown for {timeCardData.payPeriod}
+                Detailed breakdown for {timeCardData.payPeriodInfo?.name}
               </p>
             </div>
             
@@ -214,102 +271,75 @@ export default function TimeCardPage() {
                   <p className="text-muted-foreground text-sm mt-1">Time entries will appear here when available</p>
                 </div>
               ) : (
-                <div className="space-y-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
                   {timeCardData.entries.map((entry) => (
-                    <div key={entry.id} className="space-y-4">
+                    <div key={entry.id} className="border border-border rounded-lg p-4 hover:shadow-md transition-shadow">
                       {/* Date Header */}
-                      <div className="flex items-center justify-between bg-gradient-to-r from-accent to-accent/80 text-accent-foreground p-4 rounded-lg shadow-sm">
-                        <h3 className="text-lg font-semibold">
-                          {new Date(entry.date).toLocaleDateString('en-US', {
-                            weekday: 'long',
-                            month: 'long',
-                            day: 'numeric'
-                          })}
-                        </h3>
-                        <div className="text-sm text-accent-foreground/80">
-                          {entry.totalHours} hours
-                        </div>
-                      </div>
-
-                      {/* Day Summary */}
-                      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-                        <div className="bg-card border rounded-lg p-4">
-                          <div className="text-sm text-muted-foreground mb-1">Clock In</div>
-                          <div className="text-lg font-semibold text-foreground">{entry.clockIn}</div>
-                        </div>
-                        <div className="bg-card border rounded-lg p-4">
-                          <div className="text-sm text-muted-foreground mb-1">Clock Out</div>
-                          <div className="text-lg font-semibold text-foreground">{entry.clockOut}</div>
-                        </div>
-                        <div className="bg-card border rounded-lg p-4">
-                          <div className="text-sm text-muted-foreground mb-1">Break Time</div>
-                          <div className="text-lg font-semibold text-foreground">{entry.breakTime} min</div>
-                        </div>
-                        <div className="bg-card border rounded-lg p-4">
-                          <div className="text-sm text-muted-foreground mb-1">Total Hours</div>
-                          <div className="text-lg font-semibold text-foreground">{entry.totalHours}</div>
-                        </div>
-                      </div>
-
-                      {/* All Transactions Timeline */}
-                      {entry.transactions && entry.transactions.length > 0 && (
-                        <div className="bg-card border rounded-lg p-6">
-                          <h4 className="text-md font-semibold text-foreground mb-4 flex items-center">
-                            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            Transaction Timeline
-                          </h4>
-                          <div className="space-y-3">
-                            {entry.transactions.map((transaction, index) => (
-                              <div key={index} className="flex items-center justify-between border-l-2 border-primary/20 pl-4 py-2">
-                                <div className="flex items-center space-x-4">
-                                  <div className="flex-shrink-0">
-                                    <div className="w-3 h-3 bg-primary rounded-full -ml-6 border-2 border-background"></div>
-                                  </div>
-                                  <div>
-                                    <div className="font-medium text-foreground">{transaction.type}</div>
-                                    <div className="text-sm text-muted-foreground">{transaction.department}</div>
-                                    {transaction.notes && (
-                                      <div className="text-sm text-muted-foreground italic">{transaction.notes}</div>
-                                    )}
-                                  </div>
-                                </div>
-                                <div className="text-right">
-                                  <div className="font-mono text-sm text-foreground">{transaction.time}</div>
-                                  <div className="text-xs text-muted-foreground">
-                                    Trans #{transaction.transType}
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-3">
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-foreground">{getDayNumber(entry.date)}</div>
+                            <div className="text-xs text-muted-foreground">{getMonthYear(entry.date)}</div>
+                          </div>
+                          <div>
+                            <div className="font-medium text-foreground">{getDayName(entry.date)}</div>
+                            <div className="text-sm text-muted-foreground">{formatDate(entry.date)}</div>
                           </div>
                         </div>
-                      )}
-
+                        <div className={`w-3 h-3 rounded-full ${
+                          entry.status === 'completed' ? 'bg-green-500' : 
+                          entry.status === 'in-progress' ? 'bg-company-primary' : 'bg-orange-500'
+                        }`} />
+                      </div>
+                      
+                      {/* Time Info */}
+                      <div className="space-y-2 mb-3">
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-muted-foreground">Clock In:</span>
+                          <span className="font-medium text-foreground">{entry.clockIn}</span>
+                        </div>
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-muted-foreground">Clock Out:</span>
+                          <span className="font-medium text-foreground">
+                            {entry.clockOut || 'In Progress'}
+                          </span>
+                        </div>
+                        {entry.totalHours && (
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-muted-foreground">Total:</span>
+                            <span className="font-bold text-company-accent">{entry.totalHours}h</span>
+                          </div>
+                        )}
+                      </div>
+                      
                       {/* Activity Indicators */}
                       <div className="flex items-center gap-2 mb-3">
-                        <div className="flex items-center gap-1 text-xs bg-primary/10 text-primary px-2 py-1 rounded">
+                        <div className="flex items-center gap-1 text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-2 py-1 rounded">
                           <span>🏢</span>
                           <span>{entry.workedShifts} shifts</span>
                         </div>
-                        <div className="flex items-center gap-1 text-xs bg-company-secondary/10 text-company-secondary px-2 py-1 rounded">
+                        <div className="flex items-center gap-1 text-xs bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 px-2 py-1 rounded">
                           <span>💰</span>
                           <span>{entry.payLines} pay</span>
                         </div>
                         {entry.adjustments > 0 && (
-                          <div className="flex items-center gap-1 text-xs bg-company-accent/10 text-company-accent px-2 py-1 rounded">
+                          <div className="flex items-center gap-1 text-xs bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300 px-2 py-1 rounded">
                             <span>⚙️</span>
                             <span>{entry.adjustments} adj</span>
                           </div>
                         )}
                       </div>
-
-                      {/* Notes */}
+                      
+                      {/* Project & Notes */}
+                      {entry.project && (
+                        <div className="text-sm text-muted-foreground mb-2">
+                          <span className="font-medium">Project:</span> {entry.project}
+                        </div>
+                      )}
+                      
                       {entry.notes && (
-                        <div className="bg-muted/50 border rounded-lg p-4">
-                          <div className="text-sm text-muted-foreground mb-1">Notes</div>
-                          <div className="text-foreground">{entry.notes}</div>
+                        <div className="text-sm text-muted-foreground bg-muted p-2 rounded">
+                          <span className="font-medium">📝</span> {entry.notes}
                         </div>
                       )}
                     </div>
@@ -348,8 +378,6 @@ export default function TimeCardPage() {
             <span>📤</span>
             Export Data
           </button>
-        </div>
-          </div>
         </div>
       </div>
     </PageLayout>

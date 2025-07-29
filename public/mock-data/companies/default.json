@@ -1,0 +1,16 @@
+{
+  "name": "Your Company",
+  "logo": "/placeholder-logo.svg",
+  "theme": {
+    "primaryColor": "#1f2937",
+    "secondaryColor": "#374151",
+    "accentColor": "#3b82f6",
+    "darkMode": "auto",
+    "fontSize": "medium",
+    "fontFamily": "Inter, sans-serif"
+  },
+  "defaultLanguage": "en",
+  "dailyMessage": "Welcome! Have a great day at work.",
+  "timezone": "America/New_York",
+  "features": ["time-tracking", "transfers", "reports"]
+}

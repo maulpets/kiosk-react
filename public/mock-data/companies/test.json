@@ -1,0 +1,17 @@
+{
+  "name": "test",
+  "logo": "/placeholder-logo.svg",
+  "theme": {
+    "primaryColor": "#7c3aed",
+    "secondaryColor": "#8b5cf6",
+    "accentColor": "#06b6d4",
+    "darkMode": "dark",
+    "fontSize": "medium",
+    "fontFamily": "Roboto, sans-serif"
+  },
+  "defaultLanguage": "en",
+  "dailyMessage": "Innovation starts today! Let's build the future.",
+  "weeklyMessage": "Sprint week - let's deliver exceptional results.",
+  "timezone": "America/Los_Angeles",
+  "features": ["time-tracking", "transfers", "reports", "messaging", "analytics"]
+}
