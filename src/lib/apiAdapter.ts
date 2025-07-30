@@ -3,7 +3,7 @@
  * Handles switching between real API calls and mock data based on environment
  */
 
-import { APP_CONFIG } from '@/constants';
+import { API_ENDPOINTS, APP_CONFIG } from '@/constants';
 
 interface ApiResult<T> {
   success: boolean;
@@ -38,7 +38,7 @@ interface KioskEmployeeDataRequest {
 export async function apiGetTimeCard({ payPeriod }: TimeCardRequest): Promise<ApiResult<TimeCardApiData>> {
   try {
     // Always use the local API route for consistent behavior
-    const response = await fetch(`${APP_CONFIG.API_BASE_URL}/api/time-card?payPeriod=${payPeriod}`, {
+    const response = await fetch(`${APP_CONFIG.API_BASE_URL}${API_ENDPOINTS.KIOSK_TIME_CARD}?payPeriod=${payPeriod}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -55,7 +55,7 @@ export async function apiGetTimeCard({ payPeriod }: TimeCardRequest): Promise<Ap
       data
     };
   } catch (error) {
-    console.error('API call failed:', error);
+    console.log('API call failed:', error);
     const mockData = await fetch(`./mock-data/employee-timecard.json`)
     if (mockData.ok) {
       const mockDataJson = await mockData.json();
@@ -90,7 +90,7 @@ interface CompanySetupApiData {
 export async function apiGetKioskEmployeeData({ employeeId }: KioskEmployeeDataRequest): Promise<ApiResult<KioskEmployeeDataApiData>> {
   try {
     // Always use the local API route for consistent behavior
-    const response = await fetch(`${APP_CONFIG.API_BASE_URL}/api/kiosk-employee-data?employeeId=${encodeURIComponent(employeeId)}`, {
+    const response = await fetch(`${APP_CONFIG.API_BASE_URL}${API_ENDPOINTS.KIOSK_EMPLOYEE_DATA}?employeeId=${encodeURIComponent(employeeId)}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -102,12 +102,10 @@ export async function apiGetKioskEmployeeData({ employeeId }: KioskEmployeeDataR
     }
 
     const data = await response.json();
-    return {
-      success: true,
-      data
-    };
+    console.log('Kiosk employee data fetched successfully:', data);
+    return data;
   } catch (error) {
-    console.error('API call failed:', error);
+    console.log('API call failed:', error);
     const mockData = await fetch(`./mock-data/employee-data.json`)
     if (mockData.ok) {
       const mockDataJson = await mockData.json();
@@ -132,10 +130,10 @@ export async function apiGetKioskEmployeeData({ employeeId }: KioskEmployeeDataR
 export async function apiGetCompanySetup({ companyName }: { companyName: string }): Promise<ApiResult<CompanySetupApiData>> {
   try {
     console.log('apiGetCompanySetup called with companyName:', companyName);
-    console.log('Making request to:', `${APP_CONFIG.API_BASE_URL}/api/v1/kiosk-setup`);
+    console.log('Making request to:', `${APP_CONFIG.API_BASE_URL}${API_ENDPOINTS.KIOSK_COMPANY_SETUP}`);
     
     // Make POST request to the kiosk API server
-    const response = await fetch(`${APP_CONFIG.API_BASE_URL}/api/v1/kiosk-setup`, {
+    const response = await fetch(`${APP_CONFIG.API_BASE_URL}${API_ENDPOINTS.KIOSK_COMPANY_SETUP}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

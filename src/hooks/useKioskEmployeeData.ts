@@ -100,7 +100,7 @@ export function useFetchKioskEmployeeData() {
       if (!apiData.success) {
         throw new Error(apiData.message || 'API returned unsuccessful response');
       }
-
+      console.log('_____:', apiData);
       // Set the data from the API response
       const finalData = apiData.data as unknown as KioskStartupResponse;
       setData(finalData);

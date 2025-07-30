@@ -32,6 +32,7 @@ export function useCompanySetup(): UseCompanySetupReturn {
 
       // The API already handles mock data processing, so just use the response
       const finalData = apiData.data as unknown as CompanySetupResponse;
+      console.log('Company setup data loaded successfully', { companyName, data: finalData });
       setData(finalData);
       return finalData;
     } catch (err) {
