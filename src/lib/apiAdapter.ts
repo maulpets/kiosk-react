@@ -61,7 +61,7 @@ export async function apiGetTimeCard({ payPeriod }: TimeCardRequest): Promise<Ap
     if (mockData.ok) {
       const mockDataJson = await mockData.json();
       return {
-        success: false,
+        success: true,
         data: mockDataJson as TimeCardApiData,
         message: 'Using mock data'
       };
@@ -113,7 +113,7 @@ export async function apiGetKioskEmployeeData({ employeeId }: KioskEmployeeDataR
     if (mockData.ok) {
       const mockDataJson = await mockData.json();
       return {
-        success: false,
+        success: true,
         data: mockDataJson as KioskEmployeeDataApiData,
         message: 'Using mock data'
       };
@@ -167,7 +167,7 @@ export async function apiGetCompanySetup({ companyName }: { companyName: string 
     if (mockData.ok) {
       const mockDataJson = await mockData.json();
       return {
-        success: false,
+        success: true,
         data: mockDataJson as CompanySetupApiData,
         message: 'Using mock data'
       };
