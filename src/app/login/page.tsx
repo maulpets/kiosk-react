@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useAppContext } from '@/store/AppContext';
 import { useWebViewBridge } from '@/hooks/useWebViewBridge';
-import { useFetchKioskStartup } from '@/hooks/useKioskStartup';
+import { useFetchKioskEmployeeData } from '@/hooks/useKioskEmployeeData';
 import { useCompanyTheme } from '@/hooks/useCompanyTheme';
 import { useI18n } from '@/hooks/useI18n';
 import { ROUTES } from '@/constants';
@@ -60,7 +60,7 @@ export default function Login() {
   const router = useRouter();
   const { setUser } = useAppContext();
   const { sendToNative, isConnected } = useWebViewBridge();
-  const { fetchForEmployee } = useFetchKioskStartup();
+  const { fetchForEmployee } = useFetchKioskEmployeeData();
   const { companyData } = useCompanyTheme();
   const { t } = useI18n();
   

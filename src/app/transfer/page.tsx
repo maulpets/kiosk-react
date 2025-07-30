@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useWebViewBridge } from '@/hooks/useWebViewBridge';
 import { useAppContext } from '@/store/AppContext';
-import { useKioskStartup } from '@/hooks/useKioskStartup';
+import { useKioskEmployeeData } from '@/hooks/useKioskEmployeeData';
 import { TransferLevel, TransferOption, Employee } from '@/types/kiosk';
 import EmployeeMenu from '@/components/EmployeeMenu';
 
@@ -178,7 +178,7 @@ function ConfirmationSection({ employee, selections, levels, onConfirm, onBack }
 export default function TransferPage() {
   const router = useRouter();
   const { state } = useAppContext();
-  const { data: kioskData, loading, error } = useKioskStartup({ 
+  const { data: kioskData, loading, error } = useKioskEmployeeData({ 
     employeeId: state.user?.id, 
     autoFetch: true 
   });

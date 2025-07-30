@@ -6,22 +6,22 @@
 
 **Issue**: Transfer screen was showing "Transfer Not Available" even though `state.user.id` had a valid value. The `kioskData` was returning `null`.
 
-**Root Cause**: The `useKioskStartup` hook was not automatically fetching data because `autoFetch` was set to `false` by default.
+**Root Cause**: The `useKioskEmployeeData` hook was not automatically fetching data because `autoFetch` was set to `false` by default.
 
 **Solution**: Updated the hook call in `src/app/transfer/page.tsx` to include `autoFetch: true`:
 
 ```typescript
 // Before (not working)
-const { data: kioskData, loading, error } = useKioskStartup({ employeeId: state.user?.id });
+const { data: kioskData, loading, error } = useKioskEmployeeData({ employeeId: state.user?.id });
 
 // After (working)
-const { data: kioskData, loading, error } = useKioskStartup({ 
+const { data: kioskData, loading, error } = useKioskEmployeeData({ 
   employeeId: state.user?.id, 
   autoFetch: true 
 });
 ```
 
-**Impact**: This fix ensures that the API call to `/api/kiosk-startup` is automatically triggered when the component mounts and when the `employeeId` is available.
+**Impact**: This fix ensures that the API call to `/api/kiosk-employee-data` is automatically triggered when the component mounts and when the `employeeId` is available.
 
 ---
 
@@ -47,7 +47,7 @@ interface TransferOperation extends BaseOperation {
 ```
 
 **Files Modified**:
-- `src/app/api/kiosk-startup/route.ts` - Updated mock data structure
+- `src/app/api/kiosk-employee-data/route.ts` - Updated mock data structure
 - `src/types/kiosk.ts` - Updated TypeScript interfaces
 - `src/app/transfer/page.tsx` - Updated to work with new structure
 - `src/app/dashboard/page.tsx` - Updated operation handling
@@ -87,10 +87,10 @@ console.log('Error:', error);
 
 ### 📝 Development Notes
 
-**Hook Usage Pattern**: When using `useKioskStartup`, always include `autoFetch: true` if you want automatic data loading:
+**Hook Usage Pattern**: When using `useKioskEmployeeData`, always include `autoFetch: true` if you want automatic data loading:
 
 ```typescript
-const { data: kioskData, loading, error } = useKioskStartup({ 
+const { data: kioskData, loading, error } = useKioskEmployeeData({ 
   employeeId: state.user?.id, 
   autoFetch: true 
 });
@@ -127,9 +127,9 @@ const transferLevels = useMemo(() => transferData?.wgRendering?.levels || [], [t
 ### 📚 Related Files
 
 - `src/app/transfer/page.tsx` - Main transfer screen implementation
-- `src/app/api/kiosk-startup/route.ts` - API endpoint with transfer data
+- `src/app/api/kiosk-employee-data/route.ts` - API endpoint with employee data
 - `src/types/kiosk.ts` - TypeScript type definitions
-- `src/hooks/useKioskStartup.ts` - Data fetching hook
+- `src/hooks/useKioskEmployeeData.ts` - Data fetching hook
 - `src/app/dashboard/page.tsx` - Navigation to transfer screen
 
 ---

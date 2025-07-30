@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
     // Extract company name from query parameters
     const { searchParams } = new URL(request.url);
     const companyName = searchParams.get('companyName') || searchParams.get('company_name');
-    
+    console.log('Company name from request:', companyName);
     if (!companyName) {
       return NextResponse.json(
         {

@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useWebViewBridge } from '@/hooks/useWebViewBridge';
 import { useAppContext } from '@/store/AppContext';
-import { useKioskStartup } from '@/hooks/useKioskStartup';
+import { useKioskEmployeeData } from '@/hooks/useKioskEmployeeData';
 import { useI18n } from '@/hooks/useI18n';
 import { SubOperation } from '@/types/kiosk';
 import { Operation, PromptSelection } from '@/types/kioskStartup';
@@ -84,7 +84,7 @@ export default function EmployeeMenu({ onBack, backLabel }: EmployeeMenuProps) {
   const { t } = useI18n();
   const router = useRouter();
   const { state } = useAppContext();
-  const { data: kioskData } = useKioskStartup({ 
+  const { data: kioskData } = useKioskEmployeeData({ 
     employeeId: state.user?.id, 
     autoFetch: true 
   });

@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useWebViewBridge } from '@/hooks/useWebViewBridge';
 import { useAppContext } from '@/store/AppContext';
-import { useKioskStartup } from '@/hooks/useKioskStartup';
+import { useKioskEmployeeData } from '@/hooks/useKioskEmployeeData';
 import { useI18n } from '@/hooks/useI18n';
 // import { ActionItem, TimeCardEntry } from '@/types/kiosk';
 import { KioskStartupResponse, SubOperation, ActionItem, TimeEntry    } from '@/types';
@@ -293,7 +293,7 @@ export default function Dashboard() {
   const [selectedOperation, setSelectedOperation] = useState<DashboardSubOperationContainer | null>(null);
   
   // Fetch kiosk startup data
-  const { data: kioskData, loading, error } = useKioskStartup({
+  const { data: kioskData, loading, error } = useKioskEmployeeData({
     employeeId: state.user?.id,
     autoFetch: true,
   });
