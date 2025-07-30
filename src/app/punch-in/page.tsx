@@ -4,7 +4,7 @@ import React, { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useWebViewBridge } from '@/hooks/useWebViewBridge';
 import { useAppContext } from '@/store/AppContext';
-import { useKioskStartup } from '@/hooks/useKioskStartup';
+import { useKioskEmployeeData } from '@/hooks/useKioskEmployeeData';
 import { useI18n } from '@/hooks/useI18n';
 import { SubOperation, Employee } from '@/types/kiosk';
 import { KioskStartupResponse, TransferOperation } from '@/types';
@@ -297,7 +297,7 @@ function PunchInPageContent() {
   const [transferSelections, setTransferSelections] = useState<Array<{levelId: number; optionId: string; optionName: string}>>([]);
 
   // Fetch kiosk startup data to get the sub-operation details
-  const { data: kioskData, loading, error } = useKioskStartup({
+  const { data: kioskData, loading, error } = useKioskEmployeeData({
     employeeId: state.user?.id,
     autoFetch: true,
   });

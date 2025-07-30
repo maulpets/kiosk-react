@@ -1,18 +1,18 @@
-// Test utility for the kiosk-startup API endpoint
-// You can run this with: curl "http://localhost:3002/api/kiosk-startup?employeeId=12345"
+// Test utility for the kiosk-employee-data API endpoint
+// You can run this with: curl "http://localhost:3002/api/kiosk-employee-data?employeeId=12345"
 
 /**
- * Test the kiosk-startup API endpoint
+ * Test the kiosk-employee-data API endpoint
  * Usage examples:
  * 
  * 1. Basic test:
- *    curl "http://localhost:3002/api/kiosk-startup?employeeId=12345"
+ *    curl "http://localhost:3002/api/kiosk-employee-data?employeeId=12345"
  * 
  * 2. Test with missing employee ID:
- *    curl "http://localhost:3002/api/kiosk-startup"
+ *    curl "http://localhost:3002/api/kiosk-employee-data"
  * 
  * 3. Test with different employee ID:
- *    curl "http://localhost:3002/api/kiosk-startup?employeeId=98765"
+ *    curl "http://localhost:3002/api/kiosk-employee-data?employeeId=98765"
  * 
  * Expected Response Structure:
  * {
@@ -79,13 +79,13 @@
 
 export const API_TESTS = {
   // Test basic functionality
-  testBasic: () => fetch('/api/kiosk-startup?employeeId=12345'),
-  
-  // Test error handling
-  testMissingId: () => fetch('/api/kiosk-startup'),
-  
-  // Test different employee ID
-  testDifferentEmployee: () => fetch('/api/kiosk-startup?employeeId=98765'),
+  testBasic: () => fetch('/api/kiosk-employee-data?employeeId=12345'),
+
+  // Test 2: Missing employee ID (should return 400 error)
+  testMissingId: () => fetch('/api/kiosk-employee-data'),
+
+  // Test 3: Different employee ID
+  testDifferentEmployee: () => fetch('/api/kiosk-employee-data?employeeId=98765'),
 };
 
 // Console test functions (for browser console)

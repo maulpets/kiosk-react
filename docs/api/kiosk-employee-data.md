@@ -1,11 +1,14 @@
-# Kiosk Startup API Documentation
+# Kiosk Employee Data API Documentation
 
 ## Overview
-The `kiosk-startup` API endpoint provides comprehensive employee and system data needed to initialize a kiosk session. This endpoint returns all the information required for a user's dashboard, including employee details, available operations, pending action items, and time card data.
+The `kiosk-employee-data` API endpoint provides comprehensive employee and system data needed to initialize a kiosk session. This endpoint returimport { useKioskEmployeeData } from '@/hooks/useKioskEmployeeData';
+
+function DashboardPage() {
+  const { data, loading, error, refetch } = useKioskEmployeeData({ll the information required for a user's dashboard, including employee details, available operations, pending action items, and time card data.
 
 ## Endpoint
 ```
-GET /api/kiosk-startup
+GET /api/kiosk-employee-data
 ```
 
 ## Parameters
@@ -20,12 +23,12 @@ GET /api/kiosk-startup
 
 ### Basic Request
 ```bash
-curl "http://localhost:3001/api/kiosk-startup?employeeId=12345"
+curl "http://localhost:3001/api/kiosk-employee-data?employeeId=12345"
 ```
 
 ### Using employee_id parameter
 ```bash
-curl "http://localhost:3001/api/kiosk-startup?employee_id=12345"
+curl "http://localhost:3001/api/kiosk-employee-data?employee_id=12345"
 ```
 
 ## Response Structure
@@ -195,10 +198,10 @@ interface TimeCard {
 
 ### React Hook Usage
 ```typescript
-import { useKioskStartup } from '@/hooks/useKioskStartup';
+import { useKioskEmployeeData } from '@/hooks/useKioskEmployeeData';
 
 function Dashboard() {
-  const { data, loading, error, refetch } = useKioskStartup({
+  const { data, loading, error, refetch } = useKioskEmployeeData({
     employeeId: '12345',
     autoFetch: true,
     refetchInterval: 300000 // 5 minutes
@@ -219,10 +222,10 @@ function Dashboard() {
 
 ### Login Integration
 ```typescript
-import { useFetchKioskStartup } from '@/hooks/useKioskStartup';
+import { useFetchKioskEmployeeData } from '@/hooks/useKioskEmployeeData';
 
 function LoginPage() {
-  const { fetchForEmployee } = useFetchKioskStartup();
+  const { fetchForEmployee } = useFetchKioskEmployeeData();
 
   const handleLogin = async (employeeId: string, password: string) => {
     try {

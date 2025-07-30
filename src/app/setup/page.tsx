@@ -65,7 +65,7 @@ export default function Setup() {
       // Send setup data to native app if connected
       if (isConnected) {
         sendToNative('COMPANY_SETUP_COMPLETE', { 
-          companyData: data.company,
+          companyData: data,
           timestamp: Date.now()
         });
       }

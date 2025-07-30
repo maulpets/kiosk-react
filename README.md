@@ -112,7 +112,7 @@ setTheme('dark'); // or 'light'
 import { useApiGet, useApiPost } from '@/hooks';
 
 // GET request
-const { data, loading, error, get } = useApiGet('/api/kiosk-startup');
+const { data, loading, error, get } = useApiGet('/api/kiosk-employee-data');
 
 // POST request  
 const { post } = useApiPost('/api/auth');
