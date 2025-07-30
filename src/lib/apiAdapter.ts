@@ -56,6 +56,16 @@ export async function apiGetTimeCard({ payPeriod }: TimeCardRequest): Promise<Ap
     };
   } catch (error) {
     console.error('API call failed:', error);
+    const mockData = await fetch(`./mock-data/employee-timecard.json`)
+    console.log('Using mock data for employee timecard:', mockData);
+    if (mockData.ok) {
+      const mockDataJson = await mockData.json();
+      return {
+        success: false,
+        data: mockDataJson as TimeCardApiData,
+        message: 'Using mock data'
+      };
+    }
     return {
       success: false,
       data: {} as TimeCardApiData,
@@ -98,6 +108,16 @@ export async function apiGetKioskEmployeeData({ employeeId }: KioskEmployeeDataR
     };
   } catch (error) {
     console.error('API call failed:', error);
+    const mockData = await fetch(`./mock-data/employee-data.json`)
+    console.log('Using mock data for employee data:', mockData);
+    if (mockData.ok) {
+      const mockDataJson = await mockData.json();
+      return {
+        success: false,
+        data: mockDataJson as KioskEmployeeDataApiData,
+        message: 'Using mock data'
+      };
+    }
     return {
       success: false,
       data: {} as KioskEmployeeDataApiData,
@@ -142,6 +162,16 @@ export async function apiGetCompanySetup({ companyName }: { companyName: string 
     };
   } catch (error) {
     console.error('apiGetCompanySetup failed:', error);
+    const mockData = await fetch(`./mock-data/company-setup.json`)
+    console.log('Using mock data for company setup:', mockData);
+    if (mockData.ok) {
+      const mockDataJson = await mockData.json();
+      return {
+        success: false,
+        data: mockDataJson as CompanySetupApiData,
+        message: 'Using mock data'
+      };
+    }
     return {
       success: false,
       data: {} as CompanySetupApiData,
