@@ -1,8 +1,9 @@
 // API endpoints
 export const API_ENDPOINTS = {
   AUTH: '/api/auth',
-  KIOSK_EMPLOYEE_DATA: '/api/kiosk-employee-data',
-  KIOSK_COMPANY_SETUP: '/api/company-setup',
+  KIOSK_EMPLOYEE_DATA: '/api/v1/kiosk-employee-data',
+  KIOSK_COMPANY_SETUP: '/api/v1/company-setup',
+  KIOSK_TIME_CARD: '/api/v1/time-card',
 } as const;
 
 // Route paths
