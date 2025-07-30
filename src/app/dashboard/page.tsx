@@ -203,8 +203,8 @@ function TimeActivity({ entries }: TimeActivityProps) {
         <div key={entry.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
           <div className="flex items-center space-x-3">
             <div className={`w-3 h-3 rounded-full ${
-              entry.status === 'completed' ? 'bg-green-500' : 
-              entry.status === 'in-progress' ? 'bg-primary' : 'bg-orange-500'
+              entry.status === 'completed' ? 'bg-accent' : 
+              entry.status === 'in-progress' ? 'bg-primary' : 'bg-muted'
             }`} />
             <div>
               <div className="font-medium text-card-foreground">

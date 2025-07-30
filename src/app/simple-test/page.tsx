@@ -13,16 +13,16 @@ export default function SimpleTestPage() {
   };
 
   return (
-    <div className="min-h-screen p-8 bg-gray-50">
+    <div className="min-h-screen p-8 bg-background">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8 text-gray-900">Simple Test Page</h1>
+        <h1 className="text-3xl font-bold mb-8 text-foreground">Simple Test Page</h1>
         
-        <div className="bg-white p-6 rounded-lg shadow-md mb-8">
+        <div className="bg-card p-6 rounded-lg shadow-md mb-8">
           <h2 className="text-xl font-semibold mb-4">Status</h2>
-          <p className="text-gray-600 mb-4">{message}</p>
+          <p className="text-muted-foreground mb-4">{message}</p>
           <button
             onClick={handleClick}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors"
+            className="bg-company-primary hover:bg-company-primary/90 text-white font-medium py-2 px-4 rounded-md transition-colors"
           >
             Test Button
           </button>

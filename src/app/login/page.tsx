@@ -58,7 +58,7 @@ function NumberPad({ onNumberClick, onBackspace, onClear }: NumberPadProps) {
 
 export default function Login() {
   const router = useRouter();
-  const { setUser } = useAppContext();
+  const { setUser, setEmployeeData } = useAppContext();
   const { sendToNative, isConnected } = useWebViewBridge();
   const { fetchForEmployee } = useFetchKioskEmployeeData();
   const { companyData } = useCompanyTheme();
@@ -126,18 +126,17 @@ export default function Login() {
       // Fetch kiosk startup data for the employee
       const kioskData = await fetchForEmployee(employeeId);
       
-      // Cast to any to work with actual API structure (until types are aligned)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const apiData = kioskData as any;
+      // Store employee data in global state
+      setEmployeeData(kioskData);
       
       // Set user data from the API response - working with actual API structure
       setUser({
-        id: apiData.basics?.idnum || employeeId,
-        name: `${apiData.basics?.firstName || 'Unknown'} ${apiData.basics?.lastName || 'User'}`,
+        id: kioskData.basics?.idnum || employeeId,
+        name: `${kioskData.basics?.firstName || 'Unknown'} ${kioskData.basics?.lastName || 'User'}`,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        email: apiData.personalInfo?.contactInfo?.emails?.find((e: any) => e.emailLabel === 'Work Email')?.emailAddress || 'user@company.com',
-        role: apiData.basics?.homeWg?.workPositionName || 'Employee',
-        department: apiData.basics?.homeWg?.description || 'General',
+        email: kioskData.personalInfo?.contactInfo?.emails?.find((e: any) => e.emailLabel === 'Work Email')?.emailAddress || 'user@company.com',
+        role: kioskData.basics?.homeWg?.workPositionName || 'Employee',
+        department: kioskData.basics?.homeWg?.description || 'General',
         permissions: ['clock-in-out', 'view-reports'], // Default permissions
         shift: {
           start: '07:00',
@@ -149,9 +148,9 @@ export default function Login() {
       // Send successful login data to native
       if (isConnected) {
         sendToNative('LOGIN_SUCCESS', {
-          basics: apiData.basics,
-          personalInfo: apiData.personalInfo,
-          operations: apiData.context?.operations || [],
+          basics: kioskData.basics,
+          personalInfo: kioskData.personalInfo,
+          operations: kioskData.context?.operations || [],
           timestamp: Date.now()
         });
       }
@@ -164,7 +163,7 @@ export default function Login() {
     } finally {
       setIsLoading(false);
     }
-  }, [employeeId, password, isConnected, sendToNative, fetchForEmployee, setUser, router]);
+  }, [employeeId, password, isConnected, sendToNative, fetchForEmployee, setUser, setEmployeeData, router]);
 
   const handleContinue = useCallback(() => {
     if (currentStep === 'employeeId') {

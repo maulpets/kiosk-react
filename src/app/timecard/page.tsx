@@ -1,93 +1,73 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { PageLayout } from '@/components/layout/PageLayout';
 import { useI18n } from '@/hooks/useI18n';
-import { WeeklyTimeCardData, PayPeriodInfo } from '@/types/timecard';
+import { useTimeCard } from '@/hooks/useTimeCard';
+import { useKioskEmployeeData } from '@/hooks/useKioskEmployeeData';
+import { useAppContext } from '@/store/AppContext';
+import { WeeklyTimeCardData, PayPeriodInfo } from '@/types';
 
 export default function TimeCardPage() {
   const { t } = useI18n();
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
-  const [timeCardData, setTimeCardData] = useState<WeeklyTimeCardData | null>(null);
+  const { state } = useAppContext();
   const [selectedPayPeriod, setSelectedPayPeriod] = useState<'current' | 'previous'>('current');
 
-  // Memoize payPeriods to fix React hooks warning
-  const payPeriods: PayPeriodInfo[] = useMemo(() => [
-    {
-      id: 'current',
-      name: 'Current Pay Period',
-      begins: '2019-08-11',
-      ends: '2019-08-24',
-      isCurrent: true
-    },
-    {
-      id: 'previous', 
-      name: 'Previous Pay Period',
-      begins: '2019-07-28',
-      ends: '2019-08-10',
-      isCurrent: false
-    }
-  ], []);
+  // Get the logged-in user's employee ID
+  const employeeId = state.user?.id;
 
-  const fetchTimeCardData = useCallback(async () => {
-    try {
-      setLoading(true);
-      
-      // Call the API endpoint
-      const response = await fetch(`/api/time-card?payPeriod=${selectedPayPeriod}&employeeId=496`);
-      const result = await response.json();
-      
-      if (result.success && result.data) {
-        const selectedPeriod = payPeriods.find(p => p.id === selectedPayPeriod);
-        setTimeCardData({
-          ...result.data,
-          payPeriodInfo: selectedPeriod
-        });
-      } else {
-        console.error('API returned error:', result.message);
-        // Fallback to mock data if API fails
-        const selectedPeriod = payPeriods.find(p => p.id === selectedPayPeriod);
-        const mockData: WeeklyTimeCardData = {
-          weekStart: selectedPeriod?.begins || '2019-08-11',
-          weekEnd: selectedPeriod?.ends || '2019-08-24',
-          entries: [],
-          totalHours: 42.5,
-          regularHours: 40,
-          overtimeHours: 2.5,
-          employeeId: '496',
-          employeeName: 'Harry Howard',
-          payPeriod: selectedPeriod?.name || 'Current Pay Period',
-          payPeriodInfo: selectedPeriod
-        };
-        setTimeCardData(mockData);
+  // Get employee data to extract pay periods
+  const { data: employeeData } = useKioskEmployeeData({ 
+    employeeId: employeeId || '', 
+    autoFetch: !!employeeId 
+  });
+
+  // Get timecard data using the hook
+  const { data: timeCardData, loading, error } = useTimeCard(selectedPayPeriod, employeeId);
+
+  // Extract pay periods from employee data
+  const payPeriods: PayPeriodInfo[] = useMemo(() => {
+    if (!employeeData?.context) {
+      return [];
+    }
+
+    const context = employeeData.context;
+    return [
+      {
+        id: 'current',
+        name: 'Current Pay Period',
+        begins: context.currentPeriodBegins?.split('T')[0] || '',
+        ends: context.currentPeriodEnds?.split('T')[0] || '',
+        isCurrent: true
+      },
+      {
+        id: 'previous',
+        name: 'Previous Pay Period', 
+        begins: context.previousPeriodBegins?.split('T')[0] || '',
+        ends: context.previousPeriodEnds?.split('T')[0] || '',
+        isCurrent: false
       }
-    } catch (error) {
-      console.error('Error fetching timecard data:', error);
-      // Fallback to mock data on error
-      const selectedPeriod = payPeriods.find(p => p.id === selectedPayPeriod);
-      const mockData: WeeklyTimeCardData = {
-        weekStart: selectedPeriod?.begins || '2019-08-11',
-        weekEnd: selectedPeriod?.ends || '2019-08-24',
-        entries: [],
-        totalHours: 42.5,
-        regularHours: 40,
-        overtimeHours: 2.5,
-        employeeId: '496',
-        employeeName: 'Harry Howard',
-        payPeriod: selectedPeriod?.name || 'Current Pay Period',
-        payPeriodInfo: selectedPeriod
-      };
-      setTimeCardData(mockData);
-    } finally {
-      setLoading(false);
-    }
-  }, [payPeriods, selectedPayPeriod]);
+    ];
+  }, [employeeData]);
 
-  useEffect(() => {
-    fetchTimeCardData();
-  }, [fetchTimeCardData]);
+  // Add pay period info to timecard data
+  const enrichedTimeCardData: WeeklyTimeCardData | null = useMemo(() => {
+    if (!timeCardData) return null;
+    
+    const selectedPeriod = payPeriods.find(p => p.id === selectedPayPeriod);
+    return {
+      ...timeCardData,
+      payPeriodInfo: selectedPeriod
+    };
+  }, [timeCardData, payPeriods, selectedPayPeriod]);
+
+  // If no user is logged in, redirect to login
+  if (!state.user) {
+    router.push('/login');
+    return null;
+  }
 
   const formatDate = (dateStr: string): string => {
     const date = new Date(dateStr);
@@ -132,6 +112,25 @@ export default function TimeCardPage() {
     );
   }
 
+  if (error) {
+    return (
+      <PageLayout>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <div className="text-destructive text-lg mb-4">⚠️</div>
+            <p className="text-destructive">{error}</p>
+            <button
+              onClick={() => window?.location.reload()}
+              className="mt-4 px-4 py-2 bg-company-primary text-white rounded-lg hover:bg-company-primary/90"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </PageLayout>
+    );
+  }
+
   return (
     <PageLayout>
       <div className="max-w-7xl mx-auto space-y-6">
@@ -141,23 +140,23 @@ export default function TimeCardPage() {
             {/* Employee Info */}
             <div className="space-y-1">
               <h1 className="text-3xl font-bold text-foreground">
-                {timeCardData?.employeeName || 'Employee'}
+                {enrichedTimeCardData?.employeeName || 'Employee'}
               </h1>
               <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                 <span className="flex items-center gap-1">
                   <span className="w-2 h-2 bg-company-primary rounded-full"></span>
-                  ID: {timeCardData?.employeeId}
+                  ID: {enrichedTimeCardData?.employeeId}
                 </span>
-                {timeCardData?.position && (
+                {enrichedTimeCardData?.position && (
                   <span className="flex items-center gap-1">
                     <span className="w-2 h-2 bg-company-accent rounded-full"></span>
-                    {timeCardData.position}
+                    {enrichedTimeCardData.position}
                   </span>
                 )}
-                {timeCardData?.department && (
+                {enrichedTimeCardData?.department && (
                   <span className="flex items-center gap-1">
                     <span className="w-2 h-2 bg-company-secondary rounded-full"></span>
-                    {timeCardData.department}
+                    {enrichedTimeCardData.department}
                   </span>
                 )}
               </div>
@@ -184,13 +183,13 @@ export default function TimeCardPage() {
                 </div>
               </div>
               
-              {timeCardData?.payPeriodInfo && (
+              {enrichedTimeCardData?.payPeriodInfo && (
                 <div className="text-right space-y-1">
                   <div className="text-sm font-medium text-foreground">
-                    {formatDateRange(timeCardData.payPeriodInfo.begins, timeCardData.payPeriodInfo.ends)}
+                    {formatDateRange(enrichedTimeCardData.payPeriodInfo.begins, enrichedTimeCardData.payPeriodInfo.ends)}
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    {timeCardData.payClass}
+                    {enrichedTimeCardData.payClass}
                   </div>
                 </div>
               )}
@@ -199,52 +198,52 @@ export default function TimeCardPage() {
         </div>
 
         {/* Summary Cards */}
-        {timeCardData && (
+        {enrichedTimeCardData && (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
+            <div className="bg-gradient-to-br from-primary/10 to-primary/20 border border-primary/20 rounded-xl p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-blue-700 dark:text-blue-300">Regular Hours</p>
-                  <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">{timeCardData.regularHours}</p>
+                  <p className="text-sm font-medium text-primary">Regular Hours</p>
+                  <p className="text-2xl font-bold text-foreground">{enrichedTimeCardData.regularHours}</p>
                 </div>
-                <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
-                  <span className="text-white text-lg">🕒</span>
+                <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+                  <span className="text-primary-foreground text-lg">🕒</span>
                 </div>
               </div>
             </div>
             
-            <div className="bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-950 dark:to-amber-900 border border-amber-200 dark:border-amber-800 rounded-xl p-4">
+            <div className="bg-gradient-to-br from-company-accent/10 to-company-accent/20 border border-company-accent/20 rounded-xl p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-amber-700 dark:text-amber-300">Overtime Hours</p>
-                  <p className="text-2xl font-bold text-amber-900 dark:text-amber-100">{timeCardData.overtimeHours}</p>
+                  <p className="text-sm font-medium text-company-accent">Overtime Hours</p>
+                  <p className="text-2xl font-bold text-foreground">{enrichedTimeCardData.overtimeHours}</p>
                 </div>
-                <div className="w-10 h-10 bg-amber-500 rounded-lg flex items-center justify-center">
+                <div className="w-10 h-10 bg-company-accent rounded-lg flex items-center justify-center">
                   <span className="text-white text-lg">⚡</span>
                 </div>
               </div>
             </div>
             
-            <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900 border border-green-200 dark:border-green-800 rounded-xl p-4">
+            <div className="bg-gradient-to-br from-accent/10 to-accent/20 border border-accent/20 rounded-xl p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-green-700 dark:text-green-300">Total Hours</p>
-                  <p className="text-2xl font-bold text-green-900 dark:text-green-100">{timeCardData.totalHours}</p>
+                  <p className="text-sm font-medium text-accent-foreground">Total Hours</p>
+                  <p className="text-2xl font-bold text-foreground">{enrichedTimeCardData.totalHours}</p>
                 </div>
-                <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
-                  <span className="text-white text-lg">📊</span>
+                <div className="w-10 h-10 bg-accent rounded-lg flex items-center justify-center">
+                  <span className="text-accent-foreground text-lg">📊</span>
                 </div>
               </div>
             </div>
             
-            <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950 dark:to-purple-900 border border-purple-200 dark:border-purple-800 rounded-xl p-4">
+            <div className="bg-gradient-to-br from-secondary/10 to-secondary/20 border border-secondary/20 rounded-xl p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-purple-700 dark:text-purple-300">Work Days</p>
-                  <p className="text-2xl font-bold text-purple-900 dark:text-purple-100">{timeCardData.entries.length}</p>
+                  <p className="text-sm font-medium text-secondary-foreground">Work Days</p>
+                  <p className="text-2xl font-bold text-foreground">{enrichedTimeCardData.entries.length}</p>
                 </div>
-                <div className="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
-                  <span className="text-white text-lg">📅</span>
+                <div className="w-10 h-10 bg-secondary rounded-lg flex items-center justify-center">
+                  <span className="text-secondary-foreground text-lg">📅</span>
                 </div>
               </div>
             </div>
@@ -252,17 +251,17 @@ export default function TimeCardPage() {
         )}
 
         {/* Time Entries Grid */}
-        {timeCardData && (
+        {enrichedTimeCardData && (
           <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
             <div className="bg-gradient-to-r from-company-primary to-company-secondary p-6">
               <h2 className="text-xl font-bold text-white">Daily Time Entries</h2>
               <p className="text-white/80 text-sm mt-1">
-                Detailed breakdown for {timeCardData.payPeriodInfo?.name}
+                Detailed breakdown for {enrichedTimeCardData.payPeriodInfo?.name}
               </p>
             </div>
             
             <div className="p-6">
-              {timeCardData.entries.length === 0 ? (
+              {enrichedTimeCardData.entries.length === 0 ? (
                 <div className="text-center py-12">
                   <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
                     <span className="text-2xl text-muted-foreground">📋</span>
@@ -272,7 +271,7 @@ export default function TimeCardPage() {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
-                  {timeCardData.entries.map((entry) => (
+                  {enrichedTimeCardData.entries.map((entry) => (
                     <div key={entry.id} className="border border-border rounded-lg p-4 hover:shadow-md transition-shadow">
                       {/* Date Header */}
                       <div className="flex items-center justify-between mb-3">
@@ -287,8 +286,8 @@ export default function TimeCardPage() {
                           </div>
                         </div>
                         <div className={`w-3 h-3 rounded-full ${
-                          entry.status === 'completed' ? 'bg-green-500' : 
-                          entry.status === 'in-progress' ? 'bg-company-primary' : 'bg-orange-500'
+                          entry.status === 'completed' ? 'bg-accent' : 
+                          entry.status === 'in-progress' ? 'bg-company-primary' : 'bg-muted'
                         }`} />
                       </div>
                       
@@ -314,16 +313,16 @@ export default function TimeCardPage() {
                       
                       {/* Activity Indicators */}
                       <div className="flex items-center gap-2 mb-3">
-                        <div className="flex items-center gap-1 text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-2 py-1 rounded">
+                        <div className="flex items-center gap-1 text-xs bg-primary/10 text-primary px-2 py-1 rounded">
                           <span>🏢</span>
                           <span>{entry.workedShifts} shifts</span>
                         </div>
-                        <div className="flex items-center gap-1 text-xs bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 px-2 py-1 rounded">
+                        <div className="flex items-center gap-1 text-xs bg-accent/10 text-accent-foreground px-2 py-1 rounded">
                           <span>💰</span>
                           <span>{entry.payLines} pay</span>
                         </div>
                         {entry.adjustments > 0 && (
-                          <div className="flex items-center gap-1 text-xs bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300 px-2 py-1 rounded">
+                          <div className="flex items-center gap-1 text-xs bg-muted text-muted-foreground px-2 py-1 rounded">
                             <span>⚙️</span>
                             <span>{entry.adjustments} adj</span>
                           </div>

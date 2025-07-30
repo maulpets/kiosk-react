@@ -5,20 +5,26 @@ import {
   UseTimeCardResult
 } from '@/types';
 
-export function useTimeCard(payPeriod: 'current' | 'previous' = 'current'): UseTimeCardResult {
+export function useTimeCard(payPeriod: 'current' | 'previous' = 'current', employeeId?: string): UseTimeCardResult {
   const [data, setData] = useState<WeeklyTimeCardData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchData = useCallback(async () => {
+    if (!employeeId) {
+      setError('Employee ID is required');
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
     try {
-      console.log(`Fetching timecard data for ${payPeriod} pay period`);
+      console.log(`Fetching timecard data for employee ${employeeId}, ${payPeriod} pay period`);
       
       // Use API adapter for environment-aware API calls
-      const apiData = await apiGetTimeCard({ payPeriod });
+      const apiData = await apiGetTimeCard({ payPeriod, employeeId });
 
       if (!apiData.success) {
         throw new Error(apiData.message || 'API returned unsuccessful response');
@@ -40,7 +46,7 @@ export function useTimeCard(payPeriod: 'current' | 'previous' = 'current'): UseT
     } finally {
       setLoading(false);
     }
-  }, [payPeriod]);
+  }, [payPeriod, employeeId]);
 
   // Fetch data when payPeriod changes
   useEffect(() => {

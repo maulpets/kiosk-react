@@ -14,6 +14,7 @@ interface ApiResult<T> {
 // TimeCard API types
 interface TimeCardRequest {
   payPeriod: 'current' | 'previous';
+  employeeId?: string;
 }
 
 interface TimeCardApiData {
@@ -33,12 +34,21 @@ interface KioskEmployeeDataRequest {
 }
 
 /**
- * Get timecard data - uses local API route which handles mock data processing
+ * Get timecard data - calls backend server for timecard data
  */
-export async function apiGetTimeCard({ payPeriod }: TimeCardRequest): Promise<ApiResult<TimeCardApiData>> {
+export async function apiGetTimeCard({ payPeriod, employeeId }: TimeCardRequest): Promise<ApiResult<TimeCardApiData>> {
   try {
-    // Always use the local API route for consistent behavior
-    const response = await fetch(`${APP_CONFIG.API_BASE_URL}${API_ENDPOINTS.KIOSK_TIME_CARD}?payPeriod=${payPeriod}`, {
+    // Build query parameters
+    const searchParams = new URLSearchParams({
+      payPeriod
+    });
+    
+    if (employeeId) {
+      searchParams.append('employeeId', employeeId);
+    }
+    
+    // Call backend server API endpoint
+    const response = await fetch(`${APP_CONFIG.API_BASE_URL}/api/v1/time-card?${searchParams}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useReducer, useCallback, ReactNode } from 'react';
 import { User, CompanyData } from '@/types';
+import { KioskStartupResponse } from '@/types/kioskStartup';
 
 interface AppState {
   user: User | null;
@@ -11,6 +12,7 @@ interface AppState {
   language: string;
   isSetupComplete: boolean;
   companyData: CompanyData | null;
+  employeeData: KioskStartupResponse | null;
 }
 
 interface AppAction {
@@ -27,6 +29,7 @@ export const APP_ACTIONS = {
   SET_LANGUAGE: 'SET_LANGUAGE',
   SET_SETUP_COMPLETE: 'SET_SETUP_COMPLETE',
   SET_COMPANY_DATA: 'SET_COMPANY_DATA',
+  SET_EMPLOYEE_DATA: 'SET_EMPLOYEE_DATA',
   CLEAR_ERROR: 'CLEAR_ERROR',
   RESET_STATE: 'RESET_STATE',
 } as const;
@@ -40,6 +43,7 @@ const initialState: AppState = {
   language: 'en',
   isSetupComplete: false,
   companyData: null,
+  employeeData: null,
 };
 
 // Reducer
@@ -87,6 +91,12 @@ function appReducer(state: AppState, action: AppAction): AppState {
         companyData: action.payload as CompanyData | null,
       };
     
+    case APP_ACTIONS.SET_EMPLOYEE_DATA:
+      return {
+        ...state,
+        employeeData: action.payload as KioskStartupResponse | null,
+      };
+    
     case APP_ACTIONS.CLEAR_ERROR:
       return {
         ...state,
@@ -113,6 +123,7 @@ interface AppContextType {
   setLanguage: (language: string) => void;
   setSetupComplete: (complete: boolean) => void;
   setCompanyData: (companyData: CompanyData | null) => void;
+  setEmployeeData: (employeeData: KioskStartupResponse | null) => void;
   clearError: () => void;
   resetState: () => void;
 }
@@ -156,6 +167,10 @@ export function AppProvider({ children }: AppProviderProps) {
     dispatch({ type: APP_ACTIONS.SET_COMPANY_DATA, payload: companyData });
   }, []);
 
+  const setEmployeeData = useCallback((employeeData: KioskStartupResponse | null) => {
+    dispatch({ type: APP_ACTIONS.SET_EMPLOYEE_DATA, payload: employeeData });
+  }, []);
+
   const clearError = useCallback(() => {
     dispatch({ type: APP_ACTIONS.CLEAR_ERROR });
   }, []);
@@ -174,6 +189,7 @@ export function AppProvider({ children }: AppProviderProps) {
     setLanguage,
     setSetupComplete,
     setCompanyData,
+    setEmployeeData,
     clearError,
     resetState,
   };
