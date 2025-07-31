@@ -13,7 +13,7 @@ interface ApiResult<T> {
 
 // TimeCard API types
 interface TimeCardRequest {
-  payPeriod: 'current' | 'previous';
+  payPeriod: 'current' | 'previous' | 'next';
   employeeId?: string;
 }
 
@@ -60,22 +60,26 @@ export async function apiGetTimeCard({ payPeriod, employeeId }: TimeCardRequest)
     }
 
     const data = await response.json();
-    return {
-      success: true,
-      data
-    };
+    console.log('Timecard data fetched successfully:', data);
+    return data;
   } catch (error) {
-    console.log('API call failed:', error);
-    const mockData = await fetch(`./mock-data/employee-timecard.json`)
-    if (mockData.ok) {
-      const mockDataJson = await mockData.json();
-      console.log('Using mock data for employee timecard:', mockDataJson);
-      return {
-        success: true,
-        data: mockDataJson as TimeCardApiData,
-        message: 'Using mock data'
-      };
+    console.log('API call failed, using mock data:', error);
+    try {
+      const mockData = await fetch(`./mock-data/employee-timecard.json`);
+      if (mockData.ok) {
+        const mockDataJson = await mockData.json();
+        console.log('Using mock data for employee timecard:', mockDataJson);
+        // Return mock data in the correct ApiResult format
+        return {
+          success: true,
+          data: mockDataJson,
+          message: 'Using mock data'
+        };
+      }
+    } catch (mockError) {
+      console.error('Failed to load mock data:', mockError);
     }
+    
     return {
       success: false,
       data: {} as TimeCardApiData,

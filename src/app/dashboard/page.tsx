@@ -445,29 +445,27 @@ export default function Dashboard() {
     });
 
     // Sort operations in the desired order: punch-in (0), punch-out (1), transfer (2), then others
-    return transformed.sort((a, b) => {
-      const orderMap: { [key: number]: number } = {
-        0: 0,  // Punch In
-        1: 1,  // Punch Out  
-        2: 2,  // Transfer
+    const sorted = transformed.sort((a, b) => {
+      // Define explicit ordering priorities
+      const getOrderPriority = (operation: number | undefined): number => {
+        switch (operation) {
+          case 0: return 0;  // Punch In - highest priority
+          case 1: return 1;  // Punch Out - second priority
+          case 2: return 2;  // Transfer - third priority
+          default: return 999 + (operation || 0);  // All others ordered by operation number after main operations
+        }
       };
       
-      const aOrder = orderMap[a.originalOperation || 999] !== undefined ? orderMap[a.originalOperation || 999] : 999;
-      const bOrder = orderMap[b.originalOperation || 999] !== undefined ? orderMap[b.originalOperation || 999] : 999;
+      const aPriority = getOrderPriority(a.originalOperation);
+      const bPriority = getOrderPriority(b.originalOperation);
       
-      if (aOrder !== bOrder) {
-        return aOrder - bOrder;
-      }
-      
-      // For operations not in the order map, sort by original operation number
-      return (a.originalOperation || 0) - (b.originalOperation || 0);
+      return aPriority - bPriority;
     }).map(op => {
-      // Remove the temporary originalOperation property for return
-      const { originalOperation, ...cleanOp } = op;
-      // We keep the originalOperation in memory for routing decisions
-      (cleanOp as ExtendedOperation).originalOperation = originalOperation;
-      return cleanOp as ExtendedOperation;
+      // Keep the originalOperation for routing decisions
+      return op;
     });
+    
+    return sorted;
   };
 
   const { operations, actionItems, timeCard, employee } = kioskData ? {
@@ -475,7 +473,7 @@ export default function Dashboard() {
       const typedKioskData = kioskData as KioskStartupResponse;
       const baseOperations = transformApiOperations(typedKioskData.context?.operations || []);
       
-      // Add time card operation if profileInfo.sheetId === 0 - insert after transfer operation
+      // Add time card operation if profileInfo.sheetId === 0
       const profileInfo = typedKioskData.profileInfo as { sheetId?: number } | undefined;
       if (profileInfo?.sheetId === 0) {
         const timeCardOperation: ExtendedOperation = {
@@ -485,22 +483,30 @@ export default function Dashboard() {
           icon: '📋',
           enabled: true,
           route: '/timecard',
-          nativeAction: 'VIEW_TIMECARD'
+          nativeAction: 'VIEW_TIMECARD',
+          originalOperation: 2.5 // Place between transfer (2) and other operations
         };
         
-        // Find the transfer operation and insert time card right after it
-        const transferIndex = baseOperations.findIndex(op => 
-          op.id === '{5324678A-4261-40EE-BB3D-1026297ECB37}' || 
-          op.name.toLowerCase().includes('transfer')
-        );
+        baseOperations.push(timeCardOperation);
         
-        if (transferIndex !== -1) {
-          // Insert time card operation right after transfer
-          baseOperations.splice(transferIndex + 1, 0, timeCardOperation);
-        } else {
-          // If no transfer operation found, add time card at the end
-          baseOperations.push(timeCardOperation);
-        }
+        // Re-sort to maintain proper order after adding timecard
+        baseOperations.sort((a, b) => {
+          // Define explicit ordering priorities
+          const getOrderPriority = (operation: number | undefined): number => {
+            switch (operation) {
+              case 0: return 0;      // Punch In - highest priority
+              case 1: return 1;      // Punch Out - second priority
+              case 2: return 2;      // Transfer - third priority
+              case 2.5: return 3;    // Time Card - fourth priority
+              default: return 999 + (operation || 0);  // All others ordered by operation number
+            }
+          };
+          
+          const aPriority = getOrderPriority((a as ExtendedOperation).originalOperation);
+          const bPriority = getOrderPriority((b as ExtendedOperation).originalOperation);
+          
+          return aPriority - bPriority;
+        });
       }
       
       return baseOperations;
@@ -554,7 +560,7 @@ export default function Dashboard() {
                     const fullWidthOperations: DashboardOperation[] = [];
                     const halfWidthOperations: DashboardOperation[] = [];
                     
-                    // Separate operations by type
+                    // Separate operations by type while preserving order
                     enabledOperations.forEach(operation => {
                       const operationType = operation.name.toLowerCase().includes('punch') || operation.name.toLowerCase().includes('clock') ? 'punch' :
                                           operation.name.toLowerCase().includes('transfer') ? 'transfer' : 
@@ -565,6 +571,22 @@ export default function Dashboard() {
                       } else {
                         halfWidthOperations.push(operation);
                       }
+                    });
+                    
+                    // Ensure full width operations are properly sorted
+                    fullWidthOperations.sort((a, b) => {
+                      const getOrderPriority = (operation: DashboardOperation): number => {
+                        const extOp = operation as ExtendedOperation;
+                        switch (extOp.originalOperation) {
+                          case 0: return 0;      // Punch In
+                          case 1: return 1;      // Punch Out
+                          case 2: return 2;      // Transfer
+                          case 2.5: return 3;    // Time Card
+                          default: return 999 + (extOp.originalOperation || 0);
+                        }
+                      };
+                      
+                      return getOrderPriority(a) - getOrderPriority(b);
                     });
                     
                     return (

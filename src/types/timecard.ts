@@ -29,6 +29,12 @@ export interface TimeEntry {
   payLines: number;
   adjustments: number;
   transactions?: TimeCardTransaction[];
+  ptoHours?: number;
+  overtimeHours?: number;
+  ptoType?: string;
+  scheduledStart?: string;
+  scheduledEnd?: string;
+  scheduledHours?: number;
 }
 
 // Weekly Time Card Data
@@ -46,6 +52,12 @@ export interface WeeklyTimeCardData {
   department?: string;
   position?: string;
   payPeriodInfo?: PayPeriodInfo;
+  rawPayPeriods?: {
+    previous?: { begins?: string; ends?: string };
+    current?: { begins?: string; ends?: string };
+    next?: { begins?: string; ends?: string };
+    this?: { begins?: string; ends?: string };
+  };
 }
 
 // API Response Types
