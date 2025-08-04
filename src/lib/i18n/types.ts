@@ -119,6 +119,54 @@ export interface TranslationKeys {
     actionRequired: string;
   };
 
+  // Action Required
+  actionRequired: {
+    title: string;
+    subtitle: string;
+    subtitleSingle: string;
+    subtitleMultiple: string;
+    due: string;
+    viewAll: string;
+    backToDashboard: string;
+    noActionsTitle: string;
+    noActionsMessage: string;
+    errorLoading: string;
+    unknownError: string;
+    itemTypes: {
+      timeCardApproval: string;
+      missingPunch: string;
+      attestation: string;
+      default: string;
+    };
+    event: string;
+    id: string;
+    alertTitle: string;
+    alertInstructions: string;
+    item: string;
+    items: string;
+    // Attest form specific keys
+    timeCardApproval: string;
+    missingPunchAttest: string;
+    yesNoAttest: string;
+    attest: string;
+    timeCardApprovalDesc: string;
+    viewTimecard: string;
+    selectDate: string;
+    selectTime: string;
+    dateRange: string;
+    yesNoDesc: string;
+    yes: string;
+    no: string;
+    cancel: string;
+    submit: string;
+    submitting: string;
+    submitSuccess: string;
+    submitError: string;
+    missingPunchError: string;
+    yesNoError: string;
+    unknownAttestType: string;
+  };
+
   // Transfer
   transfer: {
     title: string;

@@ -269,13 +269,15 @@ export interface KioskStartupResponse {
   };
   personalInfo: PersonalInfo;
   profileInfo: ProfileInfo;
+  holidays: unknown[];
   company: unknown;
   time: unknown;
-  workGroups: WorkGroups;
   application: unknown;
+  messaging: unknown;
   operator: unknown;
   schStyles: unknown[];
   context: Context;
+  openItems: OpenItem[];
 }
 
 // Transfer Operation Types (for TransferFlow component)
@@ -434,4 +436,160 @@ export interface KioskStartupRequest {
 
 export interface KioskEmployeeDataRequest {
   employeeId: string;
+}
+
+// Open Items Types
+export interface OpenItemLeft {
+  leftis: string;
+  dom: number;
+  dow: string;
+  mon: string;
+}
+
+export interface OpenItemStyling {
+  sta: string;
+  stb: string;
+  cls: string;
+}
+
+export interface ResponseRequestEvent {
+  filekey: number;
+  caption: string;
+  eventDate: string;
+  minDate: string;
+  maxDate: string;
+  hint: string;
+  guid: string;
+  selfUniqueId: number;
+}
+
+export interface ResponseRequest {
+  descr: string;
+  caption: string;
+  guid: string;
+  icon: string;
+  instructions: string;
+  completionMsg: string;
+  incompleteMsg: string;
+  recipient: number;
+  recipientDescr: string;
+  supvsrOperation: number;
+  supvsrOperationDescr: string;
+  emplOperation: number;
+  emplOperationDescr: string;
+  urgency: number;
+  recipientList: number;
+  validateTriggerClosure: boolean;
+  killOnSupEdit: boolean;
+  killSupEditType: number;
+  killSupEditApproval: number;
+  closedClearsTrigger: boolean;
+  attestOp: number;
+}
+
+export interface SheetColumn {
+  name: string;
+  datatype: string;
+  usage: string;
+  width: number;
+  align: string;
+  fieldNameString: string;
+  fieldNameNative: string;
+}
+
+export interface SheetSchema {
+  columnCount: number;
+  columns: SheetColumn[];
+}
+
+export interface SheetRendering {
+  landscape: boolean;
+  newGroupNewPage: boolean;
+  headerHeight: number;
+  paperSizeId: number;
+}
+
+export interface SheetPeriod {
+  from: string;
+  to: string;
+}
+
+export interface SheetRow {
+  isEmpty: boolean;
+  s0: string;
+  n0: string;
+  s1: string;
+  n1: string;
+  s2: string;
+  n2: string;
+  s3: string;
+  n3: string;
+  s4: string;
+  n4: string;
+  s5: string;
+  n5: number;
+  s6: string;
+  n6: string;
+  s7: string;
+  n7: string;
+}
+
+export interface SheetField {
+  text: string;
+  dataIndex: string;
+  width: number;
+  renderer: string | null;
+}
+
+export interface OpenItemSheet {
+  caption: string;
+  name: string | null;
+  rendering: SheetRendering;
+  created: string;
+  period: SheetPeriod;
+  itemData: string;
+  schema: SheetSchema;
+  rowCount: number;
+  rows: SheetRow[];
+  fields: SheetField[];
+}
+
+export interface OpenItem {
+  itemtype: number;
+  itemtypeName: string;
+  entityType: number;
+  entityId: number;
+  altEntityType: number;
+  altEntityId: number;
+  disabled: boolean;
+  objis: number;
+  itemdata: number;
+  itemdatastr: string;
+  pkgid: string;
+  date: string;
+  effDate: string;
+  left: OpenItemLeft;
+  styling: OpenItemStyling;
+  stg: string;
+  dismissable: number;
+  dtitle: string;
+  dmsg: string;
+  dicon: string;
+  disclosure: string;
+  responseRequestEvent: ResponseRequestEvent;
+  responseRequest: ResponseRequest;
+  sheets?: OpenItemSheet[];
+  isDivider: boolean;
+  operations: unknown[];
+  operations_states: unknown[];
+  showDate: boolean;
+  offerStateId: number;
+  dateFormated: number;
+  isNewPost: boolean;
+  dom: number;
+  dateValue: number;
+  eventFilterType: string;
+  icon: string;
+  xtype?: 'cal-time-attest-item' | 'cal-punch-attest-item' | 'cal-yes-no-attest-item'; // Optional since we don't use it
+  filterType: string;
 }
