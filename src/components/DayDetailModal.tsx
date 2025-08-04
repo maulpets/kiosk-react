@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useI18n } from '@/hooks/useI18n';
 import { DayDetailData, WeeklyTimeCardData } from '@/types';
+import { getLocaleString } from '@/lib/i18n';
 
 interface DayDetailModalProps {
   isOpen: boolean;
@@ -19,7 +20,8 @@ export default function DayDetailModal({
   timeCardData,
   onNavigateDate 
 }: DayDetailModalProps) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
+  const localeString = getLocaleString(locale);
   const [activeTab, setActiveTab] = useState<'overview' | 'notes' | 'payLines' | 'incidents'>('overview');
 
   // Debug logging
@@ -32,7 +34,7 @@ export default function DayDetailModal({
   if (!isOpen || !selectedDayData) return null;
 
   const date = new Date(selectedDayData.date || new Date());
-  const formattedDate = date.toLocaleDateString('en-US', { 
+  const formattedDate = date.toLocaleDateString(localeString, { 
     weekday: 'long', 
     year: 'numeric', 
     month: 'long', 

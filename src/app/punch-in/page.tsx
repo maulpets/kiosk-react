@@ -8,6 +8,7 @@ import { useKioskEmployeeData } from '@/hooks/useKioskEmployeeData';
 import { useI18n } from '@/hooks/useI18n';
 import { SubOperation, Employee } from '@/types/kiosk';
 import { KioskStartupResponse, TransferOperation } from '@/types';
+import { getLocaleString } from '@/lib/i18n';
 import EmployeeMenu from '@/components/EmployeeMenu';
 import TransferFlow from '@/components/TransferFlow';
 
@@ -33,14 +34,15 @@ interface PunchInConfirmationProps {
 }
 
 function PunchInConfirmation({ subOperation, employee, selectedCallback, transferSelections, onConfirm, onCancel }: PunchInConfirmationProps) {
-  const { t } = useI18n();
-  const currentTime = new Date().toLocaleTimeString('en-US', {
+  const { t, locale } = useI18n();
+  const localeString = getLocaleString(locale);
+  const currentTime = new Date().toLocaleTimeString(localeString, {
     hour: '2-digit',
     minute: '2-digit',
     hour12: true
   });
 
-  const currentDate = new Date().toLocaleDateString('en-US', {
+  const currentDate = new Date().toLocaleDateString(localeString, {
     weekday: 'long',
     year: 'numeric',
     month: 'long',

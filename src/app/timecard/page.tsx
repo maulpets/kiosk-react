@@ -1,18 +1,20 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import EmployeeMenu from '@/components/EmployeeMenu';
 import DayDetailModal from '@/components/DayDetailModal';
 import { useI18n } from '@/hooks/useI18n';
 import { useTimeCard } from '@/hooks/useTimeCard';
 import { useAppContext } from '@/store/AppContext';
+import { getLocaleString } from '@/lib/i18n';
 import { WeeklyTimeCardData, PayPeriodInfo, TimeEntry, DayDetailData } from '@/types';
 
 export default function TimeCardPage() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const { state } = useAppContext();
   const router = useRouter();
+  const localeString = getLocaleString(locale);
   const [selectedPayPeriod, setSelectedPayPeriod] = useState<'previous' | 'current' | 'next'>('current');
   const [selectedDayData, setSelectedDayData] = useState<DayDetailData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -31,6 +33,18 @@ export default function TimeCardPage() {
   // Get timecard data using the hook
   const { data: timeCardData, loading, error } = useTimeCard(selectedPayPeriod, employeeId);
   console.log('TimeCardPage hook results:', { timeCardData, loading, error });
+
+  // Helper function to create local date from YYYY-MM-DD string to avoid timezone issues
+  const createLocalDate = (dateString: string): Date => {
+    const parts = dateString.split('-');
+    return new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+  };
+
+  const formatDateRange = useCallback((startStr: string, endStr: string): string => {
+    const start = createLocalDate(startStr);
+    const end = createLocalDate(endStr);
+    return `${start.toLocaleDateString(localeString, { month: 'short', day: 'numeric' })} - ${end.toLocaleDateString(localeString, { month: 'short', day: 'numeric', year: 'numeric' })}`;
+  }, [localeString]);
 
   // Extract pay periods from timecard data instead of employee data
   const payPeriods: PayPeriodInfo[] = useMemo(() => {
@@ -71,7 +85,6 @@ export default function TimeCardPage() {
     const enrichedTimeCardData: WeeklyTimeCardData | null = useMemo(() => {
     return timeCardData;
   }, [timeCardData]);
-
   // Calculate detailed summaries from period summaries data
   const payPeriodSummary = useMemo(() => {
     if (!enrichedTimeCardData?.periodSummaries?.byPayDes) {
@@ -142,22 +155,25 @@ export default function TimeCardPage() {
     };
   }, [enrichedTimeCardData]);
 
+  // Get the current selected pay period info for header display
+  const selectedPayPeriodInfo = useMemo(() => {
+    const selectedPeriod = payPeriods.find(p => p.id === selectedPayPeriod);
+    if (selectedPeriod && selectedPeriod.begins && selectedPeriod.ends) {
+      return {
+        name: selectedPeriod.name,
+        dateRange: formatDateRange(selectedPeriod.begins, selectedPeriod.ends)
+      };
+    }
+    return {
+      name: t('timecard.payPeriod'),
+      dateRange: 'Loading dates...'
+    };
+  }, [payPeriods, selectedPayPeriod, t, formatDateRange]);
+
   // Show loading or return early if no user
   if (!state.user) {
     return null;
   }
-
-  // Helper function to create local date from YYYY-MM-DD string to avoid timezone issues
-  const createLocalDate = (dateString: string): Date => {
-    const parts = dateString.split('-');
-    return new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-  };
-
-  const formatDateRange = (startStr: string, endStr: string): string => {
-    const start = createLocalDate(startStr);
-    const end = createLocalDate(endStr);
-    return `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
-  };
 
   // Generate calendar grid for the pay period
   const generateCalendarGrid = (): (Date | null)[][] => {
@@ -470,19 +486,6 @@ export default function TimeCardPage() {
                     </button>
                   ))}
                 </div>
-                
-                {/* Period dates display */}
-                <div className="text-right">
-                  {enrichedTimeCardData?.payPeriodInfo ? (
-                    <div className="text-sm font-medium text-foreground">
-                      {formatDateRange(enrichedTimeCardData.payPeriodInfo.begins, enrichedTimeCardData.payPeriodInfo.ends)}
-                    </div>
-                  ) : (
-                    <div className="text-sm text-muted-foreground">
-                      Loading dates...
-                    </div>
-                  )}
-                </div>
               </div>
             </div>
           </div>
@@ -494,7 +497,7 @@ export default function TimeCardPage() {
                 <div>
                   <h2 className="text-lg font-bold text-white mb-1">{t('timecard.timeCardSummary')}</h2>
                   <p className="text-white/80 text-sm">
-                    {enrichedTimeCardData?.payPeriodInfo?.name || t('timecard.payPeriod')}
+                    {selectedPayPeriodInfo.dateRange}
                   </p>
                 </div>
                 
