@@ -4,41 +4,31 @@
  */
 
 import { API_ENDPOINTS, APP_CONFIG } from '@/constants';
-
-interface ApiResult<T> {
-  success: boolean;
-  data: T;
-  message?: string;
-}
-
-// TimeCard API types
-interface TimeCardRequest {
-  payPeriod: 'current' | 'previous';
-}
-
-interface TimeCardApiData {
-  weekStart: string;
-  weekEnd: string;
-  employeeId: string;
-  employeeName: string;
-  payPeriod: string;
-  payClass: string;
-  department: string;
-  position: string;
-}
-
-// Kiosk Employee Data API types
-interface KioskEmployeeDataRequest {
-  employeeId: string;
-}
+import { 
+  KioskStartupResponse,
+  KioskEmployeeDataRequest,
+  TimeCardRequest,
+  WeeklyTimeCardData,
+  CompanySetupResponse,
+  ApiResult
+} from '@/types';
 
 /**
- * Get timecard data - uses local API route which handles mock data processing
+ * Get timecard data - calls backend server for timecard data
  */
-export async function apiGetTimeCard({ payPeriod }: TimeCardRequest): Promise<ApiResult<TimeCardApiData>> {
+export async function apiGetTimeCard({ payPeriod, employeeId }: TimeCardRequest): Promise<ApiResult<WeeklyTimeCardData>> {
   try {
-    // Always use the local API route for consistent behavior
-    const response = await fetch(`${APP_CONFIG.API_BASE_URL}${API_ENDPOINTS.KIOSK_TIME_CARD}?payPeriod=${payPeriod}`, {
+    // Build query parameters
+    const searchParams = new URLSearchParams({
+      payPeriod
+    });
+    
+    if (employeeId) {
+      searchParams.append('employeeId', employeeId);
+    }
+    
+    // Call backend server API endpoint
+    const response = await fetch(`${APP_CONFIG.API_BASE_URL}/api/v1/time-card?${searchParams}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -50,44 +40,38 @@ export async function apiGetTimeCard({ payPeriod }: TimeCardRequest): Promise<Ap
     }
 
     const data = await response.json();
-    return {
-      success: true,
-      data
-    };
+    console.log('Timecard data fetched successfully:', data);
+    return data;
   } catch (error) {
-    console.log('API call failed:', error);
-    const mockData = await fetch(`./mock-data/employee-timecard.json`)
-    if (mockData.ok) {
-      const mockDataJson = await mockData.json();
-      console.log('Using mock data for employee timecard:', mockDataJson);
-      return {
-        success: true,
-        data: mockDataJson as TimeCardApiData,
-        message: 'Using mock data'
-      };
+    console.log('API call failed, using mock data:', error);
+    try {
+      const mockData = await fetch(`./mock-data/employee-timecard.json`);
+      if (mockData.ok) {
+        const mockDataJson = await mockData.json();
+        console.log('Using mock data for employee timecard:', mockDataJson);
+        // Return mock data in the correct ApiResult format
+        return {
+          success: true,
+          data: mockDataJson,
+          message: 'Using mock data'
+        };
+      }
+    } catch (mockError) {
+      console.error('Failed to load mock data:', mockError);
     }
+    
     return {
       success: false,
-      data: {} as TimeCardApiData,
+      data: {} as WeeklyTimeCardData,
       message: error instanceof Error ? error.message : 'Unknown error occurred'
     };
   }
 }
 
-// Kiosk Employee Data API response type
-interface KioskEmployeeDataApiData {
-  [key: string]: unknown;
-}
-
-// Company Setup API types  
-interface CompanySetupApiData {
-  [key: string]: unknown;
-}
-
 /**
  * Get kiosk employee data - uses local API route which handles mock data processing
  */
-export async function apiGetKioskEmployeeData({ employeeId }: KioskEmployeeDataRequest): Promise<ApiResult<KioskEmployeeDataApiData>> {
+export async function apiGetKioskEmployeeData({ employeeId }: KioskEmployeeDataRequest): Promise<ApiResult<KioskStartupResponse>> {
   try {
     // Always use the local API route for consistent behavior
     const response = await fetch(`${APP_CONFIG.API_BASE_URL}${API_ENDPOINTS.KIOSK_EMPLOYEE_DATA}?employeeId=${encodeURIComponent(employeeId)}`, {
@@ -112,13 +96,13 @@ export async function apiGetKioskEmployeeData({ employeeId }: KioskEmployeeDataR
       console.log('Using mock data for employee data:', mockDataJson);
       return {
         success: true,
-        data: mockDataJson as KioskEmployeeDataApiData,
+        data: mockDataJson as KioskStartupResponse,
         message: 'Using mock data'
       };
     }
     return {
       success: false,
-      data: {} as KioskEmployeeDataApiData,
+      data: {} as KioskStartupResponse,
       message: error instanceof Error ? error.message : 'Unknown error occurred'
     };
   }
@@ -127,7 +111,7 @@ export async function apiGetKioskEmployeeData({ employeeId }: KioskEmployeeDataR
 /**
  * Get company setup data - tries API first, falls back to structured response for mock data processing
  */
-export async function apiGetCompanySetup({ companyName }: { companyName: string }): Promise<ApiResult<CompanySetupApiData>> {
+export async function apiGetCompanySetup({ companyName }: { companyName: string }): Promise<ApiResult<CompanySetupResponse>> {
   try {
     console.log('apiGetCompanySetup called with companyName:', companyName);
     console.log('Making request to:', `${APP_CONFIG.API_BASE_URL}${API_ENDPOINTS.KIOSK_COMPANY_SETUP}`);
@@ -166,13 +150,13 @@ export async function apiGetCompanySetup({ companyName }: { companyName: string 
       console.log('Using mock data for company setup:', mockDataJson);
       return {
         success: true,
-        data: { company: mockDataJson as CompanySetupApiData },
+        data: { company: mockDataJson } as CompanySetupResponse,
         message: 'Using mock data'
       };
     }
     return {
       success: false,
-      data: {} as CompanySetupApiData,
+      data: {} as CompanySetupResponse,
       message: error instanceof Error ? error.message : 'Unknown error occurred'
     };
   }

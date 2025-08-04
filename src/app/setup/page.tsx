@@ -148,7 +148,7 @@ export default function Setup() {
           <div className="mt-6 pt-6 border-t border-border">
             <div className="flex items-center justify-center space-x-2 text-sm">
               <div className={`w-2 h-2 rounded-full ${
-                isConnected ? 'bg-green-500' : 'bg-muted'
+                isConnected ? 'bg-accent' : 'bg-muted'
               }`} />
               <span className="text-muted-foreground">
                 {isConnected ? t('setup.connectionStatus.connected') : t('setup.connectionStatus.standalone')}

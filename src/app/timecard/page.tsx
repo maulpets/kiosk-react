@@ -1,180 +1,468 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { PageLayout } from '@/components/layout/PageLayout';
+import EmployeeMenu from '@/components/EmployeeMenu';
+import DayDetailModal from '@/components/DayDetailModal';
 import { useI18n } from '@/hooks/useI18n';
-import { WeeklyTimeCardData, PayPeriodInfo } from '@/types/timecard';
+import { useTimeCard } from '@/hooks/useTimeCard';
+import { useAppContext } from '@/store/AppContext';
+import { WeeklyTimeCardData, PayPeriodInfo, TimeEntry, DayDetailData } from '@/types';
 
 export default function TimeCardPage() {
   const { t } = useI18n();
+  const { state } = useAppContext();
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
-  const [timeCardData, setTimeCardData] = useState<WeeklyTimeCardData | null>(null);
-  const [selectedPayPeriod, setSelectedPayPeriod] = useState<'current' | 'previous'>('current');
+  const [selectedPayPeriod, setSelectedPayPeriod] = useState<'previous' | 'current' | 'next'>('current');
+  const [selectedDayData, setSelectedDayData] = useState<DayDetailData | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Memoize payPeriods to fix React hooks warning
-  const payPeriods: PayPeriodInfo[] = useMemo(() => [
-    {
-      id: 'current',
-      name: 'Current Pay Period',
-      begins: '2019-08-11',
-      ends: '2019-08-24',
-      isCurrent: true
-    },
-    {
-      id: 'previous', 
-      name: 'Previous Pay Period',
-      begins: '2019-07-28',
-      ends: '2019-08-10',
-      isCurrent: false
-    }
-  ], []);
+  // Get the logged-in user's employee ID
+  const employeeId = state.user?.id;
+  console.log('TimeCardPage employeeId:', employeeId, 'state.user:', state.user);
 
-  const fetchTimeCardData = useCallback(async () => {
-    try {
-      setLoading(true);
-      
-      // Call the API endpoint
-      const response = await fetch(`/api/time-card?payPeriod=${selectedPayPeriod}&employeeId=496`);
-      const result = await response.json();
-      
-      if (result.success && result.data) {
-        const selectedPeriod = payPeriods.find(p => p.id === selectedPayPeriod);
-        setTimeCardData({
-          ...result.data,
-          payPeriodInfo: selectedPeriod
-        });
-      } else {
-        console.error('API returned error:', result.message);
-        // Fallback to mock data if API fails
-        const selectedPeriod = payPeriods.find(p => p.id === selectedPayPeriod);
-        const mockData: WeeklyTimeCardData = {
-          weekStart: selectedPeriod?.begins || '2019-08-11',
-          weekEnd: selectedPeriod?.ends || '2019-08-24',
-          entries: [],
-          totalHours: 42.5,
-          regularHours: 40,
-          overtimeHours: 2.5,
-          employeeId: '496',
-          employeeName: 'Harry Howard',
-          payPeriod: selectedPeriod?.name || 'Current Pay Period',
-          payPeriodInfo: selectedPeriod
-        };
-        setTimeCardData(mockData);
-      }
-    } catch (error) {
-      console.error('Error fetching timecard data:', error);
-      // Fallback to mock data on error
-      const selectedPeriod = payPeriods.find(p => p.id === selectedPayPeriod);
-      const mockData: WeeklyTimeCardData = {
-        weekStart: selectedPeriod?.begins || '2019-08-11',
-        weekEnd: selectedPeriod?.ends || '2019-08-24',
-        entries: [],
-        totalHours: 42.5,
-        regularHours: 40,
-        overtimeHours: 2.5,
-        employeeId: '496',
-        employeeName: 'Harry Howard',
-        payPeriod: selectedPeriod?.name || 'Current Pay Period',
-        payPeriodInfo: selectedPeriod
-      };
-      setTimeCardData(mockData);
-    } finally {
-      setLoading(false);
-    }
-  }, [payPeriods, selectedPayPeriod]);
-
+  // Handle redirect to login if no user
   useEffect(() => {
-    fetchTimeCardData();
-  }, [fetchTimeCardData]);
+    if (!state.user) {
+      router.push('/login');
+    }
+  }, [state.user, router]);
 
-  const formatDate = (dateStr: string): string => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', { 
-      weekday: 'short', 
-      month: 'short', 
-      day: 'numeric' 
+  // Get timecard data using the hook
+  const { data: timeCardData, loading, error } = useTimeCard(selectedPayPeriod, employeeId);
+  console.log('TimeCardPage hook results:', { timeCardData, loading, error });
+
+  // Extract pay periods from timecard data instead of employee data
+  const payPeriods: PayPeriodInfo[] = useMemo(() => {
+    if (!timeCardData?.rawPayPeriods) {
+      console.log('No rawPayPeriods found in timeCardData:', timeCardData);
+      // Return empty array when no data available
+      return [];
+    }
+
+    const periods = timeCardData.rawPayPeriods;
+    console.log('Raw periods data:', periods);
+    return [
+      {
+        id: 'previous',
+        name: t('timecard.previous'),
+        begins: periods.previous?.begins?.split('T')[0] || '',
+        ends: periods.previous?.ends?.split('T')[0] || '',
+        isCurrent: false
+      },
+      {
+        id: 'current',
+        name: t('timecard.current'),
+        begins: periods.current?.begins?.split('T')[0] || '',
+        ends: periods.current?.ends?.split('T')[0] || '',
+        isCurrent: true
+      },
+      {
+        id: 'next',
+        name: t('timecard.next'),
+        begins: periods.next?.begins?.split('T')[0] || '',
+        ends: periods.next?.ends?.split('T')[0] || '',
+        isCurrent: false
+      }
+    ];
+  }, [timeCardData, t]);
+
+  // Add pay period info to timecard data
+    const enrichedTimeCardData: WeeklyTimeCardData | null = useMemo(() => {
+    return timeCardData;
+  }, [timeCardData]);
+
+  // Calculate detailed summaries from period summaries data
+  const payPeriodSummary = useMemo(() => {
+    if (!enrichedTimeCardData?.periodSummaries?.byPayDes) {
+      return {
+        totalHours: enrichedTimeCardData?.totalHours || 0,
+        regularHours: enrichedTimeCardData?.regularHours || 0,
+        overtimeHours: enrichedTimeCardData?.overtimeHours || 0,
+        holidayHours: 0,
+        ptoHours: 0,
+        weekendHours: 0,
+        daysWorked: enrichedTimeCardData?.entries?.length || 0,
+        payDesCategories: []
+      };
+    }
+
+    const summaries = enrichedTimeCardData.periodSummaries.byPayDes;
+    let totalHours = 0;
+    const payDesCategories: Array<{ name: string; hours: number; abb?: string }> = [];
+
+    // Create categories directly from the payDes data
+    summaries.forEach(summary => {
+      const hours = summary.hundHours || 0;
+      totalHours += hours;
+
+      if (hours > 0) { // Only include categories with hours
+        payDesCategories.push({
+          name: summary.payDes?.name || 'Unknown',
+          abb: summary.payDes?.abb,
+          hours: Math.round(hours * 100) / 100
+        });
+      }
     });
+
+    // Legacy categorization for backward compatibility (still calculate these for charts/widgets)
+    let regularHours = 0;
+    let overtimeHours = 0;
+    let holidayHours = 0;
+    let ptoHours = 0;
+    let weekendHours = 0;
+
+    summaries.forEach(summary => {
+      const hours = summary.hundHours || 0;
+      const payDesName = summary.payDes?.name?.toLowerCase() || '';
+      const payDesAbb = summary.payDes?.abb?.toLowerCase() || '';
+
+      if (payDesName.includes('regular') || payDesAbb.includes('rg')) {
+        regularHours += hours;
+      } else if (payDesName.includes('overtime') || payDesAbb.includes('ot') || summary.payDes?.multiplier && summary.payDes.multiplier > 1.0) {
+        overtimeHours += hours;
+      } else if (payDesName.includes('holiday') || payDesAbb.includes('hol')) {
+        holidayHours += hours;
+      } else if (payDesName.includes('pto') || payDesName.includes('vacation') || payDesName.includes('sick')) {
+        ptoHours += hours;
+      } else if (payDesName.includes('weekend') || payDesAbb.includes('wk')) {
+        weekendHours += hours;
+      }
+    });
+
+    return {
+      totalHours: Math.round(totalHours * 100) / 100,
+      regularHours: Math.round(regularHours * 100) / 100,
+      overtimeHours: Math.round(overtimeHours * 100) / 100,
+      holidayHours: Math.round(holidayHours * 100) / 100,
+      ptoHours: Math.round(ptoHours * 100) / 100,
+      weekendHours: Math.round(weekendHours * 100) / 100,
+      daysWorked: enrichedTimeCardData?.entries?.filter(entry => entry.totalHours && entry.totalHours > 0).length || 0,
+      payDesCategories
+    };
+  }, [enrichedTimeCardData]);
+
+  // Show loading or return early if no user
+  if (!state.user) {
+    return null;
+  }
+
+  // Helper function to create local date from YYYY-MM-DD string to avoid timezone issues
+  const createLocalDate = (dateString: string): Date => {
+    const parts = dateString.split('-');
+    return new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
   };
 
   const formatDateRange = (startStr: string, endStr: string): string => {
-    const start = new Date(startStr);
-    const end = new Date(endStr);
+    const start = createLocalDate(startStr);
+    const end = createLocalDate(endStr);
     return `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
   };
 
-  const getDayName = (dateStr: string): string => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', { weekday: 'long' });
+  // Generate calendar grid for the pay period
+  const generateCalendarGrid = (): (Date | null)[][] => {
+    if (!enrichedTimeCardData?.payPeriodInfo) return [];
+
+    const startDate = createLocalDate(enrichedTimeCardData.payPeriodInfo.begins);
+    const endDate = createLocalDate(enrichedTimeCardData.payPeriodInfo.ends);
+    
+    // Generate all dates in the pay period
+    const dates: Date[] = [];
+    const currentDate = new Date(startDate);
+    
+    while (currentDate <= endDate) {
+      dates.push(new Date(currentDate));
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    // Group dates by week (starting on Sunday)
+    const weeks: (Date | null)[][] = [];
+    let currentWeek: (Date | null)[] = [];
+    
+    dates.forEach(date => {
+      if (currentWeek.length === 0) {
+        // Fill in empty cells for start of first week
+        const dayOfWeek = date.getDay(); // 0 = Sunday
+        for (let i = 0; i < dayOfWeek; i++) {
+          currentWeek.push(null);
+        }
+      }
+      
+      currentWeek.push(date);
+      
+      if (currentWeek.length === 7 || date === dates[dates.length - 1]) {
+        // Fill in empty cells for end of last week
+        while (currentWeek.length < 7) {
+          currentWeek.push(null);
+        }
+        weeks.push(currentWeek);
+        currentWeek = [];
+      }
+    });
+
+    return weeks;
   };
 
-  const getDayNumber = (dateStr: string): string => {
-    const date = new Date(dateStr);
-    return date.getDate().toString();
+  const calendarWeeks = generateCalendarGrid();
+
+  // Helper to get entry for a specific date
+  const getEntryForDate = (date: Date) => {
+    if (!enrichedTimeCardData?.entries) return null;
+    const dateStr = date.toISOString().split('T')[0];
+    return enrichedTimeCardData.entries.find(entry => 
+      entry.date.split('T')[0] === dateStr
+    );
   };
 
-  const getMonthYear = (dateStr: string): string => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+  // Handle day cell click to open detailed view
+  const handleDayClick = (date: Date, dayData: TimeEntry | DayDetailData) => {
+    if (dayData) {
+      setSelectedDayData(dayData as DayDetailData);
+      setIsModalOpen(true);
+    }
+  };
+
+  // Handle navigation between dates in modal
+  const handleNavigateDate = (direction: 'prev' | 'next') => {
+    if (!enrichedTimeCardData?.entries || !selectedDayData) return;
+    
+    const currentDateStr = selectedDayData.date?.split('T')[0];
+    const currentIndex = enrichedTimeCardData.entries.findIndex(entry => 
+      entry.date.split('T')[0] === currentDateStr
+    );
+    
+    let newIndex = -1;
+    if (direction === 'prev' && currentIndex > 0) {
+      newIndex = currentIndex - 1;
+    } else if (direction === 'next' && currentIndex < enrichedTimeCardData.entries.length - 1) {
+      newIndex = currentIndex + 1;
+    }
+    
+    if (newIndex >= 0) {
+      const newEntry = enrichedTimeCardData.entries[newIndex];
+      setSelectedDayData(newEntry as unknown as DayDetailData);
+    }
+  };
+
+  // Function to determine cell style and render content
+  const renderCalendarCell = (date: Date, entry: TimeEntry | null) => {
+    const isToday = date.toDateString() === new Date().toDateString();
+    
+    // Style 1: Full work day with multiple transactions
+    if (entry && entry.transactions && entry.transactions.length > 2 && entry.status === 'completed') {
+      return (
+        <div 
+          className={`border-2 border-accent bg-accent/10 rounded-lg p-2 min-h-[120px] cursor-pointer hover:bg-accent/20 transition-colors ${isToday ? 'ring-2 ring-company-primary' : ''}`}
+          onClick={() => handleDayClick(date, entry)}
+        >
+          <div className="text-sm font-bold text-accent-foreground mb-1">{date.getDate()}</div>
+          <div className="space-y-1">
+            {entry.transactions.map((transaction, idx: number) => (
+              <div key={idx} className="text-xs flex justify-between">
+                <span className={transaction.type === 'punch' ? 'text-accent-foreground/90 font-medium' : 'text-primary'}>
+                  {transaction.time}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  {transaction.type === 'punch' ? '🕐' : '☕'}
+                </span>
+              </div>
+            ))}
+            <div className="text-xs font-bold text-accent-foreground border-t pt-1">
+              {entry.totalHours}h {entry.overtimeHours && entry.overtimeHours > 0 && <span className="text-destructive">+{entry.overtimeHours}OT</span>}
+            </div>
+          </div>
+        </div>
+      );
+    }
+    
+    // Style 2: Simple work day (few transactions)
+    if (entry && entry.transactions && entry.transactions.length <= 2 && entry.status === 'completed') {
+      return (
+        <div 
+          className={`border border-secondary bg-secondary/10 rounded p-2 min-h-[100px] cursor-pointer hover:bg-secondary/20 transition-colors ${isToday ? 'ring-2 ring-company-primary' : ''}`}
+          onClick={() => handleDayClick(date, entry)}
+        >
+          <div className="text-sm font-bold text-secondary-foreground mb-1">{date.getDate()}</div>
+          <div className="space-y-1">
+            <div className="text-xs text-secondary-foreground/80">
+              {entry.clockIn} - {entry.clockOut}
+            </div>
+            <div className="text-xs font-bold text-secondary-foreground">
+              {entry.totalHours}h
+            </div>
+            <div className="flex justify-center">
+              <div className="w-3 h-3 bg-secondary rounded-full"></div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    
+    // Style 3: Work in progress (clocked in, not out)
+    if (entry && entry.status === 'in-progress') {
+      return (
+        <div 
+          className={`border-2 border-primary bg-primary/10 rounded p-2 min-h-[100px] animate-pulse cursor-pointer hover:bg-primary/20 transition-colors ${isToday ? 'ring-2 ring-company-primary' : ''}`}
+          onClick={() => handleDayClick(date, entry)}
+        >
+          <div className="text-sm font-bold text-primary-foreground mb-1">{date.getDate()}</div>
+          <div className="space-y-1">
+            <div className="text-xs text-primary-foreground/90 font-medium">
+              🔴 {t('timecard.active')}: {entry.clockIn}
+            </div>
+            {entry.transactions && entry.transactions.map((transaction, idx: number) => (
+              <div key={idx} className="text-xs text-primary-foreground/80">
+                {transaction.time} - {transaction.notes}
+              </div>
+            ))}
+            <div className="text-xs text-primary-foreground font-bold">
+              {t('timecard.currentlyWorking')}
+            </div>
+          </div>
+        </div>
+      );
+    }
+    
+    // Style 4: PTO/Vacation day
+    if (entry && entry.ptoHours && entry.ptoHours > 0) {
+      return (
+        <div 
+          className={`border-2 border-accent bg-accent/10 rounded p-2 min-h-[100px] cursor-pointer hover:bg-accent/20 transition-colors ${isToday ? 'ring-2 ring-company-primary' : ''}`}
+          onClick={() => handleDayClick(date, entry)}
+        >
+          <div className="text-sm font-bold text-accent-foreground mb-1">{date.getDate()}</div>
+          <div className="space-y-1">
+            <div className="text-center">
+              <span className="text-2xl">🏖️</span>
+            </div>
+            <div className="text-xs text-accent-foreground/80 font-medium text-center">
+              {entry.ptoType || t('timecard.ptoHours')}
+            </div>
+            <div className="text-xs font-bold text-accent-foreground text-center">
+              {entry.ptoHours}h
+            </div>
+          </div>
+        </div>
+      );
+    }
+    
+    // Style 5: Scheduled day (no work yet)
+    if (entry && entry.scheduledStart && !entry.clockIn) {
+      return (
+        <div 
+          className={`border border-muted bg-muted/50 rounded p-2 min-h-[100px] cursor-pointer hover:bg-muted transition-colors ${isToday ? 'ring-2 ring-company-primary' : ''}`}
+          onClick={() => handleDayClick(date, entry)}
+        >
+          <div className="text-sm font-bold text-muted-foreground mb-1">{date.getDate()}</div>
+          <div className="space-y-1">
+            <div className="text-center">
+              <span className="text-lg">📅</span>
+            </div>
+            <div className="text-xs text-muted-foreground text-center">
+              {t('timecard.scheduled')}
+            </div>
+            <div className="text-xs text-muted-foreground text-center">
+              {entry.scheduledStart} - {entry.scheduledEnd}
+            </div>
+            <div className="text-xs font-medium text-muted-foreground text-center">
+              {entry.scheduledHours}h
+            </div>
+          </div>
+        </div>
+      );
+    }
+    
+    // Style 6: No data/empty day
+    return (
+      <div className={`border border-border bg-background rounded p-2 min-h-[80px] ${isToday ? 'ring-2 ring-company-primary' : ''}`}>
+        <div className="text-sm font-medium text-muted-foreground mb-1">{date.getDate()}</div>
+        <div className="text-center">
+          <span className="text-lg text-muted-foreground/50">—</span>
+        </div>
+        <div className="text-xs text-muted-foreground text-center mt-1">
+          {t('timecard.noActivity')}
+        </div>
+      </div>
+    );
   };
 
   if (loading) {
     return (
-      <PageLayout>
+      <div className="min-h-screen bg-background pt-6">
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-company-primary mx-auto mb-4"></div>
             <p className="text-muted-foreground">{t('common.loading')}</p>
           </div>
         </div>
-      </PageLayout>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background pt-6">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <div className="text-destructive text-lg mb-4">⚠️</div>
+            <p className="text-destructive">{error}</p>
+            <button
+              onClick={() => window?.location.reload()}
+              className="mt-4 px-4 py-2 bg-company-primary text-white rounded-lg hover:bg-company-primary/90"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </div>
     );
   }
 
   return (
-    <PageLayout>
-      <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header Section */}
-        <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-            {/* Employee Info */}
-            <div className="space-y-1">
-              <h1 className="text-3xl font-bold text-foreground">
-                {timeCardData?.employeeName || 'Employee'}
-              </h1>
-              <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-                <span className="flex items-center gap-1">
-                  <span className="w-2 h-2 bg-company-primary rounded-full"></span>
-                  ID: {timeCardData?.employeeId}
-                </span>
-                {timeCardData?.position && (
-                  <span className="flex items-center gap-1">
-                    <span className="w-2 h-2 bg-company-accent rounded-full"></span>
-                    {timeCardData.position}
-                  </span>
-                )}
-                {timeCardData?.department && (
-                  <span className="flex items-center gap-1">
-                    <span className="w-2 h-2 bg-company-secondary rounded-full"></span>
-                    {timeCardData.department}
-                  </span>
-                )}
+    <>
+      {/* Day Detail Modal */}
+      <DayDetailModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        selectedDayData={selectedDayData}
+        timeCardData={enrichedTimeCardData}
+        onNavigateDate={handleNavigateDate}
+      />
+      
+      <div className="min-h-screen bg-background pt-6">
+      <div className="flex">
+        {/* Left Sidebar Menu */}
+        <EmployeeMenu />
+        
+        {/* Main Content */}
+        <div className="flex-1 px-6 py-8 overflow-hidden">
+          {/* Compact Header with Employee Info */}
+          <div className="bg-card border border-border rounded-lg p-4 shadow-sm mb-4">
+            <div className="flex items-center justify-between">
+              {/* Employee Info - Compact */}
+              <div className="flex items-center gap-4">
+                <div>
+                  <h1 className="text-xl font-bold text-foreground">
+                    {enrichedTimeCardData?.employeeName || t('common.defaultUser')}
+                  </h1>
+                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                    <span>{t('timecard.employeeId')}: {enrichedTimeCardData?.employeeId}</span>
+                    {enrichedTimeCardData?.position && <span>{enrichedTimeCardData.position}</span>}
+                  </div>
+                </div>
               </div>
-            </div>
 
-            {/* Pay Period Selector */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">Pay Period</label>
-                <div className="flex bg-muted rounded-lg p-1">
+              {/* Pay Period Selector - Compact */}
+              <div className="flex items-center gap-4">
+                {/* Show selector with fallback data */}
+                <div className="flex bg-muted rounded-md p-1 min-w-[200px]">
                   {payPeriods.map((period) => (
                     <button
                       key={period.id}
-                      onClick={() => setSelectedPayPeriod(period.id as 'current' | 'previous')}
-                      className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                      onClick={() => setSelectedPayPeriod(period.id as 'previous' | 'current' | 'next')}
+                      className={`px-3 py-1 rounded text-sm font-medium transition-all ${
                         selectedPayPeriod === period.id
-                          ? 'bg-company-primary text-white shadow-sm'
+                          ? 'bg-company-primary text-white'
                           : 'text-muted-foreground hover:text-foreground'
                       }`}
                     >
@@ -182,204 +470,96 @@ export default function TimeCardPage() {
                     </button>
                   ))}
                 </div>
+                
+                {/* Period dates display */}
+                <div className="text-right">
+                  {enrichedTimeCardData?.payPeriodInfo ? (
+                    <div className="text-sm font-medium text-foreground">
+                      {formatDateRange(enrichedTimeCardData.payPeriodInfo.begins, enrichedTimeCardData.payPeriodInfo.ends)}
+                    </div>
+                  ) : (
+                    <div className="text-sm text-muted-foreground">
+                      Loading dates...
+                    </div>
+                  )}
+                </div>
               </div>
+            </div>
+          </div>
+
+          {/* Calendar with Totals Header */}
+          <div className="bg-card border border-border rounded-lg overflow-hidden flex-1">
+            <div className="bg-gradient-to-r from-company-primary to-company-secondary p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-lg font-bold text-white mb-1">{t('timecard.timeCardSummary')}</h2>
+                  <p className="text-white/80 text-sm">
+                    {enrichedTimeCardData?.payPeriodInfo?.name || t('timecard.payPeriod')}
+                  </p>
+                </div>
+                
+                {/* Totals in Header - Dynamic based on payDes categories */}
+                <div className="flex items-center gap-6">
+                  {payPeriodSummary.payDesCategories.map((category, index) => (
+                    <div key={index} className="text-center">
+                      <p className="text-xs font-medium text-white/80">{category.abb || category.name}</p>
+                      <p className="text-xl font-bold text-white">{category.hours}h</p>
+                    </div>
+                  ))}
+                  <div className="text-center">
+                    <p className="text-xs font-medium text-white/80">{t('timecard.total')}</p>
+                    <p className="text-xl font-bold text-white">{payPeriodSummary.totalHours}h</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-xs font-medium text-white/80">{t('timecard.days')}</p>
+                    <p className="text-xl font-bold text-white">{payPeriodSummary.daysWorked}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
               
-              {timeCardData?.payPeriodInfo && (
-                <div className="text-right space-y-1">
-                  <div className="text-sm font-medium text-foreground">
-                    {formatDateRange(timeCardData.payPeriodInfo.begins, timeCardData.payPeriodInfo.ends)}
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    {timeCardData.payClass}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Summary Cards */}
-        {timeCardData && (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-blue-700 dark:text-blue-300">Regular Hours</p>
-                  <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">{timeCardData.regularHours}</p>
-                </div>
-                <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
-                  <span className="text-white text-lg">🕒</span>
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-950 dark:to-amber-900 border border-amber-200 dark:border-amber-800 rounded-xl p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-amber-700 dark:text-amber-300">Overtime Hours</p>
-                  <p className="text-2xl font-bold text-amber-900 dark:text-amber-100">{timeCardData.overtimeHours}</p>
-                </div>
-                <div className="w-10 h-10 bg-amber-500 rounded-lg flex items-center justify-center">
-                  <span className="text-white text-lg">⚡</span>
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900 border border-green-200 dark:border-green-800 rounded-xl p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-green-700 dark:text-green-300">Total Hours</p>
-                  <p className="text-2xl font-bold text-green-900 dark:text-green-100">{timeCardData.totalHours}</p>
-                </div>
-                <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
-                  <span className="text-white text-lg">📊</span>
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950 dark:to-purple-900 border border-purple-200 dark:border-purple-800 rounded-xl p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-purple-700 dark:text-purple-300">Work Days</p>
-                  <p className="text-2xl font-bold text-purple-900 dark:text-purple-100">{timeCardData.entries.length}</p>
-                </div>
-                <div className="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
-                  <span className="text-white text-lg">📅</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Time Entries Grid */}
-        {timeCardData && (
-          <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
-            <div className="bg-gradient-to-r from-company-primary to-company-secondary p-6">
-              <h2 className="text-xl font-bold text-white">Daily Time Entries</h2>
-              <p className="text-white/80 text-sm mt-1">
-                Detailed breakdown for {timeCardData.payPeriodInfo?.name}
-              </p>
-            </div>
-            
-            <div className="p-6">
-              {timeCardData.entries.length === 0 ? (
-                <div className="text-center py-12">
-                  <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="text-2xl text-muted-foreground">📋</span>
-                  </div>
-                  <p className="text-muted-foreground text-lg">No time entries for this pay period</p>
-                  <p className="text-muted-foreground text-sm mt-1">Time entries will appear here when available</p>
+                          
+            <div className="p-4 overflow-auto flex-1">
+              {!enrichedTimeCardData || calendarWeeks.length === 0 ? (
+                <div className="text-center py-8">
+                  <span className="text-4xl text-muted-foreground mb-4 block">📋</span>
+                  <p className="text-muted-foreground">{t('timecard.noTimecardDataAvailable')}</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
-                  {timeCardData.entries.map((entry) => (
-                    <div key={entry.id} className="border border-border rounded-lg p-4 hover:shadow-md transition-shadow">
-                      {/* Date Header */}
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-3">
-                          <div className="text-center">
-                            <div className="text-2xl font-bold text-foreground">{getDayNumber(entry.date)}</div>
-                            <div className="text-xs text-muted-foreground">{getMonthYear(entry.date)}</div>
-                          </div>
-                          <div>
-                            <div className="font-medium text-foreground">{getDayName(entry.date)}</div>
-                            <div className="text-sm text-muted-foreground">{formatDate(entry.date)}</div>
-                          </div>
-                        </div>
-                        <div className={`w-3 h-3 rounded-full ${
-                          entry.status === 'completed' ? 'bg-green-500' : 
-                          entry.status === 'in-progress' ? 'bg-company-primary' : 'bg-orange-500'
-                        }`} />
+                <div className="space-y-2">
+                  {/* Day Headers */}
+                  <div className="grid grid-cols-7 gap-1 mb-2">
+                    {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                      <div key={day} className="text-center text-xs font-medium text-muted-foreground p-2">
+                        {day}
                       </div>
-                      
-                      {/* Time Info */}
-                      <div className="space-y-2 mb-3">
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-muted-foreground">Clock In:</span>
-                          <span className="font-medium text-foreground">{entry.clockIn}</span>
-                        </div>
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-muted-foreground">Clock Out:</span>
-                          <span className="font-medium text-foreground">
-                            {entry.clockOut || 'In Progress'}
-                          </span>
-                        </div>
-                        {entry.totalHours && (
-                          <div className="flex items-center justify-between text-sm">
-                            <span className="text-muted-foreground">Total:</span>
-                            <span className="font-bold text-company-accent">{entry.totalHours}h</span>
+                    ))}
+                  </div>
+                  
+                  {/* Calendar Weeks */}
+                  {calendarWeeks.map((week, weekIndex) => (
+                    <div key={weekIndex} className="grid grid-cols-7 gap-1">
+                      {week.map((date: Date | null, dayIndex: number) => {
+                        if (!date) {
+                          return <div key={dayIndex} className="p-2"></div>;
+                        }
+                        
+                        const entry = getEntryForDate(date);
+                        return (
+                          <div key={dayIndex}>
+                            {renderCalendarCell(date, entry || null)}
                           </div>
-                        )}
-                      </div>
-                      
-                      {/* Activity Indicators */}
-                      <div className="flex items-center gap-2 mb-3">
-                        <div className="flex items-center gap-1 text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-2 py-1 rounded">
-                          <span>🏢</span>
-                          <span>{entry.workedShifts} shifts</span>
-                        </div>
-                        <div className="flex items-center gap-1 text-xs bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 px-2 py-1 rounded">
-                          <span>💰</span>
-                          <span>{entry.payLines} pay</span>
-                        </div>
-                        {entry.adjustments > 0 && (
-                          <div className="flex items-center gap-1 text-xs bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300 px-2 py-1 rounded">
-                            <span>⚙️</span>
-                            <span>{entry.adjustments} adj</span>
-                          </div>
-                        )}
-                      </div>
-                      
-                      {/* Project & Notes */}
-                      {entry.project && (
-                        <div className="text-sm text-muted-foreground mb-2">
-                          <span className="font-medium">Project:</span> {entry.project}
-                        </div>
-                      )}
-                      
-                      {entry.notes && (
-                        <div className="text-sm text-muted-foreground bg-muted p-2 rounded">
-                          <span className="font-medium">📝</span> {entry.notes}
-                        </div>
-                      )}
+                        );
+                      })}
                     </div>
                   ))}
                 </div>
               )}
             </div>
           </div>
-        )}
-
-        {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-3">
-          <button
-            onClick={() => router.push('/dashboard')}
-            className="px-6 py-3 bg-muted hover:bg-muted/80 text-foreground rounded-lg transition-colors flex items-center gap-2"
-          >
-            <span>←</span>
-            {t('common.back')} to Dashboard
-          </button>
-          
-          <button
-            onClick={() => window.print()}
-            className="px-6 py-3 bg-company-primary hover:bg-company-primary/90 text-white rounded-lg transition-colors flex items-center gap-2"
-          >
-            <span>🖨️</span>
-            Print Time Card
-          </button>
-          
-          <button
-            onClick={() => {
-              // Future: Export functionality
-              alert('Export functionality coming soon!');
-            }}
-            className="px-6 py-3 bg-company-secondary hover:bg-company-secondary/90 text-white rounded-lg transition-colors flex items-center gap-2"
-          >
-            <span>📤</span>
-            Export Data
-          </button>
         </div>
       </div>
-    </PageLayout>
+    </div>
+    </>
   );
 }

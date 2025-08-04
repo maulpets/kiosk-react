@@ -132,7 +132,21 @@ export default function EmployeeMenu({ onBack, backLabel }: EmployeeMenuProps) {
   };
 
   const transformedOperations = transformApiOperations(operations);
-  const actionItems = []; // actionItems don't exist in new structure, using empty array
+  
+  // Get action items from employee data - check for actual action items
+  // For now, check if there are any pending approvals, notifications, or issues
+  const getActionItemsCount = () => {
+    // Check for timecard approval requirements
+    const needsTimeCardApproval = false; // TODO: Check if timecard needs approval
+    
+    // Check for other pending actions (training, safety, etc.)
+    const pendingActions = []; // TODO: Get from employee data or separate API
+    
+    // Return the total count of actions needed
+    return pendingActions.length + (needsTimeCardApproval ? 1 : 0);
+  };
+  
+  const actionItemsCount = getActionItemsCount();
 
   const handleDropdownToggle = (dropdownId: string) => {
     setOpenDropdown(openDropdown === dropdownId ? null : dropdownId);
@@ -206,21 +220,23 @@ export default function EmployeeMenu({ onBack, backLabel }: EmployeeMenuProps) {
 
   return (
     <div className="w-full max-w-[300px] bg-muted border-r border-border p-4 space-y-4">
-      {/* Action Items Button */}
-      <button
-        onClick={handleActionItemsClick}
-        className="w-full p-3 rounded-lg text-left transition-all bg-destructive hover:bg-destructive/90 text-destructive-foreground shadow-md hover:shadow-lg"
-      >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <span className="text-lg">⚠️</span>
-            <span className="font-medium">Action Required</span>
+      {/* Action Items Button - Only show when there are action items */}
+      {actionItemsCount > 0 && (
+        <button
+          onClick={handleActionItemsClick}
+          className="w-full p-3 rounded-lg text-left transition-all bg-destructive hover:bg-destructive/90 text-destructive-foreground shadow-md hover:shadow-lg"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <span className="text-lg">⚠️</span>
+              <span className="font-medium">Action Required</span>
+            </div>
+            <span className="bg-destructive text-destructive-foreground text-sm font-bold px-2 py-1 rounded-full">
+              {actionItemsCount}
+            </span>
           </div>
-          <span className="bg-destructive text-destructive-foreground text-sm font-bold px-2 py-1 rounded-full">
-            {actionItems.length}
-          </span>
-        </div>
-      </button>
+        </button>
+      )}
 
       {/* Dynamic Operation Dropdowns */}
       {transformedOperations

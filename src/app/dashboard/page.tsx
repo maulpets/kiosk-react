@@ -203,8 +203,8 @@ function TimeActivity({ entries }: TimeActivityProps) {
         <div key={entry.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
           <div className="flex items-center space-x-3">
             <div className={`w-3 h-3 rounded-full ${
-              entry.status === 'completed' ? 'bg-green-500' : 
-              entry.status === 'in-progress' ? 'bg-primary' : 'bg-orange-500'
+              entry.status === 'completed' ? 'bg-accent' : 
+              entry.status === 'in-progress' ? 'bg-primary' : 'bg-muted'
             }`} />
             <div>
               <div className="font-medium text-card-foreground">
@@ -291,6 +291,23 @@ export default function Dashboard() {
   
   // State for managing sub-operations view
   const [selectedOperation, setSelectedOperation] = useState<DashboardSubOperationContainer | null>(null);
+  
+  // Helper function to get transaction details - updated to handle transType 0 context
+  const getTransactionDetails = (transType: number, isClockIn: boolean) => {
+    switch (transType) {
+      case 0: 
+        return isClockIn 
+          ? { type: 'punch', notes: 'Clock In', icon: '🟢' }
+          : { type: 'punch', notes: 'Clock Out', icon: '🔴' };
+      case 1: return { type: 'punch', notes: 'Clock Out', icon: '🔴' };
+      case 2: return { type: 'break', notes: 'Break Out', icon: '☕' };
+      case 3: return { type: 'break', notes: 'Break In', icon: '🟢' };
+      case 256: return { type: 'punch', notes: 'Clock In (System)', icon: '🟢' };
+      case 512: return { type: 'break', notes: 'Lunch Break', icon: '🍽️' };
+      case 1024: return { type: 'punch', notes: 'End Shift', icon: '🏁' };
+      default: return { type: 'other', notes: `Transaction ${transType}`, icon: '📝' };
+    }
+  };
   
   // Fetch kiosk startup data
   const { data: kioskData, loading, error } = useKioskEmployeeData({
@@ -445,29 +462,27 @@ export default function Dashboard() {
     });
 
     // Sort operations in the desired order: punch-in (0), punch-out (1), transfer (2), then others
-    return transformed.sort((a, b) => {
-      const orderMap: { [key: number]: number } = {
-        0: 0,  // Punch In
-        1: 1,  // Punch Out  
-        2: 2,  // Transfer
+    const sorted = transformed.sort((a, b) => {
+      // Define explicit ordering priorities
+      const getOrderPriority = (operation: number | undefined): number => {
+        switch (operation) {
+          case 0: return 0;  // Punch In - highest priority
+          case 1: return 1;  // Punch Out - second priority
+          case 2: return 2;  // Transfer - third priority
+          default: return 999 + (operation || 0);  // All others ordered by operation number after main operations
+        }
       };
       
-      const aOrder = orderMap[a.originalOperation || 999] !== undefined ? orderMap[a.originalOperation || 999] : 999;
-      const bOrder = orderMap[b.originalOperation || 999] !== undefined ? orderMap[b.originalOperation || 999] : 999;
+      const aPriority = getOrderPriority(a.originalOperation);
+      const bPriority = getOrderPriority(b.originalOperation);
       
-      if (aOrder !== bOrder) {
-        return aOrder - bOrder;
-      }
-      
-      // For operations not in the order map, sort by original operation number
-      return (a.originalOperation || 0) - (b.originalOperation || 0);
+      return aPriority - bPriority;
     }).map(op => {
-      // Remove the temporary originalOperation property for return
-      const { originalOperation, ...cleanOp } = op;
-      // We keep the originalOperation in memory for routing decisions
-      (cleanOp as ExtendedOperation).originalOperation = originalOperation;
-      return cleanOp as ExtendedOperation;
+      // Keep the originalOperation for routing decisions
+      return op;
     });
+    
+    return sorted;
   };
 
   const { operations, actionItems, timeCard, employee } = kioskData ? {
@@ -475,7 +490,7 @@ export default function Dashboard() {
       const typedKioskData = kioskData as KioskStartupResponse;
       const baseOperations = transformApiOperations(typedKioskData.context?.operations || []);
       
-      // Add time card operation if profileInfo.sheetId === 0 - insert after transfer operation
+      // Add time card operation if profileInfo.sheetId === 0
       const profileInfo = typedKioskData.profileInfo as { sheetId?: number } | undefined;
       if (profileInfo?.sheetId === 0) {
         const timeCardOperation: ExtendedOperation = {
@@ -485,34 +500,159 @@ export default function Dashboard() {
           icon: '📋',
           enabled: true,
           route: '/timecard',
-          nativeAction: 'VIEW_TIMECARD'
+          nativeAction: 'VIEW_TIMECARD',
+          originalOperation: 2.5 // Place between transfer (2) and other operations
         };
         
-        // Find the transfer operation and insert time card right after it
-        const transferIndex = baseOperations.findIndex(op => 
-          op.id === '{5324678A-4261-40EE-BB3D-1026297ECB37}' || 
-          op.name.toLowerCase().includes('transfer')
-        );
+        baseOperations.push(timeCardOperation);
         
-        if (transferIndex !== -1) {
-          // Insert time card operation right after transfer
-          baseOperations.splice(transferIndex + 1, 0, timeCardOperation);
-        } else {
-          // If no transfer operation found, add time card at the end
-          baseOperations.push(timeCardOperation);
-        }
+        // Re-sort to maintain proper order after adding timecard
+        baseOperations.sort((a, b) => {
+          // Define explicit ordering priorities
+          const getOrderPriority = (operation: number | undefined): number => {
+            switch (operation) {
+              case 0: return 0;      // Punch In - highest priority
+              case 1: return 1;      // Punch Out - second priority
+              case 2: return 2;      // Transfer - third priority
+              case 2.5: return 3;    // Time Card - fourth priority
+              default: return 999 + (operation || 0);  // All others ordered by operation number
+            }
+          };
+          
+          const aPriority = getOrderPriority((a as ExtendedOperation).originalOperation);
+          const bPriority = getOrderPriority((b as ExtendedOperation).originalOperation);
+          
+          return aPriority - bPriority;
+        });
       }
       
       return baseOperations;
     })(),
     actionItems: [], // This needs to be added to the new API structure or handled differently
-    timeCard: {
-      currentEntry: null as TimeEntry | null,
-      weeklyEntries: [],
-      weeklyTotal: 0,
-      overtimeHours: 0,
-      isOnBreak: false
-    }, // This needs to be added to the new API structure or handled differently
+    timeCard: (() => {
+      const typedKioskData = kioskData as KioskStartupResponse;
+      const workedShifts = typedKioskData.context?.workedShifts || [];
+      
+      if (workedShifts.length === 0) {
+        return {
+          currentEntry: null as TimeEntry | null,
+          weeklyEntries: [],
+          weeklyTotal: 0,
+          overtimeHours: 0,
+          isOnBreak: false
+        };
+      }
+      
+      // Get the last worked shift to determine current state
+      const lastShift = workedShifts[workedShifts.length - 1];
+      const isPunchedIn = lastShift.lastPunchState === 1;
+      
+      // Transform workedShifts to TimeEntry format
+      const weeklyEntries: TimeEntry[] = workedShifts.map(shift => {
+        const transactions = shift.transactions?.actual || [];
+        
+        // Find clock in/out times from transactions with improved logic for transType 0
+        let clockInTransaction = null;
+        let clockOutTransaction = null;
+        
+        // Handle transType 0 alternating pattern and other transaction types
+        const transType0Transactions = transactions.filter(t => t.transType === 0);
+        
+        if (transType0Transactions.length > 0) {
+          clockInTransaction = transType0Transactions[0]; // First transType 0 is clock in
+          if (transType0Transactions.length > 1) {
+            clockOutTransaction = transType0Transactions[transType0Transactions.length - 1]; // Last transType 0 is clock out if even count
+            // If odd number of transType 0, last one is clock in (still working)
+            if (transType0Transactions.length % 2 === 1) {
+              clockOutTransaction = null;
+            }
+          }
+        }
+        
+        // Also check for other transaction types
+        if (!clockInTransaction) {
+          clockInTransaction = transactions.find(t => t.transType === 256); // System clock in
+        }
+        if (!clockOutTransaction) {
+          clockOutTransaction = transactions.find(t => t.transType === 1 || t.transType === 1024); // Explicit clock out or end shift
+        }
+        
+        const clockIn = clockInTransaction ? 
+          new Date(clockInTransaction.timestamp).toLocaleTimeString('en-US', { 
+            hour: 'numeric', 
+            minute: '2-digit',
+            hour12: true 
+          }) : '';
+          
+        const clockOut = clockOutTransaction ? 
+          new Date(clockOutTransaction.timestamp).toLocaleTimeString('en-US', { 
+            hour: 'numeric', 
+            minute: '2-digit',
+            hour12: true 
+          }) : '';
+        
+        // Determine status based on punch state and transactions
+        let status: 'completed' | 'in-progress' | 'pending-approval' = 'completed';
+        if (shift === lastShift && isPunchedIn) {
+          status = 'in-progress';
+        } else if (!clockOutTransaction && clockInTransaction) {
+          status = 'in-progress';
+        }
+        
+        return {
+          id: `shift-${shift.date}`,
+          date: shift.date,
+          clockIn,
+          clockOut,
+          totalHours: shift.hundHours || 0,
+          status,
+          workedShifts: 1, // Each shift represents one worked shift
+          payLines: 0, // Would need to be calculated from actual pay data
+          adjustments: 0, // Would need adjustment data from API
+          transactions: transactions.map((t, index) => {
+            // For transType 0, determine if it's clock in or out based on sequence
+            let isClockIn = true;
+            if (t.transType === 0) {
+              // Look at previous transType 0 transactions to determine alternating pattern
+              const prevType0Count = transactions.slice(0, index).filter(prev => prev.transType === 0).length;
+              isClockIn = prevType0Count % 2 === 0; // Even index = clock in, odd = clock out
+            }
+            
+            const details = getTransactionDetails(t.transType, isClockIn);
+            return {
+              time: new Date(t.timestamp).toLocaleTimeString('en-US', { 
+                hour: 'numeric', 
+                minute: '2-digit',
+                hour12: true 
+              }),
+              type: details.type,
+              notes: details.notes,
+              department: 'Production', // Could be extracted from workgroup data if available
+              transType: t.transType,
+              timestamp: t.timestamp
+            };
+          })
+        };
+      });
+      
+      // Calculate totals
+      const weeklyTotal = workedShifts.reduce((sum, shift) => sum + (shift.hundHours || 0), 0);
+      const overtimeHours = workedShifts.reduce((sum, shift) => {
+        const regularHours = shift.hundHours || 0;
+        return sum + (regularHours > 8 ? regularHours - 8 : 0);
+      }, 0);
+      
+      // Create current entry if punched in
+      const currentEntry = isPunchedIn ? weeklyEntries[weeklyEntries.length - 1] : null;
+      
+      return {
+        currentEntry,
+        weeklyEntries,
+        weeklyTotal,
+        overtimeHours,
+        isOnBreak: false // Could be determined from transaction types if needed
+      };
+    })(),
     employee: {
       id: (kioskData as KioskStartupResponse).basics?.idnum || '',
       name: `${(kioskData as KioskStartupResponse).basics?.firstName || ''} ${(kioskData as KioskStartupResponse).basics?.lastName || ''}`.trim(),
@@ -520,7 +660,24 @@ export default function Dashboard() {
       role: (kioskData as KioskStartupResponse).basics?.homeWg?.workPositionName || '',
       department: (kioskData as KioskStartupResponse).basics?.homeWg?.description || '',
     }
-  } : { operations: [], actionItems: [], timeCard: { currentEntry: undefined, weeklyEntries: [], weeklyTotal: 0, overtimeHours: 0, isOnBreak: false }, employee: { id: '', name: '', email: '', role: '', department: '' } };
+  } : { 
+    operations: [], 
+    actionItems: [], 
+    timeCard: { 
+      currentEntry: null, 
+      weeklyEntries: [], 
+      weeklyTotal: 0, 
+      overtimeHours: 0, 
+      isOnBreak: false 
+    }, 
+    employee: { 
+      id: '', 
+      name: '', 
+      email: '', 
+      role: '', 
+      department: '' 
+    } 
+  };
   const enabledOperations = operations.filter(op => op.enabled);
 
   return (
@@ -554,7 +711,7 @@ export default function Dashboard() {
                     const fullWidthOperations: DashboardOperation[] = [];
                     const halfWidthOperations: DashboardOperation[] = [];
                     
-                    // Separate operations by type
+                    // Separate operations by type while preserving order
                     enabledOperations.forEach(operation => {
                       const operationType = operation.name.toLowerCase().includes('punch') || operation.name.toLowerCase().includes('clock') ? 'punch' :
                                           operation.name.toLowerCase().includes('transfer') ? 'transfer' : 
@@ -565,6 +722,22 @@ export default function Dashboard() {
                       } else {
                         halfWidthOperations.push(operation);
                       }
+                    });
+                    
+                    // Ensure full width operations are properly sorted
+                    fullWidthOperations.sort((a, b) => {
+                      const getOrderPriority = (operation: DashboardOperation): number => {
+                        const extOp = operation as ExtendedOperation;
+                        switch (extOp.originalOperation) {
+                          case 0: return 0;      // Punch In
+                          case 1: return 1;      // Punch Out
+                          case 2: return 2;      // Transfer
+                          case 2.5: return 3;    // Time Card
+                          default: return 999 + (extOp.originalOperation || 0);
+                        }
+                      };
+                      
+                      return getOrderPriority(a) - getOrderPriority(b);
                     });
                     
                     return (
