@@ -2,50 +2,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { apiGetTimeCard } from '../lib/apiAdapter';
 import { 
   WeeklyTimeCardData, 
-  UseTimeCardResult
+  UseTimeCardResult,
+  RawMockData
 } from '@/types';
-
-// Type for raw API data structure
-interface RawTimeCardData {
-  basics?: {
-    idnum?: string;
-    firstName?: string;
-    lastName?: string;
-    homeWg?: {
-      description?: string;
-      workPositionName?: string;
-    };
-  };
-  payPeriod?: {
-    general?: {
-      payClass?: {
-        name?: string;
-      };
-      periods?: {
-        previous?: { begins?: string; ends?: string };
-        current?: { begins?: string; ends?: string };
-        next?: { begins?: string; ends?: string };
-        this?: { begins?: string; ends?: string };
-      };
-    };
-    days?: Array<{
-      date: string;
-      workedShifts?: Array<{
-        hours?: number;
-        transactions?: {
-          actual?: Array<{
-            timestamp: string;
-            transType: number;
-            station?: number;
-          }>;
-        };
-      }>;
-      payLines?: Array<unknown>;
-      adjustments?: Array<unknown>;
-    }>;
-  };
-  [key: string]: unknown;
-}
 
 export function useTimeCard(payPeriod: 'previous' | 'current' | 'next' = 'current', employeeId?: string): UseTimeCardResult {
   const [data, setData] = useState<WeeklyTimeCardData | null>(null);
@@ -84,13 +43,26 @@ export function useTimeCard(payPeriod: 'previous' | 'current' | 'next' = 'curren
         finalData = apiData.data as WeeklyTimeCardData;
       } else {
         // Data is in raw API format, transform it
-        const rawData = apiData.data as unknown as RawTimeCardData;
+        const rawData = apiData.data as unknown as RawMockData;
         
         // Extract pay period info from raw data if available
         const payPeriodInfo = rawData?.payPeriod?.general?.periods;
         console.log('Raw pay period info:', payPeriodInfo);
         
         // Transform daily data into TimeEntry format
+        // Now processing comprehensive daily data including:
+        // ✓ notes: Employee notes for the day
+        // ✓ incidents: Any incidents that occurred (when available)
+        // ✓ dailyExceptions: Daily exceptions like unscheduled work
+        // ✓ distributed: Distributed pay information  
+        // ✓ summaries: Daily summaries
+        // ✓ notifConds: Notification conditions
+        // ✓ schedules: Full schedule details with confirmation states
+        // ✓ payLines: Complete pay line data with work groups
+        // ✓ adjustments: Detailed adjustment tracking with audit info
+        // Note: Additional shift-level data still available:
+        // - workedShifts[].monitoredItems: Detailed arrival/departure tracking
+        // - workedShifts[].grossHours, dop, dow, scheduled flags, etc.
         const transformedEntries = rawData?.payPeriod?.days?.map((day) => {
           const dayDate = day.date.split('T')[0];
           
@@ -129,6 +101,33 @@ export function useTimeCard(payPeriod: 'previous' | 'current' | 'next' = 'curren
             allTransactions.length === 0 ? 'pending' :
             allTransactions.length % 2 === 0 ? 'completed' : 'in-progress';
           
+          // Extract scheduled shift information if available
+          const scheduleInfo = day.schedules && day.schedules.length > 0 ? day.schedules[0] : null;
+          const scheduledStart = scheduleInfo?.startTime ? 
+            new Date(scheduleInfo.startTime).toLocaleTimeString('en-US', { 
+              hour: '2-digit', 
+              minute: '2-digit',
+              hour12: true 
+            }) : undefined;
+          const scheduledEnd = scheduleInfo?.endTime ? 
+            new Date(scheduleInfo.endTime).toLocaleTimeString('en-US', { 
+              hour: '2-digit', 
+              minute: '2-digit',
+              hour12: true 
+            }) : undefined;
+          const scheduledHours = scheduleInfo?.hundHours || undefined;
+          
+          // Calculate PTO hours from pay lines
+          let ptoHours = 0;
+          let ptoType: string | undefined;
+          day.payLines?.forEach(payLine => {
+            const payDesName = payLine.payDes?.name?.toLowerCase() || '';
+            if (payDesName.includes('pto') || payDesName.includes('vacation') || payDesName.includes('sick')) {
+              ptoHours += payLine.hundHours || 0;
+              ptoType = payLine.payDes?.name || 'PTO';
+            }
+          });
+          
           return {
             id: `${dayDate}-entry`,
             date: day.date,
@@ -139,6 +138,13 @@ export function useTimeCard(payPeriod: 'previous' | 'current' | 'next' = 'curren
             workedShifts: day.workedShifts?.length || 0,
             payLines: day.payLines?.length || 0,
             adjustments: day.adjustments?.length || 0,
+            // Include PTO information
+            ptoHours: ptoHours > 0 ? Math.round(ptoHours * 100) / 100 : undefined,
+            ptoType: ptoType,
+            // Include scheduled shift information  
+            scheduledStart,
+            scheduledEnd,
+            scheduledHours,
             transactions: allTransactions.map((t) => ({
               time: new Date(t.timestamp).toLocaleTimeString('en-US', { 
                 hour: '2-digit', 
@@ -151,14 +157,109 @@ export function useTimeCard(payPeriod: 'previous' | 'current' | 'next' = 'curren
               transType: t.transType,
               timestamp: t.timestamp,
               station: t.station
-            }))
+            })),
+            // Enhanced data from raw API
+            rawNotes: day.notes?.length > 0 ? day.notes.map(note => ({
+              itemdata: note.itemdata,
+              memoText: note.memoText,
+              memoNoteCatId: note.memoNoteCatId,
+              uniqueId: note.uniqueId
+            })) : undefined,
+            rawPayLines: day.payLines?.length > 0 ? day.payLines.map(payLine => ({
+              dop: payLine.dop,
+              payDes: payLine.payDes ? {
+                name: payLine.payDes.name,
+                abb: payLine.payDes.abb,
+                multiplier: payLine.payDes.multiplier,
+                num: payLine.payDes.num,
+                isHours: payLine.payDes.isHours,
+                memberships: payLine.payDes.memberships
+              } : undefined,
+              hundHours: payLine.hundHours,
+              hours: payLine.hours,
+              rate: payLine.rate,
+              dollars: payLine.dollars,
+              wg: payLine.wg ? {
+                description: payLine.wg.description,
+                workPositionName: payLine.wg.workPositionName
+              } : undefined
+            })) : undefined,
+            rawAdjustments: day.adjustments?.length > 0 ? day.adjustments.map(adj => ({
+              editType: adj.editType,
+              hours: adj.hours,
+              hundHours: adj.hundHours,
+              aeUserCode: adj.aeUserCode,
+              timestamp: adj.timestamp,
+              cancelled: adj.cancelled,
+              uniqueId: adj.uniqueId
+            })) : undefined,
+            dailyExceptions: day.dailyExceptions?.length > 0 ? day.dailyExceptions.map(exc => ({
+              name: exc.name,
+              hours: exc.hours,
+              hundHours: exc.hundHours,
+              shiftException: exc.shiftException
+            })) : undefined,
+            distributed: day.distributed?.length > 0 ? day.distributed.map(dist => ({
+              payDes: dist.payDes ? {
+                name: dist.payDes.name,
+                abb: dist.payDes.abb,
+                hours: dist.hours,
+                hundHours: dist.hundHours
+              } : undefined,
+              wg: dist.wg ? {
+                description: dist.wg.description,
+                workPositionName: dist.wg.workPositionName
+              } : undefined
+            })) : undefined,
+            summaries: day.summaries?.length > 0 ? day.summaries.map(summary => ({
+              payDes: summary.payDes ? {
+                name: summary.payDes.name,
+                abb: summary.payDes.abb,
+                hours: summary.hours,
+                hundHours: summary.hundHours
+              } : undefined
+            })) : undefined,
+            incidents: day.incidents?.length > 0 ? day.incidents : undefined,
+            notifConds: day.notifConds?.length > 0 ? day.notifConds.map(notif => ({
+              uniqueId: notif.uniqueId
+            })) : undefined,
+            scheduleDetails: day.schedules?.length > 0 ? day.schedules.map(schedule => ({
+              date: schedule.date,
+              startTime: schedule.startTime,
+              endTime: schedule.endTime,
+              description: schedule.description,
+              confirmState: schedule.confirmState,
+              hundHours: schedule.hundHours
+            })) : undefined
           };
         }) || [];
         
-        // Calculate totals
-        const totalHours = transformedEntries.reduce((sum: number, entry) => sum + (entry.totalHours || 0), 0);
-        const regularHours = Math.min(totalHours, 40); // Assume 40hr regular work week
-        const overtimeHours = Math.max(0, totalHours - 40);
+        // Calculate totals from periodSummaries if available, otherwise use legacy calculation
+        let totalHours = 0;
+        let regularHours = 0;
+        let overtimeHours = 0;
+        
+        if (rawData?.payPeriod?.periodSummaries?.byPayDes) {
+          // Calculate from period summaries
+          rawData.payPeriod.periodSummaries.byPayDes.forEach(summary => {
+            const hours = summary.hundHours || 0;
+            totalHours += hours;
+            
+            // Check membership to categorize hours
+            if (summary.payDes?.memberships?.includes('workedTime')) {
+              if (summary.payDes?.multiplier === 1.0) {
+                regularHours += hours;
+              } else if (summary.payDes?.multiplier && summary.payDes.multiplier > 1.0) {
+                overtimeHours += hours;
+              }
+            }
+          });
+        } else {
+          // Legacy calculation from entries
+          totalHours = transformedEntries.reduce((sum: number, entry) => sum + (entry.totalHours || 0), 0);
+          regularHours = Math.min(totalHours, 40); // Assume 40hr regular work week
+          overtimeHours = Math.max(0, totalHours - 40);
+        }
         
         finalData = {
           weekStart: payPeriodInfo?.[payPeriod]?.begins?.split('T')[0] || '',
@@ -173,8 +274,17 @@ export function useTimeCard(payPeriod: 'previous' | 'current' | 'next' = 'curren
           payClass: rawData?.payPeriod?.general?.payClass?.name || 'Regular',
           department: rawData.basics?.homeWg?.description || '',
           position: rawData.basics?.homeWg?.workPositionName || '',
+          periodSummaries: rawData?.payPeriod?.periodSummaries,
           // Include the raw pay period data for the UI to use
-          rawPayPeriods: payPeriodInfo
+          rawPayPeriods: payPeriodInfo,
+          // Include the current pay period info for easy access
+          payPeriodInfo: payPeriodInfo?.[payPeriod] ? {
+            id: payPeriod,
+            name: `${payPeriod.charAt(0).toUpperCase() + payPeriod.slice(1)} Pay Period`,
+            begins: payPeriodInfo[payPeriod].begins || '',
+            ends: payPeriodInfo[payPeriod].ends || '',
+            isCurrent: payPeriod === 'current'
+          } : undefined
         };
         
         console.warn('Timecard data in raw format, using transformed placeholder data');

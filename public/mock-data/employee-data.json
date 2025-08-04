@@ -1,37 +1,37 @@
 {
     "basics": {
-        "filekey": 369,
-        "lastName": "Smith",
-        "firstName": "John",
+        "filekey": 290,
+        "lastName": "Howard",
+        "firstName": "Harry",
         "middle": "",
         "idnum": "496",
-        "badge": 575575,
+        "badge": 496,
         "homeWg": {
-            "description": "Production Floor-Machine Operator-Default-Manufacturing",
-            "workPositionWgName": "Machine Operator",
-            "workPositionWgCode": "MOP",
-            "workPositionName": "Machine Operator",
-            "workPositionAbb": "MOP",
+            "description": "Glenwood Gardens-DFT-9-Certified Nursing Assistant",
+            "workPositionWgName": "Certified Nursing Assistant",
+            "workPositionWgCode": "CNA",
+            "workPositionName": "CNA",
+            "workPositionAbb": "CNA",
             "levels": [
                 {
                     "wgLevel": 1,
                     "wgNum": 3,
-                    "caption": "Production Floor"
-                },
-                {
-                    "wgLevel": 4,
-                    "wgNum": 66,
-                    "caption": "Machine Operator"
+                    "caption": "Glenwood Gardens"
                 },
                 {
                     "wgLevel": 2,
                     "wgNum": 1,
-                    "caption": "Default"
+                    "caption": "DFT"
                 },
                 {
                     "wgLevel": 3,
                     "wgNum": 9,
-                    "caption": "Manufacturing"
+                    "caption": "9"
+                },
+                {
+                    "wgLevel": 4,
+                    "wgNum": 66,
+                    "caption": "Certified Nursing Assistant"
                 }
             ]
         },
@@ -55,17 +55,17 @@
                 }
             ]
         },
-        "homeWgEffDate": "2024-01-01T00:00:00.000"
+        "homeWgEffDate": "2012-10-25T00:00:00.000"
     },
     "personalInfo": {
         "address": {
-            "addressLine1": "123 Main Street",
+            "addressLine1": "Ravinewood Dr ",
             "addressLine2": "",
             "addressLine3": "",
-            "city": "Manufacturing City",
+            "city": "Commerce Township",
             "stateProv": "MI",
-            "postalCode": "48262",
-            "created": "2024-01-01T00:00:00.000",
+            "postalCode": "48206",
+            "created": "2012-10-25T00:00:00.000",
             "editing": {
                 "editable": false,
                 "presentInConfig": false
@@ -76,28 +76,19 @@
                 {
                     "phonePosIndex": 0,
                     "phoneLabel": "Work Phone",
-                    "phoneNumber": "8102311963",
+                    "phoneNumber": "2072331100",
                     "editing": {
-                        "editable": true,
-                        "presentInConfig": true
+                        "editable": false,
+                        "presentInConfig": false
                     }
                 },
                 {
                     "phonePosIndex": 1,
                     "phoneLabel": "Home Phone",
-                    "phoneNumber": "5551234567",
+                    "phoneNumber": "5866513906",
                     "editing": {
-                        "editable": true,
-                        "presentInConfig": true
-                    }
-                },
-                {
-                    "phonePosIndex": 2,
-                    "phoneLabel": "Cell Phone",
-                    "phoneNumber": "5559876543",
-                    "editing": {
-                        "editable": true,
-                        "presentInConfig": true
+                        "editable": false,
+                        "presentInConfig": false
                     }
                 }
             ],
@@ -105,117 +96,228 @@
                 {
                     "emailPosIndex": 0,
                     "emailLabel": "Work Email",
-                    "emailAddress": "john.smith@company.com",
+                    "emailAddress": "harrymonahan3.aod@gmail.com",
                     "editing": {
-                        "editable": true,
-                        "presentInConfig": true
-                    }
-                },
-                {
-                    "emailPosIndex": 1,
-                    "emailLabel": "Personal Email",
-                    "emailAddress": "john.smith.personal@gmail.com",
-                    "editing": {
-                        "editable": true,
-                        "presentInConfig": true
+                        "editable": false,
+                        "presentInConfig": false
                     }
                 }
             ],
             "devices": [
                 {
-                    "platform": "Windows"
+                    "platform": "Apple"
                 }
             ]
         },
         "emergency": {
             "emergencyContact": "",
             "editing": {
-                "editable": true,
-                "presentInConfig": true
+                "editable": false,
+                "presentInConfig": false
             }
         },
         "customFields": [],
         "eula": {
             "attest": true,
-            "lastModified": "2025-07-22T10:44:36.020",
+            "lastModified": "2019-08-15T11:01:32.000",
             "url": null
         }
     },
     "profileInfo": {
-        "profileName": "John",
-        "guid": "{21178A09-E594-4918-BF09-20C64172984A}",
+        "profileName": "Timecard",
+        "guid": "{2528B766-27A0-419B-9048-30C9E6FD66AB}",
         "createdBy": "",
         "sheetId": 0,
         "sheetName": "Default (Time Card)",
-        "allSheets": false,
+        "allSheets": true,
         "schSheetId": 1,
         "arcSheetId": 1,
         "benSheetId": 1,
         "piSheetId": 2,
-        "piSheetName": "Customized Layout",
+        "piSheetName": "Customzied Layout",
         "msgSheetId": 1,
         "leaveSheetId": 1,
         "wgRendering": {
-            "caption": "",
+            "caption": "Pauls WG's As Labeled",
             "levels": [
                 {
                     "wgLevel": 1,
                     "name": "Location",
-                    "plural": "",
+                    "plural": "Location",
                     "captionUses": "wgName"
-                },
-                {
-                    "wgLevel": 4,
-                    "name": "Position Name/Code",
-                    "plural": "Position Name/Code",
-                    "captionUses": "wgNum"
                 },
                 {
                     "wgLevel": 2,
                     "name": "Zone",
-                    "plural": "",
-                    "captionUses": "wgName"
+                    "plural": "Zone",
+                    "captionUses": "wgCode"
                 },
                 {
                     "wgLevel": 3,
                     "name": "Department",
-                    "plural": "",
+                    "plural": "Department",
+                    "captionUses": "wgNum"
+                },
+                {
+                    "wgLevel": 4,
+                    "name": "Position",
+                    "plural": "Position",
                     "captionUses": "wgName"
                 }
             ]
         },
         "enablePunchingRestrictions": false,
-        "enableOverrideRestrClass": true,
-        "wageAdvanceEnabled": false,
+        "enableOverrideRestrClass": false,
+        "wageAdvanceEnabled": true,
         "empNameFormatId": 0,
         "timeCardApprovalEnabled": true,
         "timeCardApprovalAsSupervisor": false,
         "showRateOfOpenSch": false,
         "idleTimeout": 300,
-        "benefitPeriodId": 60,
+        "benefitPeriodId": 19,
         "approvalText": "I understand that I am approving my time card for the selected pay period.",
-        "mayAddToWGSheet": false,
+        "mayAddToWGSheet": true,
         "daysBackForHistory": 30,
         "applyPaidLunch": true,
-        "schBuddyCoverage": true,
+        "schBuddyCoverage": false,
         "inclPrintTimeCard": false,
         "timeCardReportName": "Time Card Report",
-        "benefitPeriodName": "Prev. & Current Calendar Year",
-        "benefitPeriodAbb": "currPrevYear",
+        "benefitPeriodName": "Last 12 Months (FMLA)",
+        "benefitPeriodAbb": "lastTwelveMonths",
+        "benefitPeriodSelections": [
+            {
+                "benefitPeriodId": 1,
+                "benefitPeriodName": "Previous Period",
+                "benefitPeriodAbb": "prevPeriod",
+                "id": "extModel69-1"
+            },
+            {
+                "benefitPeriodId": 2,
+                "benefitPeriodName": "Current Period",
+                "benefitPeriodAbb": "currPeriod",
+                "id": "extModel69-2"
+            },
+            {
+                "benefitPeriodId": 3,
+                "benefitPeriodName": "Next Period",
+                "benefitPeriodAbb": "nextPeriod",
+                "id": "extModel69-3"
+            },
+            {
+                "benefitPeriodId": 16,
+                "benefitPeriodName": "Previous Year",
+                "benefitPeriodAbb": "prevYear",
+                "id": "extModel69-4"
+            },
+            {
+                "benefitPeriodId": 17,
+                "benefitPeriodName": "Current Year",
+                "benefitPeriodAbb": "currYear",
+                "id": "extModel69-5"
+            },
+            {
+                "benefitPeriodId": 18,
+                "benefitPeriodName": "Next Year",
+                "benefitPeriodAbb": "nextYear",
+                "id": "extModel69-6"
+            },
+            {
+                "benefitPeriodId": 19,
+                "benefitPeriodName": "Last 12 Months (FMLA)",
+                "benefitPeriodAbb": "lastTwelveMonths",
+                "id": "extModel69-7"
+            },
+            {
+                "benefitPeriodId": 60,
+                "benefitPeriodName": "Prev. & Current Calendar Year",
+                "benefitPeriodAbb": "currPrevYear",
+                "id": "extModel69-8"
+            },
+            {
+                "benefitPeriodId": 72,
+                "benefitPeriodName": "Current & Next Calendar Year",
+                "benefitPeriodAbb": "currNextYear",
+                "id": "extModel69-9"
+            },
+            {
+                "benefitPeriodId": 100,
+                "benefitPeriodName": "Previous Employment Year",
+                "benefitPeriodAbb": "100?",
+                "id": "extModel69-10"
+            },
+            {
+                "benefitPeriodId": 101,
+                "benefitPeriodName": "Current Employment Year",
+                "benefitPeriodAbb": "101?",
+                "id": "extModel69-11"
+            },
+            {
+                "benefitPeriodId": 102,
+                "benefitPeriodName": "Next Employment Year",
+                "benefitPeriodAbb": "102?",
+                "id": "extModel69-12"
+            }
+        ],
         "maySetAvailability": true,
         "canSeeCoWorkerSch": true,
         "canSeeOpenAssignments": true,
         "canSeeOpenSchedules": true,
         "openSchWGLevel": 1,
-        "wageAdvance": false,
-        "preventChgPwd": true,
+        "wageAdvance": true,
+        "preventChgPwd": false,
+        "leaveRequests": {
+            "minRTOTime": 60,
+            "defaultRTOBenefit": 3,
+            "rtoMinDaysFormulaId": 2,
+            "rtoMinDaysFormula": "Minimum Days from Start of Current Week",
+            "rtoDaysOffset": 0,
+            "rtoMaxDaysOffset": 9999,
+            "rtoMaxDaysFormulaId": 2,
+            "rtoMaxDaysFormula": "Number of Months from Start of Current Month",
+            "allowCancelRTO": false,
+            "rtoMinCancelDays": 7,
+            "eMailRTOReqs": true,
+            "rtoFKeys": [
+                {
+                    "fkeyOpId": 2,
+                    "usedForId": 0,
+                    "caption": "Request Time Off",
+                    "collectGPS": false,
+                    "collectGPSMode": 2,
+                    "icon": "sun",
+                    "guid": "{BDC8EEEF-3DD5-4EC2-99DE-E7E0D487A775}",
+                    "fkeyCls": "fkey-default",
+                    "fkeyHint": "",
+                    "rtoStyleId": 1,
+                    "rtoStyle": "More than one day; not an extended leave (Vacation)",
+                    "rtoHoursPromptId": 0,
+                    "rtoHoursPrompt": "Prompt for Amount",
+                    "rtoDefaultHoursFormulaId": 0,
+                    "rtoDefaultHoursFormula": "Value Specified",
+                    "rtoHours": 480,
+                    "rtoIntervalFormulaId": 0,
+                    "rtoIntervalFormula": "None",
+                    "rtoHoursInterval": 15,
+                    "rtoHoursMin": 15,
+                    "rtoHoursMax": 4800,
+                    "rtoBenefitPromptId": 0,
+                    "rtoBenefitPrompt": "Prompt for Benefit",
+                    "rtoDefaultBenefitFormulaId": 0,
+                    "rtoDefaultBenefitFormula": "Profile Default",
+                    "rtoBenefit": 1,
+                    "rtoZeroHours": true,
+                    "rtoRenderBenBalId": 1,
+                    "rtoRenderBenBal": "Show"
+                }
+            ]
+        },
         "stationProperties": {
-            "impliedStationNum": 55,
-            "punchTZXLateMode": 1,
+            "impliedStationNum": 0,
+            "punchTZXLateMode": 0,
             "showPunchMode": 0,
             "transAcceptedText": "Transaction Accepted",
-            "currentTimeMode": 2,
-            "showCorpTimeStamp": true,
+            "currentTimeMode": 0,
+            "showCorpTimeStamp": false,
             "auxDataCapFields": [],
             "empReviewTiles": []
         },
@@ -223,10 +325,10 @@
             "reapproveOnChgNotes": true,
             "doesConfirmSchs": true,
             "confirmPattSchs": true,
-            "unConfSchDays": 21
+            "unConfSchDays": 7
         },
         "onboardingInvitation": {
-            "invtModeId": 1,
+            "invtModeId": 0,
             "invtPeriodDays": 14,
             "invtMaxTrys": 3,
             "invtMinHrs": 23,
@@ -234,10 +336,10 @@
         },
         "restClass": {
             "classNum": 0,
-            "BSTEnabled": true,
+            "BSTEnabled": false,
             "BSTBegin": 240,
             "BSTEnd": 15,
-            "ASTEnabled": true,
+            "ASTEnabled": false,
             "ASTBegin": 15,
             "ASTEnd": 60,
             "BETEnabled": false,
@@ -250,58 +352,143 @@
             "RestFlexEnabled": false
         },
         "datedLabelRules": [],
-        "customProperties": [
-            {
-                "name": "URL:TLN",
-                "value": "https://www.attendanceondemand.com/learning-center/8-employee-mobile/",
-                "id": "extModel21-1",
-                "type": "URL",
-                "label": "TLN"
-            }
-        ],
+        "customProperties": [],
+        "persInfoSections": [],
         "operational": {
-            "minimumLeaveRequestDate": "2025-07-22T00:00:00.000",
-            "maximumLeaveRequestDate": "2056-08-01T00:00:00.000",
-            "currentPayPeriodBeginDate": "2025-07-21T00:00:00.000",
-            "currentPayPeriodEndDate": "2025-07-27T00:00:00.000",
-            "previousPayPeriodBeginDate": "2025-07-14T00:00:00.000",
-            "previousPayPeriodEndDate": "2025-07-20T00:00:00.000",
-            "nextPayPeriodBeginDate": "2025-07-28T00:00:00.000",
-            "nextPayPeriodEndDate": "2025-08-03T00:00:00.000",
+            "minimumLeaveRequestDate": "2019-08-11T00:00:00.000",
+            "maximumLeaveRequestDate": "2852-11-01T00:00:00.000",
+            "currentPayPeriodBeginDate": "2019-08-11T00:00:00.000",
+            "currentPayPeriodEndDate": "2019-08-24T00:00:00.000",
+            "previousPayPeriodBeginDate": "2019-07-28T00:00:00.000",
+            "previousPayPeriodEndDate": "2019-08-10T00:00:00.000",
+            "nextPayPeriodBeginDate": "2019-08-25T00:00:00.000",
+            "nextPayPeriodEndDate": "2019-09-07T00:00:00.000",
             "availability": {
-                "earliestAllowedDate": "2025-07-22T15:05:05.107",
-                "daysFormulaId": 1,
+                "earliestAllowedDate": "2019-09-14T11:00:14.347",
+                "daysFormulaId": 0,
                 "days": 30
             }
         },
         "availablePlaces": [
             {
-                "wgName": "Production Floor",
-                "wgCode": "PF",
-                "wgNum": 3
+                "wgName": "Cedar Springs",
+                "wgCode": "CS",
+                "wgNum": 4
             },
             {
-                "wgName": "Warehouse",
-                "wgCode": "WH",
+                "wgName": "Central Office",
+                "wgCode": "CO",
                 "wgNum": 1
             },
             {
-                "wgName": "Shipping",
-                "wgCode": "SH",
+                "wgName": "Evergreen Acres",
+                "wgCode": "EA",
                 "wgNum": 2
             },
             {
-                "wgName": "Office",
-                "wgCode": "OF",
-                "wgNum": 4
+                "wgName": "Glenwood Gardens",
+                "wgCode": "GG",
+                "wgNum": 3
             }
         ]
     },
+    "holidays": [
+        {
+            "holClassId": 2,
+            "date": "2020-02-20T00:00:00.000",
+            "workedHoliday": true,
+            "nonWorkedHoliday": true,
+            "descr": "Paul Day",
+            "id": 1,
+            "dateValue": 1582174800000
+        },
+        {
+            "holClassId": 2,
+            "date": "2019-02-20T00:00:00.000",
+            "workedHoliday": true,
+            "nonWorkedHoliday": true,
+            "descr": "Paul Day",
+            "id": 2,
+            "dateValue": 1550638800000
+        },
+        {
+            "holClassId": 0,
+            "date": "2020-01-01T00:00:00.000",
+            "workedHoliday": true,
+            "nonWorkedHoliday": true,
+            "descr": "New Year's Day",
+            "id": 3,
+            "dateValue": 1577854800000
+        },
+        {
+            "holClassId": 0,
+            "date": "2020-01-20T00:00:00.000",
+            "workedHoliday": true,
+            "nonWorkedHoliday": true,
+            "descr": "Martin Luther King, Jr. Day",
+            "id": 4,
+            "dateValue": 1579496400000
+        },
+        {
+            "holClassId": 0,
+            "date": "2019-05-27T00:00:00.000",
+            "workedHoliday": true,
+            "nonWorkedHoliday": true,
+            "descr": "U.S. Memorial Day",
+            "id": 5,
+            "dateValue": 1558929600000
+        },
+        {
+            "holClassId": 0,
+            "date": "2019-07-04T00:00:00.000",
+            "workedHoliday": true,
+            "nonWorkedHoliday": true,
+            "descr": "U.S. Independence Day (July 4t",
+            "id": 6,
+            "dateValue": 1562212800000
+        },
+        {
+            "holClassId": 0,
+            "date": "2019-09-02T00:00:00.000",
+            "workedHoliday": true,
+            "nonWorkedHoliday": true,
+            "descr": "U.S. Labor Day",
+            "id": 7,
+            "dateValue": 1567396800000
+        },
+        {
+            "holClassId": 0,
+            "date": "2019-11-28T00:00:00.000",
+            "workedHoliday": true,
+            "nonWorkedHoliday": true,
+            "descr": "U.S. Thanksgiving",
+            "id": 8,
+            "dateValue": 1574917200000
+        },
+        {
+            "holClassId": 0,
+            "date": "2019-12-25T00:00:00.000",
+            "workedHoliday": true,
+            "nonWorkedHoliday": true,
+            "descr": "Christmas Day",
+            "id": 9,
+            "dateValue": 1577250000000
+        },
+        {
+            "holClassId": 0,
+            "date": "2019-08-12T00:00:00.000",
+            "workedHoliday": true,
+            "nonWorkedHoliday": true,
+            "descr": "New Company Holiday",
+            "id": 10,
+            "dateValue": 1565582400000
+        }
+    ],
     "company": {
-        "name": "Manufacturing Company Inc",
-        "address1": "1 Industrial Way",
+        "name": "Thompson Time Keeping",
+        "address1": "1 Golden Pond Ave",
         "address2": "",
-        "city": "Manufacturing City",
+        "city": "Detroit",
         "stateProv": "MI",
         "postalCode": "48201",
         "latitude": 42.348495,
@@ -314,20 +501,12 @@
             {
                 "phonePosIndex": 1,
                 "phoneLabel": "Home Phone"
-            },
-            {
-                "phonePosIndex": 2,
-                "phoneLabel": "Cell Phone"
             }
         ],
         "emailFields": [
             {
                 "emailPosIndex": 0,
                 "emailLabel": "Work Email"
-            },
-            {
-                "emailPosIndex": 1,
-                "emailLabel": "Personal Email"
             }
         ]
     },
@@ -336,605 +515,34 @@
         "bypassDaylightSavings": false,
         "california": false,
         "inProduction": false,
-        "installationDate": "2024-01-01T08:34:45.219",
+        "installationDate": "2006-05-19T08:34:45.219",
         "startDOW": 1,
         "payroll": "Custom"
-    },
-    "workGroups": {
-        "levels": [
-            {
-                "levelName": "Location",
-                "levelNamePlural": "Location",
-                "wgLevel": 1,
-                "items": [
-                    {
-                        "text": "CS",
-                        "wgnum": 4,
-                        "code": "CS",
-                        "name": "Cedar Springs"
-                    },
-                    {
-                        "text": "CO",
-                        "wgnum": 1,
-                        "code": "CO",
-                        "name": "Central Office"
-                    },
-                    {
-                        "text": "EA",
-                        "wgnum": 2,
-                        "code": "EA",
-                        "name": "Evergreen Acres"
-                    },
-                    {
-                        "text": "GG",
-                        "wgnum": 3,
-                        "code": "GG",
-                        "name": "Glenwood Gardens"
-                    }
-                ]
-            },
-            {
-                "levelName": "Zone",
-                "levelNamePlural": "Zone",
-                "wgLevel": 2,
-                "items": [
-                    {
-                        "text": "DFT",
-                        "wgnum": 1,
-                        "code": "DFT",
-                        "name": "Default"
-                    },
-                    {
-                        "text": "FLT",
-                        "wgnum": 5,
-                        "code": "FLT",
-                        "name": "Float"
-                    },
-                    {
-                        "text": "A",
-                        "wgnum": 2,
-                        "code": "A",
-                        "name": "Zone A"
-                    },
-                    {
-                        "text": "B",
-                        "wgnum": 3,
-                        "code": "B",
-                        "name": "Zone B"
-                    },
-                    {
-                        "text": "C",
-                        "wgnum": 4,
-                        "code": "C",
-                        "name": "Zone C"
-                    }
-                ]
-            },
-            {
-                "levelName": "Department",
-                "levelNamePlural": "Department",
-                "wgLevel": 3,
-                "items": [
-                    {
-                        "text": "ACT",
-                        "wgnum": 1,
-                        "code": "ACT",
-                        "name": "Activities"
-                    },
-                    {
-                        "text": "G/A",
-                        "wgnum": 2,
-                        "code": "G/A",
-                        "name": "General/Administration"
-                    },
-                    {
-                        "text": "HSK",
-                        "wgnum": 3,
-                        "code": "HSK",
-                        "name": "Housekeeping"
-                    },
-                    {
-                        "text": "LRY",
-                        "wgnum": 4,
-                        "code": "LRY",
-                        "name": "Laundry"
-                    },
-                    {
-                        "text": "MKT",
-                        "wgnum": 5,
-                        "code": "MKT",
-                        "name": "Marketing"
-                    },
-                    {
-                        "text": "MCD",
-                        "wgnum": 6,
-                        "code": "MCD",
-                        "name": "Medical Director"
-                    },
-                    {
-                        "text": "MDR",
-                        "wgnum": 7,
-                        "code": "MDR",
-                        "name": "Medical Records"
-                    },
-                    {
-                        "text": "NSA",
-                        "wgnum": 8,
-                        "code": "NSA",
-                        "name": "Nursing Administration"
-                    },
-                    {
-                        "text": "NDR",
-                        "wgnum": 9,
-                        "code": "NDR",
-                        "name": "Nursing Medicare Direct"
-                    },
-                    {
-                        "text": "NMD",
-                        "wgnum": 10,
-                        "code": "NMD",
-                        "name": "Nursing Medicare Distinct"
-                    },
-                    {
-                        "text": "NTS",
-                        "wgnum": 11,
-                        "code": "NTS",
-                        "name": "Nutritional Services"
-                    },
-                    {
-                        "text": "OTH",
-                        "wgnum": 12,
-                        "code": "OTH",
-                        "name": "Occupational Therapy"
-                    },
-                    {
-                        "text": "PTH",
-                        "wgnum": 13,
-                        "code": "PTH",
-                        "name": "Physical Therapy"
-                    },
-                    {
-                        "text": "P/M",
-                        "wgnum": 14,
-                        "code": "P/M",
-                        "name": "Plant/Maintenance"
-                    },
-                    {
-                        "text": "SSS",
-                        "wgnum": 15,
-                        "code": "SSS",
-                        "name": "Social Services"
-                    },
-                    {
-                        "text": "STY",
-                        "wgnum": 16,
-                        "code": "STY",
-                        "name": "Speech Therapy"
-                    },
-                    {
-                        "text": "Training",
-                        "wgnum": 17,
-                        "code": "Training",
-                        "name": "Training"
-                    }
-                ]
-            },
-            {
-                "levelName": "Position",
-                "levelNamePlural": "Position",
-                "wgLevel": 4,
-                "items": [
-                    {
-                        "text": "ACA",
-                        "wgnum": 1,
-                        "code": "ACA",
-                        "name": "Accounting Assistant"
-                    },
-                    {
-                        "text": "ACM",
-                        "wgnum": 2,
-                        "code": "ACM",
-                        "name": "Accounting Manager"
-                    },
-                    {
-                        "text": "ATA",
-                        "wgnum": 3,
-                        "code": "ATA",
-                        "name": "Activities Asst"
-                    },
-                    {
-                        "text": "ATD",
-                        "wgnum": 4,
-                        "code": "ATD",
-                        "name": "Activities Director"
-                    },
-                    {
-                        "text": "AMT",
-                        "wgnum": 5,
-                        "code": "AMT",
-                        "name": "Admin. In Training "
-                    },
-                    {
-                        "text": "ADM",
-                        "wgnum": 6,
-                        "code": "ADM",
-                        "name": "Administration"
-                    },
-                    {
-                        "text": "AMA",
-                        "wgnum": 7,
-                        "code": "AMA",
-                        "name": "Administrative Assistant"
-                    },
-                    {
-                        "text": "AMR",
-                        "wgnum": 8,
-                        "code": "AMR",
-                        "name": "Administrator"
-                    },
-                    {
-                        "text": "ANL",
-                        "wgnum": 9,
-                        "code": "ANL",
-                        "name": "Admission Nurse- LPN"
-                    },
-                    {
-                        "text": "ANR",
-                        "wgnum": 10,
-                        "code": "ANR",
-                        "name": "Admission Nurse- RN"
-                    },
-                    {
-                        "text": "ADC",
-                        "wgnum": 11,
-                        "code": "ADC",
-                        "name": "Admissions Coordinator"
-                    },
-                    {
-                        "text": "AFD",
-                        "wgnum": 12,
-                        "code": "AFD",
-                        "name": "Assistant Facilities Director"
-                    },
-                    {
-                        "text": "BLS",
-                        "wgnum": 13,
-                        "code": "BLS",
-                        "name": "Billing Specialist"
-                    },
-                    {
-                        "text": "BOM",
-                        "wgnum": 14,
-                        "code": "BOM",
-                        "name": "Business Office Manager"
-                    },
-                    {
-                        "text": "CS",
-                        "wgnum": 15,
-                        "code": "CS",
-                        "name": "Central Supply "
-                    },
-                    {
-                        "text": "Certifications",
-                        "wgnum": 69,
-                        "code": "Certifications",
-                        "name": "Certifications"
-                    },
-                    {
-                        "text": "CNA",
-                        "wgnum": 66,
-                        "code": "CNA",
-                        "name": "Certified Nursing Assistant"
-                    },
-                    {
-                        "text": "COA",
-                        "wgnum": 17,
-                        "code": "COA",
-                        "name": "Certified OT Assistant"
-                    },
-                    {
-                        "text": "CML",
-                        "wgnum": 18,
-                        "code": "CML",
-                        "name": "Clinical Nurse Manager- LPN"
-                    },
-                    {
-                        "text": "CMR",
-                        "wgnum": 19,
-                        "code": "CMR",
-                        "name": "Clinical Nurse Manager- RN"
-                    },
-                    {
-                        "text": "CTR",
-                        "wgnum": 20,
-                        "code": "CTR",
-                        "name": "Controller"
-                    },
-                    {
-                        "text": "CK",
-                        "wgnum": 21,
-                        "code": "CK",
-                        "name": "Cook"
-                    },
-                    {
-                        "text": "DT",
-                        "wgnum": 22,
-                        "code": "DT",
-                        "name": "Diet Tech"
-                    },
-                    {
-                        "text": "DES",
-                        "wgnum": 25,
-                        "code": "DES",
-                        "name": "Director Environmental Service"
-                    },
-                    {
-                        "text": "DIS",
-                        "wgnum": 28,
-                        "code": "DIS",
-                        "name": "Director Information Services"
-                    },
-                    {
-                        "text": "DCS",
-                        "wgnum": 23,
-                        "code": "DCS",
-                        "name": "Director of Clinical Systems"
-                    },
-                    {
-                        "text": "DOD",
-                        "wgnum": 24,
-                        "code": "DOD",
-                        "name": "Director of Development"
-                    },
-                    {
-                        "text": "DOF",
-                        "wgnum": 26,
-                        "code": "DOF",
-                        "name": "Director of Facilities"
-                    },
-                    {
-                        "text": "DHR",
-                        "wgnum": 27,
-                        "code": "DHR",
-                        "name": "Director of Human Resources"
-                    },
-                    {
-                        "text": "DMK",
-                        "wgnum": 29,
-                        "code": "DMK",
-                        "name": "Director of Marketing"
-                    },
-                    {
-                        "text": "DON",
-                        "wgnum": 30,
-                        "code": "DON",
-                        "name": "Director of Nursing"
-                    },
-                    {
-                        "text": "DPR",
-                        "wgnum": 31,
-                        "code": "DPR",
-                        "name": "Director PR/Marketing"
-                    },
-                    {
-                        "text": "HKR",
-                        "wgnum": 32,
-                        "code": "HKR",
-                        "name": "Housekeeper"
-                    },
-                    {
-                        "text": "HRM",
-                        "wgnum": 33,
-                        "code": "HRM",
-                        "name": "Human Resource Manager"
-                    },
-                    {
-                        "text": "LDT",
-                        "wgnum": 34,
-                        "code": "LDT",
-                        "name": "Laundry Tech"
-                    },
-                    {
-                        "text": "LPN",
-                        "wgnum": 35,
-                        "code": "LPN",
-                        "name": "Licensed Practical Nurse"
-                    },
-                    {
-                        "text": "LAD",
-                        "wgnum": 36,
-                        "code": "LAD",
-                        "name": "LPN With Administrative Duties"
-                    },
-                    {
-                        "text": "MSP",
-                        "wgnum": 37,
-                        "code": "MSP",
-                        "name": "Maintenance Supervisor"
-                    },
-                    {
-                        "text": "MTN",
-                        "wgnum": 38,
-                        "code": "MTN",
-                        "name": "Maintenance Technician"
-                    },
-                    {
-                        "text": "MDL",
-                        "wgnum": 39,
-                        "code": "MDL",
-                        "name": "MDS LPN"
-                    },
-                    {
-                        "text": "MDR",
-                        "wgnum": 40,
-                        "code": "MDR",
-                        "name": "MDS RN"
-                    },
-                    {
-                        "text": "MDR",
-                        "wgnum": 41,
-                        "code": "MDR",
-                        "name": "Medical Director"
-                    },
-                    {
-                        "text": "MRC",
-                        "wgnum": 42,
-                        "code": "MRC",
-                        "name": "Medical Records"
-                    },
-                    {
-                        "text": "NAD",
-                        "wgnum": 43,
-                        "code": "NAD",
-                        "name": "Network Administrator"
-                    },
-                    {
-                        "text": "NSS",
-                        "wgnum": 44,
-                        "code": "NSS",
-                        "name": "Network Support Specialist"
-                    },
-                    {
-                        "text": "NAI",
-                        "wgnum": 45,
-                        "code": "NAI",
-                        "name": "Nurse Aide"
-                    },
-                    {
-                        "text": "NUA",
-                        "wgnum": 46,
-                        "code": "NUA",
-                        "name": "Nutrition Aide"
-                    },
-                    {
-                        "text": "NUS",
-                        "wgnum": 47,
-                        "code": "NUS",
-                        "name": "Nutrition Supervisor"
-                    },
-                    {
-                        "text": "OTH",
-                        "wgnum": 48,
-                        "code": "OTH",
-                        "name": "Occupational Therapist"
-                    },
-                    {
-                        "text": "PAC",
-                        "wgnum": 49,
-                        "code": "PAC",
-                        "name": "Payroll Accountant"
-                    },
-                    {
-                        "text": "PTH",
-                        "wgnum": 50,
-                        "code": "PTH",
-                        "name": "Physical Therapist"
-                    },
-                    {
-                        "text": "PTA",
-                        "wgnum": 51,
-                        "code": "PTA",
-                        "name": "Physical Therapy Assistant"
-                    },
-                    {
-                        "text": "PTD",
-                        "wgnum": 52,
-                        "code": "PTD",
-                        "name": "PT Aide"
-                    },
-                    {
-                        "text": "PAG",
-                        "wgnum": 53,
-                        "code": "PAG",
-                        "name": "Purchasing Agent"
-                    },
-                    {
-                        "text": "RCP",
-                        "wgnum": 54,
-                        "code": "RCP",
-                        "name": "Receptionist"
-                    },
-                    {
-                        "text": "R/A",
-                        "wgnum": 55,
-                        "code": "R/A",
-                        "name": "Receptionist/Admin"
-                    },
-                    {
-                        "text": "RN",
-                        "wgnum": 68,
-                        "code": "RN",
-                        "name": "Registered Nurse"
-                    },
-                    {
-                        "text": "RSM",
-                        "wgnum": 57,
-                        "code": "RSM",
-                        "name": "Rehab Service Manager"
-                    },
-                    {
-                        "text": "RBT",
-                        "wgnum": 58,
-                        "code": "RBT",
-                        "name": "Rehab Technician"
-                    },
-                    {
-                        "text": "RND",
-                        "wgnum": 59,
-                        "code": "RND",
-                        "name": "RN With Administrative Duties"
-                    },
-                    {
-                        "text": "SBS",
-                        "wgnum": 60,
-                        "code": "SBS",
-                        "name": "Senior Billing Specialist"
-                    },
-                    {
-                        "text": "SW",
-                        "wgnum": 61,
-                        "code": "SW",
-                        "name": "Social Worker"
-                    },
-                    {
-                        "text": "SPT",
-                        "wgnum": 62,
-                        "code": "SPT",
-                        "name": "Speech Therapist"
-                    },
-                    {
-                        "text": "SYA",
-                        "wgnum": 63,
-                        "code": "SYA",
-                        "name": "Systems Administrator"
-                    },
-                    {
-                        "text": "DVR",
-                        "wgnum": 64,
-                        "code": "DVR",
-                        "name": "Van Driver"
-                    }
-                ]
-            }
-        ]
     },
     "application": {
         "maxFaceEnrollments": 3,
         "tradingAllowed": true,
-        "wageAdvanceEligible": false,
+        "wageAdvanceEligible": true,
         "requireBioAttest": false,
         "visualScheduling": true
     },
+    "messaging": {
+        "enabled": true,
+        "server": "https://info0155.attendanceondemand.com/wss/messenger",
+        "subscription": "B494A9FDFE3149CA96BBCE7FF3C2821400000290",
+        "token": "13kswqvoQG2HUTG8xkB0tcdnLR0MrwBrqB4fnkv5NQ7FKJu0FaAiszh19XSpH3gL_DI1bqlU1Q2p3STaOIkqFnTSyo4HF2iuFEoX-njErmrOq1PGZ5BcVZC9RKlcehd5oTuRfG7jx72WM0vKGt075Xi_5F-XqhLjnex0flGwI_IjeArtx6cCjzl2YppVk9bZ",
+        "initialization": "registerMessengerService('https://info0155.attendanceondemand.com/wss/messenger','B494A9FDFE3149CA96BBCE7FF3C2821400000290','13kswqvoQG2HUTG8xkB0tcdnLR0MrwBrqB4fnkv5NQ7FKJu0FaAiszh19XSpH3gL_DI1bqlU1Q2p3STaOIkqFnTSyo4HF2iuFEoX-njErmrOq1PGZ5BcVZC9RKlcehd5oTuRfG7jx72WM0vKGt075Xi_5F-XqhLjnex0flGwI_IjeArtx6cCjzl2YppVk9bZ');"
+    },
     "operator": {
-        "canSeeRates": true,
-        "aeUserCode": "KIOSKAPI",
-        "friendlyName": "KIOSK USER",
+        "canSeeRates": false,
+        "aeUserCode": "ESSUSER",
+        "friendlyName": "Employee Self Service Account",
         "userGroup": "Employee Self Service",
         "preferences": {
             "timeInAmPm": true,
             "timeInHund": false,
             "hoursInHund": false,
-            "schTimeInAmPm": true,
+            "schTimeInAmPm": false,
             "schTimeInHund": false,
             "schHoursInHund": false,
             "arcHoursInHund": false
@@ -942,43 +550,92 @@
     },
     "schStyles": [
         {
-            "uniqueId": 2621,
+            "uniqueId": 2611,
             "schStyleId": 1,
             "Schedule Style": "On Call",
             "comment": "",
             "isUnpunchedStyle": false
         },
         {
-            "uniqueId": 2622,
+            "uniqueId": 2612,
             "schStyleId": 2,
-            "Schedule Style": "Absent - No Show",
+            "Schedule Style": "Schedule Style 2",
             "comment": "",
             "isUnpunchedStyle": false
         },
         {
-            "uniqueId": 2623,
+            "uniqueId": 2613,
             "schStyleId": 3,
-            "Schedule Style": "Scheduled",
+            "Schedule Style": "Schedule Style 3",
+            "comment": "",
+            "isUnpunchedStyle": false
+        },
+        {
+            "uniqueId": 2614,
+            "schStyleId": 4,
+            "Schedule Style": "Schedule Style 4",
+            "comment": "",
+            "isUnpunchedStyle": false
+        },
+        {
+            "uniqueId": 2615,
+            "schStyleId": 5,
+            "Schedule Style": "Schedule Style 5",
+            "comment": "",
+            "isUnpunchedStyle": false
+        },
+        {
+            "uniqueId": 2616,
+            "schStyleId": 6,
+            "Schedule Style": "Schedule Style 6",
+            "comment": "",
+            "isUnpunchedStyle": false
+        },
+        {
+            "uniqueId": 2617,
+            "schStyleId": 7,
+            "Schedule Style": "Schedule Style 7",
+            "comment": "",
+            "isUnpunchedStyle": false
+        },
+        {
+            "uniqueId": 2618,
+            "schStyleId": 8,
+            "Schedule Style": "Schedule Style 8",
+            "comment": "",
+            "isUnpunchedStyle": false
+        },
+        {
+            "uniqueId": 2619,
+            "schStyleId": 9,
+            "Schedule Style": "Schedule Style 9",
+            "comment": "",
+            "isUnpunchedStyle": false
+        },
+        {
+            "uniqueId": 2620,
+            "schStyleId": 10,
+            "Schedule Style": "Schedule Style 10",
             "comment": "",
             "isUnpunchedStyle": false
         }
     ],
     "context": {
-        "focusDate": "2025-07-29T00:00:00.000",
-        "currentTime": "2025-07-29T17:15:06.046Z",
+        "focusDate": "2019-08-15T00:00:00.000",
+        "currentTime": "2019-08-15T11:00:18.347",
         "demoMode": true,
-        "previousPeriodBegins": "2025-07-14T00:00:00.000",
-        "previousPeriodEnds": "2025-07-20T00:00:00.000",
-        "currentPeriodBegins": "2025-07-21T00:00:00.000",
-        "currentPeriodEnds": "2025-07-27T00:00:00.000",
+        "previousPeriodBegins": "2019-07-28T00:00:00.000",
+        "previousPeriodEnds": "2019-08-10T00:00:00.000",
+        "currentPeriodBegins": "2019-08-11T00:00:00.000",
+        "currentPeriodEnds": "2019-08-24T00:00:00.000",
         "workedShifts": [
             {
-                "date": "2025-07-22T00:00:00.000",
+                "date": "2019-08-15T00:00:00.000",
                 "dop": 0,
-                "dow": 2,
-                "grossHours": 305,
-                "hours": 275,
-                "hundHours": 4.58,
+                "dow": 0,
+                "grossHours": 236,
+                "hours": 236,
+                "hundHours": 3.93,
                 "shiftNum": 0,
                 "scheduled": false,
                 "hasWorkSchedule": false,
@@ -987,33 +644,87 @@
                 "isOddPunchState": false,
                 "isVirtualShift": false,
                 "lastPunchState": 0,
-                "active": true,
+                "active": false,
                 "transactions": {
                     "count": 2,
                     "actual": [
                         {
-                            "timestamp": "2025-07-22T07:00:00.000",
+                            "timestamp": "2019-08-15T10:34:00.000",
                             "transType": 256,
-                            "station": 55,
-                            "id": "trans-001"
+                            "station": 0,
+                            "id": "extModel67-1"
                         },
                         {
-                            "timestamp": "2025-07-22T12:00:00.000",
+                            "timestamp": "2019-08-15T14:30:00.000",
                             "transType": 0,
-                            "station": 55,
-                            "id": "trans-002"
+                            "station": 0,
+                            "id": "extModel67-2"
                         }
                     ],
                     "rounded": []
                 },
                 "monitoredItems": {
                     "arrival": {
+                        "beforeStart": false,
                         "afterStart": false
                     },
                     "departure": {
+                        "beforeEnd": false,
                         "afterEnd": false
                     },
                     "intervals": {
+                        "inDiff": 0,
+                        "outDiff": 0,
+                        "inDiffRnd": 0,
+                        "outDiffRnd": 0
+                    },
+                    "shiftExceptions": [],
+                    "breakEvents": [],
+                    "zones": [],
+                    "nonWorkedEvents": []
+                }
+            },
+            {
+                "date": "2019-08-15T00:00:00.000",
+                "dop": 0,
+                "dow": 0,
+                "grossHours": 0,
+                "hours": 0,
+                "hundHours": 0,
+                "shiftNum": 0,
+                "scheduled": false,
+                "hasWorkSchedule": false,
+                "hasFlexSchedule": false,
+                "isWorkedHoliday": false,
+                "isOddPunchState": true,
+                "isVirtualShift": false,
+                "lastPunchState": 1,
+                "active": true,
+                "transactions": {
+                    "count": 1,
+                    "actual": [
+                        {
+                            "timestamp": "2019-08-15T05:57:00.000",
+                            "transType": 0,
+                            "station": 0,
+                            "id": "extModel67-3"
+                        }
+                    ],
+                    "rounded": []
+                },
+                "monitoredItems": {
+                    "arrival": {
+                        "beforeStart": false,
+                        "afterStart": false
+                    },
+                    "departure": {
+                        "beforeEnd": false,
+                        "afterEnd": false
+                    },
+                    "intervals": {
+                        "inDiff": 0,
+                        "outDiff": 0,
+                        "inDiffRnd": 0,
                         "outDiffRnd": 0
                     },
                     "shiftExceptions": [],
@@ -1023,39 +734,39 @@
                 }
             }
         ],
-        "impliedStation": 55,
+        "impliedStation": 0,
         "maySetAvailability": true,
         "canSeeCoWorkerSch": true,
         "canSeeOpenAssignments": true,
         "canSeeOpenSchedules": true,
         "openSchWGLevel": 1,
-        "inOutStateId": 0,
+        "inOutStateId": 1,
         "defaultWg": {
-            "description": "Production Floor-Machine Operator-Default-Manufacturing",
-            "workPositionWgName": "Machine Operator",
-            "workPositionWgCode": "MOP",
-            "workPositionName": "Machine Operator",
-            "workPositionAbb": "MOP",
+            "description": "Glenwood Gardens-DFT-9-Certified Nursing Assistant",
+            "workPositionWgName": "Certified Nursing Assistant",
+            "workPositionWgCode": "CNA",
+            "workPositionName": "CNA",
+            "workPositionAbb": "CNA",
             "levels": [
                 {
                     "wgLevel": 1,
                     "wgNum": 3,
-                    "caption": "Production Floor"
-                },
-                {
-                    "wgLevel": 4,
-                    "wgNum": 66,
-                    "caption": "Machine Operator"
+                    "caption": "Glenwood Gardens"
                 },
                 {
                     "wgLevel": 2,
                     "wgNum": 1,
-                    "caption": "Default"
+                    "caption": "DFT"
                 },
                 {
                     "wgLevel": 3,
                     "wgNum": 9,
-                    "caption": "Manufacturing"
+                    "caption": "9"
+                },
+                {
+                    "wgLevel": 4,
+                    "wgNum": 66,
+                    "caption": "Certified Nursing Assistant"
                 }
             ]
         },

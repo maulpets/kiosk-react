@@ -33,6 +33,13 @@ export interface ApiResponse<T = unknown> {
   timestamp: string;
 }
 
+// Generic API result interface for adapter layer
+export interface ApiResult<T> {
+  success: boolean;
+  data: T;
+  message?: string;
+}
+
 export interface ApiError {
   message: string;
   code: string;

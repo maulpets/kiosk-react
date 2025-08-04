@@ -292,6 +292,23 @@ export default function Dashboard() {
   // State for managing sub-operations view
   const [selectedOperation, setSelectedOperation] = useState<DashboardSubOperationContainer | null>(null);
   
+  // Helper function to get transaction details - updated to handle transType 0 context
+  const getTransactionDetails = (transType: number, isClockIn: boolean) => {
+    switch (transType) {
+      case 0: 
+        return isClockIn 
+          ? { type: 'punch', notes: 'Clock In', icon: '🟢' }
+          : { type: 'punch', notes: 'Clock Out', icon: '🔴' };
+      case 1: return { type: 'punch', notes: 'Clock Out', icon: '🔴' };
+      case 2: return { type: 'break', notes: 'Break Out', icon: '☕' };
+      case 3: return { type: 'break', notes: 'Break In', icon: '🟢' };
+      case 256: return { type: 'punch', notes: 'Clock In (System)', icon: '🟢' };
+      case 512: return { type: 'break', notes: 'Lunch Break', icon: '🍽️' };
+      case 1024: return { type: 'punch', notes: 'End Shift', icon: '🏁' };
+      default: return { type: 'other', notes: `Transaction ${transType}`, icon: '📝' };
+    }
+  };
+  
   // Fetch kiosk startup data
   const { data: kioskData, loading, error } = useKioskEmployeeData({
     employeeId: state.user?.id,
@@ -512,13 +529,130 @@ export default function Dashboard() {
       return baseOperations;
     })(),
     actionItems: [], // This needs to be added to the new API structure or handled differently
-    timeCard: {
-      currentEntry: null as TimeEntry | null,
-      weeklyEntries: [],
-      weeklyTotal: 0,
-      overtimeHours: 0,
-      isOnBreak: false
-    }, // This needs to be added to the new API structure or handled differently
+    timeCard: (() => {
+      const typedKioskData = kioskData as KioskStartupResponse;
+      const workedShifts = typedKioskData.context?.workedShifts || [];
+      
+      if (workedShifts.length === 0) {
+        return {
+          currentEntry: null as TimeEntry | null,
+          weeklyEntries: [],
+          weeklyTotal: 0,
+          overtimeHours: 0,
+          isOnBreak: false
+        };
+      }
+      
+      // Get the last worked shift to determine current state
+      const lastShift = workedShifts[workedShifts.length - 1];
+      const isPunchedIn = lastShift.lastPunchState === 1;
+      
+      // Transform workedShifts to TimeEntry format
+      const weeklyEntries: TimeEntry[] = workedShifts.map(shift => {
+        const transactions = shift.transactions?.actual || [];
+        
+        // Find clock in/out times from transactions with improved logic for transType 0
+        let clockInTransaction = null;
+        let clockOutTransaction = null;
+        
+        // Handle transType 0 alternating pattern and other transaction types
+        const transType0Transactions = transactions.filter(t => t.transType === 0);
+        
+        if (transType0Transactions.length > 0) {
+          clockInTransaction = transType0Transactions[0]; // First transType 0 is clock in
+          if (transType0Transactions.length > 1) {
+            clockOutTransaction = transType0Transactions[transType0Transactions.length - 1]; // Last transType 0 is clock out if even count
+            // If odd number of transType 0, last one is clock in (still working)
+            if (transType0Transactions.length % 2 === 1) {
+              clockOutTransaction = null;
+            }
+          }
+        }
+        
+        // Also check for other transaction types
+        if (!clockInTransaction) {
+          clockInTransaction = transactions.find(t => t.transType === 256); // System clock in
+        }
+        if (!clockOutTransaction) {
+          clockOutTransaction = transactions.find(t => t.transType === 1 || t.transType === 1024); // Explicit clock out or end shift
+        }
+        
+        const clockIn = clockInTransaction ? 
+          new Date(clockInTransaction.timestamp).toLocaleTimeString('en-US', { 
+            hour: 'numeric', 
+            minute: '2-digit',
+            hour12: true 
+          }) : '';
+          
+        const clockOut = clockOutTransaction ? 
+          new Date(clockOutTransaction.timestamp).toLocaleTimeString('en-US', { 
+            hour: 'numeric', 
+            minute: '2-digit',
+            hour12: true 
+          }) : '';
+        
+        // Determine status based on punch state and transactions
+        let status: 'completed' | 'in-progress' | 'pending-approval' = 'completed';
+        if (shift === lastShift && isPunchedIn) {
+          status = 'in-progress';
+        } else if (!clockOutTransaction && clockInTransaction) {
+          status = 'in-progress';
+        }
+        
+        return {
+          id: `shift-${shift.date}`,
+          date: shift.date,
+          clockIn,
+          clockOut,
+          totalHours: shift.hundHours || 0,
+          status,
+          workedShifts: 1, // Each shift represents one worked shift
+          payLines: 0, // Would need to be calculated from actual pay data
+          adjustments: 0, // Would need adjustment data from API
+          transactions: transactions.map((t, index) => {
+            // For transType 0, determine if it's clock in or out based on sequence
+            let isClockIn = true;
+            if (t.transType === 0) {
+              // Look at previous transType 0 transactions to determine alternating pattern
+              const prevType0Count = transactions.slice(0, index).filter(prev => prev.transType === 0).length;
+              isClockIn = prevType0Count % 2 === 0; // Even index = clock in, odd = clock out
+            }
+            
+            const details = getTransactionDetails(t.transType, isClockIn);
+            return {
+              time: new Date(t.timestamp).toLocaleTimeString('en-US', { 
+                hour: 'numeric', 
+                minute: '2-digit',
+                hour12: true 
+              }),
+              type: details.type,
+              notes: details.notes,
+              department: 'Production', // Could be extracted from workgroup data if available
+              transType: t.transType,
+              timestamp: t.timestamp
+            };
+          })
+        };
+      });
+      
+      // Calculate totals
+      const weeklyTotal = workedShifts.reduce((sum, shift) => sum + (shift.hundHours || 0), 0);
+      const overtimeHours = workedShifts.reduce((sum, shift) => {
+        const regularHours = shift.hundHours || 0;
+        return sum + (regularHours > 8 ? regularHours - 8 : 0);
+      }, 0);
+      
+      // Create current entry if punched in
+      const currentEntry = isPunchedIn ? weeklyEntries[weeklyEntries.length - 1] : null;
+      
+      return {
+        currentEntry,
+        weeklyEntries,
+        weeklyTotal,
+        overtimeHours,
+        isOnBreak: false // Could be determined from transaction types if needed
+      };
+    })(),
     employee: {
       id: (kioskData as KioskStartupResponse).basics?.idnum || '',
       name: `${(kioskData as KioskStartupResponse).basics?.firstName || ''} ${(kioskData as KioskStartupResponse).basics?.lastName || ''}`.trim(),
@@ -526,7 +660,24 @@ export default function Dashboard() {
       role: (kioskData as KioskStartupResponse).basics?.homeWg?.workPositionName || '',
       department: (kioskData as KioskStartupResponse).basics?.homeWg?.description || '',
     }
-  } : { operations: [], actionItems: [], timeCard: { currentEntry: undefined, weeklyEntries: [], weeklyTotal: 0, overtimeHours: 0, isOnBreak: false }, employee: { id: '', name: '', email: '', role: '', department: '' } };
+  } : { 
+    operations: [], 
+    actionItems: [], 
+    timeCard: { 
+      currentEntry: null, 
+      weeklyEntries: [], 
+      weeklyTotal: 0, 
+      overtimeHours: 0, 
+      isOnBreak: false 
+    }, 
+    employee: { 
+      id: '', 
+      name: '', 
+      email: '', 
+      role: '', 
+      department: '' 
+    } 
+  };
   const enabledOperations = operations.filter(op => op.enabled);
 
   return (

@@ -431,3 +431,7 @@ export interface KioskStartupRequest {
   deviceId?: string;
   location?: string;
 }
+
+export interface KioskEmployeeDataRequest {
+  employeeId: string;
+}
