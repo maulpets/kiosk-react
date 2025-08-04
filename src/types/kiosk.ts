@@ -48,6 +48,51 @@ export interface SubOperation {
   transferRendering?: TransferRendering;
 }
 
+// Dashboard operation types
+export interface DashboardOperation {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  enabled: boolean;
+  route?: string;
+  nativeAction?: string;
+}
+
+export interface DashboardSubOperation extends SubOperation {
+  selectionId?: number;
+}
+
+export interface DashboardSubOperationContainer extends DashboardOperation {
+  operation: 1;
+  subOperations: DashboardSubOperation[];
+}
+
+// Extended types for dashboard-specific operations
+export interface ExtendedSubOperation extends SubOperation {
+  selectionId?: number;
+}
+
+export interface ExtendedOperation extends DashboardOperation {
+  originalOperation?: number;
+}
+
+// Type for API operations before transformation
+export interface ApiOperation {
+  fkeyguid?: string;
+  caption?: string;
+  description?: string;
+  icon?: string;
+  operation: number;
+  prerequisites?: { enabled?: boolean };
+  route?: string;
+  nativeAction?: string;
+  prompts?: {
+    askForTransType?: boolean;
+    selections?: Array<{ id: number; caption: string; }>;
+  };
+}
+
 // Base operation interface
 // interface BaseOperation {
 //   id: string;

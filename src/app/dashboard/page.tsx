@@ -6,54 +6,19 @@ import { useWebViewBridge } from '@/hooks/useWebViewBridge';
 import { useAppContext } from '@/store/AppContext';
 import { useKioskEmployeeData } from '@/hooks/useKioskEmployeeData';
 import { useI18n } from '@/hooks/useI18n';
-// import { ActionItem, TimeCardEntry } from '@/types/kiosk';
-import { KioskStartupResponse, SubOperation, ActionItem, TimeEntry    } from '@/types';
+import { getLocaleString } from '@/lib/i18n';
+import { 
+  KioskStartupResponse, 
+  TimeEntry,
+  DashboardOperation,
+  DashboardSubOperationContainer,
+  ExtendedSubOperation,
+  ExtendedOperation,
+  ApiOperation,
+  SubOperation
+} from '@/types';
 
-// Dashboard-specific operation interfaces
-interface DashboardOperation {
-  id: string;
-  name: string;
-  description: string;
-  icon: string;
-  enabled: boolean;
-  route?: string;
-  nativeAction?: string;
-}
-
-interface DashboardSubOperation extends SubOperation {
-  selectionId?: number;
-}
-
-interface DashboardSubOperationContainer extends DashboardOperation {
-  operation: 1;
-  subOperations: DashboardSubOperation[];
-}
-
-// Extended types for dashboard-specific operations
-interface ExtendedSubOperation extends SubOperation {
-  selectionId?: number;
-}
-
-interface ExtendedOperation extends DashboardOperation {
-  originalOperation?: number;
-}
-
-// Type for API operations before transformation
-interface ApiOperation {
-  fkeyguid?: string;
-  caption?: string;
-  description?: string;
-  icon?: string;
-  operation: number;
-  prerequisites?: { enabled?: boolean };
-  route?: string;
-  nativeAction?: string;
-  prompts?: {
-    askForTransType?: boolean;
-    selections?: Array<{ id: number; caption: string; }>;
-  };
-}
-
+// Component prop interfaces (UI-specific, can remain local)
 interface OperationButtonProps {
   operation: DashboardOperation;
   onClick: () => void;
@@ -191,91 +156,31 @@ function BackButton({ onClick }: { onClick: () => void }) {
 
 interface TimeActivityProps {
   entries: TimeEntry[];
+  locale: string;
 }
 
-function TimeActivity({ entries }: TimeActivityProps) {
-  // Get last 2 days of entries
-  const recentEntries = entries.slice(-2);
+function TimeActivity({ entries, locale }: TimeActivityProps) {
+  // Show all entries instead of just the last 2
+  const allEntries = entries;
   
   return (
-    <div className="space-y-3">
-      {recentEntries.map((entry) => (
-        <div key={entry.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-          <div className="flex items-center space-x-3">
-            <div className={`w-3 h-3 rounded-full ${
+    <div className="space-y-2">
+      {allEntries.map((entry) => (
+        <div key={entry.id} className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <div className={`w-2 h-2 rounded-full ${
               entry.status === 'completed' ? 'bg-accent' : 
               entry.status === 'in-progress' ? 'bg-primary' : 'bg-muted'
             }`} />
-            <div>
-              <div className="font-medium text-card-foreground">
-                {new Date(entry.date).toLocaleDateString('en-US', { 
-                  weekday: 'short', 
-                  month: 'short', 
-                  day: 'numeric' 
-                })}
-              </div>
-              <div className="text-sm text-muted-foreground">
-                {entry.clockIn} - {entry.clockOut || 'In Progress'}
-              </div>
+            <div className="text-xs text-muted-foreground mr-2">
+              {new Date(entry.date).toLocaleDateString(locale, { 
+                month: 'short', 
+                day: 'numeric' 
+              })}
             </div>
           </div>
-          <div className="text-right">
-            <div className="font-bold text-card-foreground">
-              {entry.totalHours?.toFixed(2) || '0.00'}h
-            </div>
-            <div className="text-xs text-muted-foreground capitalize">
-              {entry.status.replace('-', ' ')}
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-interface ActionItemListProps {
-  actionItems: ActionItem[];
-}
-
-function ActionItemList({ actionItems }: ActionItemListProps) {
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'urgent': return 'bg-destructive/10 text-destructive border border-destructive/20';
-      case 'high': return 'bg-company-secondary/10 text-company-secondary border border-company-secondary/20';
-      case 'medium': return 'bg-company-accent/10 text-company-accent border border-company-accent/20';
-      default: return 'bg-muted text-muted-foreground border border-border';
-    }
-  };
-
-  return (
-    <div className="space-y-3">
-      {actionItems.map((item) => (
-        <div key={item.id} className="p-4 border border-border rounded-lg hover:bg-muted/50 transition-colors">
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <div className="flex items-center space-x-2 mb-1">
-                <span className={`px-2 py-1 text-xs font-medium rounded-full ${getPriorityColor(item.priority)}`}>
-                  {item.priority.toUpperCase()}
-                </span>
-                {item.dueDate && (
-                  <span className="text-xs text-muted-foreground">
-                    Due {new Date(item.dueDate).toLocaleDateString()}
-                  </span>
-                )}
-              </div>
-              <h4 className="font-medium text-card-foreground">{item.title}</h4>
-              <p className="text-sm text-muted-foreground mt-1">{item.description}</p>
-              {item.estimatedMinutes && (
-                <span className="text-xs text-muted-foreground mt-1 block">
-                  ~{item.estimatedMinutes} minutes
-                </span>
-              )}
-            </div>
-            <button className="text-muted-foreground hover:text-foreground">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
+          <div className="text-xs text-muted-foreground">
+            {entry.clockIn}{entry.clockOut ? ` - ${entry.clockOut}` : ' - In Progress'}
           </div>
         </div>
       ))}
@@ -286,28 +191,140 @@ function ActionItemList({ actionItems }: ActionItemListProps) {
 export default function Dashboard() {
   const { state } = useAppContext();
   const { sendToNative, isConnected } = useWebViewBridge();
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const router = useRouter();
+  
+  // Get the locale string for date formatting
+  const localeString = getLocaleString(locale);
+  
+  // Helper function to process time card data with locale
+  const processTimeCardData = (kioskData: KioskStartupResponse, locale: string) => {
+    const workedShifts = kioskData.context?.workedShifts || [];
+    
+    if (workedShifts.length === 0) {
+      return {
+        currentEntry: null as TimeEntry | null,
+        weeklyEntries: [],
+        weeklyTotal: 0,
+        overtimeHours: 0,
+        isOnBreak: false
+      };
+    }
+    
+    // Collect all actual transactions from all shifts into a single array
+    const allTransactions: Array<{ timestamp: string; shiftDate: string; shiftIndex: number }> = [];
+    
+    workedShifts.forEach((shift, shiftIndex) => {
+      const transactions = shift.transactions?.actual || [];
+      transactions.forEach(transaction => {
+        allTransactions.push({
+          timestamp: transaction.timestamp,
+          shiftDate: shift.date,
+          shiftIndex
+        });
+      });
+    });
+    
+    // Sort all transactions by timestamp
+    allTransactions.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+    
+    // Group transactions into pairs (in/out)
+    const transactionPairs: Array<{
+      clockIn: string;
+      clockOut?: string;
+      shiftDate: string;
+      shiftIndex: number;
+    }> = [];
+    
+    for (let i = 0; i < allTransactions.length; i += 2) {
+      const clockInTransaction = allTransactions[i];
+      const clockOutTransaction = allTransactions[i + 1];
+      
+      transactionPairs.push({
+        clockIn: new Date(clockInTransaction.timestamp).toLocaleTimeString(locale, { 
+          hour: 'numeric', 
+          minute: '2-digit',
+          hour12: true 
+        }),
+        clockOut: clockOutTransaction ? new Date(clockOutTransaction.timestamp).toLocaleTimeString(locale, { 
+          hour: 'numeric', 
+          minute: '2-digit',
+          hour12: true 
+        }) : undefined,
+        shiftDate: clockInTransaction.shiftDate,
+        shiftIndex: clockInTransaction.shiftIndex
+      });
+    }
+    
+    // Transform pairs into TimeEntry format
+    const weeklyEntries: TimeEntry[] = transactionPairs.map((pair, pairIndex) => {
+      // Calculate hours if we have both in and out
+      let totalHours = 0;
+      if (pair.clockOut) {
+        // Find the original transactions to calculate hours from timestamps
+        const clockInTime = allTransactions.find(t => 
+          new Date(t.timestamp).toLocaleTimeString(locale, { 
+            hour: 'numeric', 
+            minute: '2-digit',
+            hour12: true 
+          }) === pair.clockIn && t.shiftDate === pair.shiftDate
+        );
+        const clockOutTime = allTransactions.find(t => 
+          new Date(t.timestamp).toLocaleTimeString(locale, { 
+            hour: 'numeric', 
+            minute: '2-digit',
+            hour12: true 
+          }) === pair.clockOut && t.shiftDate === pair.shiftDate
+        );
+        
+        if (clockInTime && clockOutTime) {
+          const inTime = new Date(clockInTime.timestamp).getTime();
+          const outTime = new Date(clockOutTime.timestamp).getTime();
+          totalHours = (outTime - inTime) / (1000 * 60 * 60); // Convert milliseconds to hours
+        }
+      }
+      
+      // Determine status
+      let status: 'completed' | 'in-progress' | 'pending-approval' = 'completed';
+      if (!pair.clockOut) {
+        status = 'in-progress';
+      }
+      
+      return {
+        id: `transaction-pair-${pair.shiftDate}-${pair.shiftIndex}-${pairIndex}`,
+        date: pair.shiftDate,
+        clockIn: pair.clockIn,
+        clockOut: pair.clockOut,
+        totalHours,
+        status,
+        workedShifts: 1,
+        payLines: 0,
+        adjustments: 0,
+        transactions: [] // Simplified - no individual transaction details
+      };
+    });
+    
+    // Calculate totals from original shift data
+    const weeklyTotal = workedShifts.reduce((sum, shift) => sum + (shift.hundHours || 0), 0);
+    const overtimeHours = workedShifts.reduce((sum, shift) => {
+      const regularHours = shift.hundHours || 0;
+      return sum + (regularHours > 8 ? regularHours - 8 : 0);
+    }, 0);
+    
+    // Create current entry if punched in (last transaction was a punch in and status is in-progress)
+    const currentEntry = weeklyEntries.find(entry => entry.status === 'in-progress') || null;
+    
+    return {
+      currentEntry,
+      weeklyEntries,
+      weeklyTotal,
+      overtimeHours,
+      isOnBreak: false
+    };
+  };
   
   // State for managing sub-operations view
   const [selectedOperation, setSelectedOperation] = useState<DashboardSubOperationContainer | null>(null);
-  
-  // Helper function to get transaction details - updated to handle transType 0 context
-  const getTransactionDetails = (transType: number, isClockIn: boolean) => {
-    switch (transType) {
-      case 0: 
-        return isClockIn 
-          ? { type: 'punch', notes: 'Clock In', icon: '🟢' }
-          : { type: 'punch', notes: 'Clock Out', icon: '🔴' };
-      case 1: return { type: 'punch', notes: 'Clock Out', icon: '🔴' };
-      case 2: return { type: 'break', notes: 'Break Out', icon: '☕' };
-      case 3: return { type: 'break', notes: 'Break In', icon: '🟢' };
-      case 256: return { type: 'punch', notes: 'Clock In (System)', icon: '🟢' };
-      case 512: return { type: 'break', notes: 'Lunch Break', icon: '🍽️' };
-      case 1024: return { type: 'punch', notes: 'End Shift', icon: '🏁' };
-      default: return { type: 'other', notes: `Transaction ${transType}`, icon: '📝' };
-    }
-  };
   
   // Fetch kiosk startup data
   const { data: kioskData, loading, error } = useKioskEmployeeData({
@@ -485,7 +502,7 @@ export default function Dashboard() {
     return sorted;
   };
 
-  const { operations, actionItems, timeCard, employee } = kioskData ? {
+  const { operations, timeCard, employee } = kioskData ? {
     operations: (() => {
       const typedKioskData = kioskData as KioskStartupResponse;
       const baseOperations = transformApiOperations(typedKioskData.context?.operations || []);
@@ -528,131 +545,7 @@ export default function Dashboard() {
       
       return baseOperations;
     })(),
-    actionItems: [], // This needs to be added to the new API structure or handled differently
-    timeCard: (() => {
-      const typedKioskData = kioskData as KioskStartupResponse;
-      const workedShifts = typedKioskData.context?.workedShifts || [];
-      
-      if (workedShifts.length === 0) {
-        return {
-          currentEntry: null as TimeEntry | null,
-          weeklyEntries: [],
-          weeklyTotal: 0,
-          overtimeHours: 0,
-          isOnBreak: false
-        };
-      }
-      
-      // Get the last worked shift to determine current state
-      const lastShift = workedShifts[workedShifts.length - 1];
-      const isPunchedIn = lastShift.lastPunchState === 1;
-      
-      // Transform workedShifts to TimeEntry format
-      const weeklyEntries: TimeEntry[] = workedShifts.map(shift => {
-        const transactions = shift.transactions?.actual || [];
-        
-        // Find clock in/out times from transactions with improved logic for transType 0
-        let clockInTransaction = null;
-        let clockOutTransaction = null;
-        
-        // Handle transType 0 alternating pattern and other transaction types
-        const transType0Transactions = transactions.filter(t => t.transType === 0);
-        
-        if (transType0Transactions.length > 0) {
-          clockInTransaction = transType0Transactions[0]; // First transType 0 is clock in
-          if (transType0Transactions.length > 1) {
-            clockOutTransaction = transType0Transactions[transType0Transactions.length - 1]; // Last transType 0 is clock out if even count
-            // If odd number of transType 0, last one is clock in (still working)
-            if (transType0Transactions.length % 2 === 1) {
-              clockOutTransaction = null;
-            }
-          }
-        }
-        
-        // Also check for other transaction types
-        if (!clockInTransaction) {
-          clockInTransaction = transactions.find(t => t.transType === 256); // System clock in
-        }
-        if (!clockOutTransaction) {
-          clockOutTransaction = transactions.find(t => t.transType === 1 || t.transType === 1024); // Explicit clock out or end shift
-        }
-        
-        const clockIn = clockInTransaction ? 
-          new Date(clockInTransaction.timestamp).toLocaleTimeString('en-US', { 
-            hour: 'numeric', 
-            minute: '2-digit',
-            hour12: true 
-          }) : '';
-          
-        const clockOut = clockOutTransaction ? 
-          new Date(clockOutTransaction.timestamp).toLocaleTimeString('en-US', { 
-            hour: 'numeric', 
-            minute: '2-digit',
-            hour12: true 
-          }) : '';
-        
-        // Determine status based on punch state and transactions
-        let status: 'completed' | 'in-progress' | 'pending-approval' = 'completed';
-        if (shift === lastShift && isPunchedIn) {
-          status = 'in-progress';
-        } else if (!clockOutTransaction && clockInTransaction) {
-          status = 'in-progress';
-        }
-        
-        return {
-          id: `shift-${shift.date}`,
-          date: shift.date,
-          clockIn,
-          clockOut,
-          totalHours: shift.hundHours || 0,
-          status,
-          workedShifts: 1, // Each shift represents one worked shift
-          payLines: 0, // Would need to be calculated from actual pay data
-          adjustments: 0, // Would need adjustment data from API
-          transactions: transactions.map((t, index) => {
-            // For transType 0, determine if it's clock in or out based on sequence
-            let isClockIn = true;
-            if (t.transType === 0) {
-              // Look at previous transType 0 transactions to determine alternating pattern
-              const prevType0Count = transactions.slice(0, index).filter(prev => prev.transType === 0).length;
-              isClockIn = prevType0Count % 2 === 0; // Even index = clock in, odd = clock out
-            }
-            
-            const details = getTransactionDetails(t.transType, isClockIn);
-            return {
-              time: new Date(t.timestamp).toLocaleTimeString('en-US', { 
-                hour: 'numeric', 
-                minute: '2-digit',
-                hour12: true 
-              }),
-              type: details.type,
-              notes: details.notes,
-              department: 'Production', // Could be extracted from workgroup data if available
-              transType: t.transType,
-              timestamp: t.timestamp
-            };
-          })
-        };
-      });
-      
-      // Calculate totals
-      const weeklyTotal = workedShifts.reduce((sum, shift) => sum + (shift.hundHours || 0), 0);
-      const overtimeHours = workedShifts.reduce((sum, shift) => {
-        const regularHours = shift.hundHours || 0;
-        return sum + (regularHours > 8 ? regularHours - 8 : 0);
-      }, 0);
-      
-      // Create current entry if punched in
-      const currentEntry = isPunchedIn ? weeklyEntries[weeklyEntries.length - 1] : null;
-      
-      return {
-        currentEntry,
-        weeklyEntries,
-        weeklyTotal,
-        overtimeHours,
-        isOnBreak: false // Could be determined from transaction types if needed
-      };
-    })(),
+    timeCard: processTimeCardData(kioskData as KioskStartupResponse, localeString),
     employee: {
       id: (kioskData as KioskStartupResponse).basics?.idnum || '',
       name: `${(kioskData as KioskStartupResponse).basics?.firstName || ''} ${(kioskData as KioskStartupResponse).basics?.lastName || ''}`.trim(),
@@ -662,7 +555,6 @@ export default function Dashboard() {
     }
   } : { 
     operations: [], 
-    actionItems: [], 
     timeCard: { 
       currentEntry: null, 
       weeklyEntries: [], 
@@ -684,7 +576,7 @@ export default function Dashboard() {
     <div className="h-full w-full bg-background overflow-auto">
       <div className="w-full max-w-full px-4 md:px-6 py-4 md:py-8 min-h-full">
         {/* Two Column Layout - Responsive Grid */}
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 md:gap-8 h-full">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 h-full">
           
           {/* Left Column - Navigation/Operations */}
           <div className="space-y-4 flex flex-col">
@@ -782,44 +674,72 @@ export default function Dashboard() {
           </div>
 
           {/* Right Column - Profile, Actions, Mobile App */}
-          <div className="space-y-4 md:space-y-6 flex flex-col">
+          <div className="space-y-4 md:space-y-6  flex-col">
             
             {/* Profile and Time Activity Section */}
             <div className="bg-card rounded-xl md:rounded-2xl p-4 md:p-6 shadow-sm flex-1">
-              <div className="flex items-center space-x-3 md:space-x-4 mb-3 md:mb-4">
-                <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-company-primary to-company-accent rounded-full flex items-center justify-center flex-shrink-0">
-                  <span className="text-white font-bold text-base md:text-lg">
-                    {employee.name.charAt(0).toUpperCase()}
-                  </span>
-                </div>
-                <div className="flex-1 min-w-0">
+              <div className="flex items-start justify-between space-x-4">
+                {/* Profile Information */}
+                <div className="flex flex-col flex-1 min-w-0">
                   <h3 className="font-bold text-card-foreground text-sm md:text-base truncate">{employee.name}</h3>
                   <p className="text-xs md:text-sm text-muted-foreground">{t('dashboard.badge')} {employee.id}</p>
                 </div>
-                <div className="text-right flex-shrink-0">
-                  <div className="text-xs md:text-sm text-muted-foreground">
-                    {timeCard.currentEntry && timeCard.currentEntry.clockIn ? t('dashboard.punchedInFor', [timeCard.currentEntry.clockIn]) : t('dashboard.notClockedIn')}
+                
+                {/* Recent Activity */}
+                {timeCard.weeklyEntries.length > 0 && (
+                  <div className="flex-shrink-0">
+                    <h4 className="font-medium text-card-foreground mb-2 text-xs md:text-sm">{t('dashboard.recentTimeActivity')}</h4>
+                    <TimeActivity entries={timeCard.weeklyEntries} locale={localeString} />
                   </div>
-                </div>
+                )}
               </div>
-              
-              {timeCard.weeklyEntries.length > 0 && (
-                <div>
-                  <h4 className="font-medium text-card-foreground mb-2 md:mb-3 text-sm md:text-base">{t('dashboard.recentTimeActivity')}</h4>
-                  <TimeActivity entries={timeCard.weeklyEntries} />
-                </div>
-              )}
             </div>
 
             {/* Action Required Section */}
-            {actionItems.length > 0 && (
-              <div className="bg-destructive/10 border border-destructive/20 rounded-xl md:rounded-2xl p-4 md:p-6">
-                <h3 className="font-bold text-destructive text-base md:text-lg mb-3 md:mb-4">
-                  {t('operations.actionRequired')} ({actionItems.length})
-                </h3>
-                <ActionItemList actionItems={actionItems} />
-              </div>
-            )}
+            {(() => {
+              const typedKioskData = kioskData as KioskStartupResponse;
+              const openItems = typedKioskData?.openItems || [];
+              return openItems.length > 0 && (
+                <div className="bg-destructive/10 border border-destructive/20 rounded-xl md:rounded-2xl p-4 md:p-6">
+                  <h3 className="font-bold text-destructive text-base md:text-lg mb-3 md:mb-4">
+                    {t('operations.actionRequired')} ({openItems.length})
+                  </h3>
+                  <div className="space-y-3">
+                    {openItems.slice(0, 3).map((item) => (
+                      <button
+                        key={item.itemdata}
+                        onClick={() => router.push('/action-required')}
+                        className="w-full p-3 border border-destructive/30 rounded-lg hover:bg-destructive/5 transition-colors text-left"
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <h4 className="font-medium text-destructive text-sm md:text-base">
+                              {item.responseRequest.descr}
+                            </h4>
+                            {item.responseRequestEvent?.eventDate && (
+                              <p className="text-xs text-muted-foreground mt-1">
+                                {t('actionRequired.event')} {new Date(item.responseRequestEvent.eventDate).toLocaleDateString()}
+                              </p>
+                            )}
+                          </div>
+                          <svg className="w-4 h-4 text-destructive flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </div>
+                      </button>
+                    ))}
+                    {openItems.length > 3 && (
+                      <button
+                        onClick={() => router.push('/action-required')}
+                        className="w-full p-2 text-center text-destructive text-sm hover:underline"
+                      >
+                        {t('actionRequired.viewAll', [openItems.length.toString()])}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })()}
 
             {/* Get the Mobile App Section */}
             <div className="bg-card rounded-xl md:rounded-2xl p-4 md:p-6 shadow-sm">

@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { apiGetTimeCard } from '../lib/apiAdapter';
+import { useI18n } from './useI18n';
+import { getLocaleString } from '@/lib/i18n';
 import { 
   WeeklyTimeCardData, 
   UseTimeCardResult,
@@ -7,6 +9,8 @@ import {
 } from '@/types';
 
 export function useTimeCard(payPeriod: 'previous' | 'current' | 'next' = 'current', employeeId?: string): UseTimeCardResult {
+  const { locale } = useI18n();
+  const localeString = getLocaleString(locale);
   const [data, setData] = useState<WeeklyTimeCardData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -84,14 +88,14 @@ export function useTimeCard(payPeriod: 'previous' | 'current' | 'next' = 'curren
           allTransactions.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
           
           const clockIn = allTransactions.length > 0 ? 
-            new Date(allTransactions[0].timestamp).toLocaleTimeString('en-US', { 
+            new Date(allTransactions[0].timestamp).toLocaleTimeString(localeString, { 
               hour: '2-digit', 
               minute: '2-digit',
               hour12: true 
             }) : '';
             
           const clockOut = allTransactions.length > 1 ? 
-            new Date(allTransactions[allTransactions.length - 1].timestamp).toLocaleTimeString('en-US', { 
+            new Date(allTransactions[allTransactions.length - 1].timestamp).toLocaleTimeString(localeString, { 
               hour: '2-digit', 
               minute: '2-digit',
               hour12: true 
@@ -104,13 +108,13 @@ export function useTimeCard(payPeriod: 'previous' | 'current' | 'next' = 'curren
           // Extract scheduled shift information if available
           const scheduleInfo = day.schedules && day.schedules.length > 0 ? day.schedules[0] : null;
           const scheduledStart = scheduleInfo?.startTime ? 
-            new Date(scheduleInfo.startTime).toLocaleTimeString('en-US', { 
+            new Date(scheduleInfo.startTime).toLocaleTimeString(localeString, { 
               hour: '2-digit', 
               minute: '2-digit',
               hour12: true 
             }) : undefined;
           const scheduledEnd = scheduleInfo?.endTime ? 
-            new Date(scheduleInfo.endTime).toLocaleTimeString('en-US', { 
+            new Date(scheduleInfo.endTime).toLocaleTimeString(localeString, { 
               hour: '2-digit', 
               minute: '2-digit',
               hour12: true 
@@ -146,7 +150,7 @@ export function useTimeCard(payPeriod: 'previous' | 'current' | 'next' = 'curren
             scheduledEnd,
             scheduledHours,
             transactions: allTransactions.map((t) => ({
-              time: new Date(t.timestamp).toLocaleTimeString('en-US', { 
+              time: new Date(t.timestamp).toLocaleTimeString(localeString, { 
                 hour: '2-digit', 
                 minute: '2-digit',
                 hour12: true 
@@ -303,7 +307,7 @@ export function useTimeCard(payPeriod: 'previous' | 'current' | 'next' = 'curren
     } finally {
       setLoading(false);
     }
-  }, [payPeriod, employeeId]);
+  }, [payPeriod, employeeId, localeString]);
 
   // Fetch data when payPeriod changes
   useEffect(() => {

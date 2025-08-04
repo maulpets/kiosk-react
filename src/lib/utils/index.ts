@@ -7,9 +7,9 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 // Format date utilities
-export function formatDate(date: Date | string, options?: Intl.DateTimeFormatOptions): string {
+export function formatDate(date: Date | string, options?: Intl.DateTimeFormatOptions, locale: string = 'en-US'): string {
   const dateObj = typeof date === 'string' ? new Date(date) : date;
-  return dateObj.toLocaleDateString('en-US', {
+  return dateObj.toLocaleDateString(locale, {
     year: 'numeric',
     month: 'short',
     day: 'numeric',

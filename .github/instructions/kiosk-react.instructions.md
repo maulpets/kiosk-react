@@ -23,7 +23,7 @@ This project is a React-based kiosk application designed to provide an interacti
 <!-- - **Code Reviews**: All code changes must be reviewed by at least one other developer before merging. -->
 - **Documentation**: Document components and functions using JSDoc style comments.
 - **Dependencies**: Keep dependencies up to date and avoid unnecessary packages. Use npm or yarn for package management.
-- **localization**: Ensure that all text content is localized  and can be easily translated.  Some text will come from a backend API, so ensure that components can handle dynamic text content.  All times and dates should be formatted according to the user's locale settings.  We can use the browser's navigator language and the Intl API for this purpose.  
+- **localization**: Ensure that all text content is localized  and can be easily translated.  Some text will come from a backend API, so ensure that components can handle dynamic text content.  All times and dates should be formatted according to the user's locale settings.  We can use the browser's navigator language or the language selector drop down and the Intl API for this purpose.  
 
 Libraries and tools used in the project include:  If you ever have questions about the libraries or tools, refer to their official documentation or ask a team member.
 - **React**: For building user interfaces.

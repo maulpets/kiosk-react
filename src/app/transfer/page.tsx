@@ -5,8 +5,10 @@ import { useRouter } from 'next/navigation';
 import { useWebViewBridge } from '@/hooks/useWebViewBridge';
 import { useAppContext } from '@/store/AppContext';
 import { useKioskEmployeeData } from '@/hooks/useKioskEmployeeData';
+import { useI18n } from '@/hooks/useI18n';
 import { TransferLevel, TransferOption, Employee } from '@/types/kiosk';
 import EmployeeMenu from '@/components/EmployeeMenu';
+import { getLocaleString } from '@/lib/i18n';
 
 interface TransferSelection {
   levelId: number;
@@ -96,7 +98,9 @@ interface ConfirmationSectionProps {
 }
 
 function ConfirmationSection({ employee, selections, levels, onConfirm, onBack }: ConfirmationSectionProps) {
-  const currentTime = new Date().toLocaleTimeString('en-US', {
+  const { locale } = useI18n();
+  const localeString = getLocaleString(locale);
+  const currentTime = new Date().toLocaleTimeString(localeString, {
     hour: '2-digit',
     minute: '2-digit',
     hour12: true

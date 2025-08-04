@@ -8,6 +8,7 @@ import { useKioskEmployeeData } from '@/hooks/useKioskEmployeeData';
 import { useI18n } from '@/hooks/useI18n';
 import { SubOperation, Employee } from '@/types/kiosk';
 import EmployeeMenu from '@/components/EmployeeMenu';
+import { getLocaleString } from '@/lib/i18n';
 
 interface PunchOutConfirmationProps {
   subOperation: SubOperation;
@@ -17,14 +18,15 @@ interface PunchOutConfirmationProps {
 }
 
 function PunchOutConfirmation({ subOperation, employee, onConfirm, onCancel }: PunchOutConfirmationProps) {
-  const { t } = useI18n();
-  const currentTime = new Date().toLocaleTimeString('en-US', {
+  const { t, locale } = useI18n();
+  const localeString = getLocaleString(locale);
+  const currentTime = new Date().toLocaleTimeString(localeString, {
     hour: '2-digit',
     minute: '2-digit',
     hour12: true
   });
 
-  const currentDate = new Date().toLocaleDateString('en-US', {
+  const currentDate = new Date().toLocaleDateString(localeString, {
     weekday: 'long',
     year: 'numeric',
     month: 'long',

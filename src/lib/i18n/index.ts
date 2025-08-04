@@ -87,7 +87,7 @@ export function formatDateTime(
 }
 
 // Convert our locale code to a standard locale string
-function getLocaleString(locale: Locale): string {
+export function getLocaleString(locale: Locale): string {
   const localeMap: Record<Locale, string> = {
     en: 'en-US',
     es: 'es-ES',
